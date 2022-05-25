@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Item } from "./Item";
 import {
   Container,
@@ -8,15 +9,22 @@ import {
   Divider
 } from "./style"
 
+
 export const BusinessListing: React.FC = () => {
+
+  let navigate = useNavigate();
+
   return (
     <Container>
       <Content>
       <Header>
         4 resultados encontrados
+        <div onClick={() => navigate('/business')}>
+          a
+        </div>
       </Header>
       <ItemsContent>
-        <Item />
+        <Item/>
         <Divider />
         <Item />
         <Divider />

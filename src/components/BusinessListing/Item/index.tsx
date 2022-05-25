@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 import { AiOutlineWhatsApp, AiOutlineMail } from 'react-icons/ai';
 import { BsChatLeft } from 'react-icons/bs';
 import  DanceImg  from '../../../assets/dance.jpg'
@@ -16,8 +17,10 @@ import {
  } from './styles';
 
 export const Item: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
-    <Container>
+    <Container onClick={() => navigate('/business')}>
         <Image src={DanceImg} />
         <BusinessInfo>
           <BusinessHeader>
