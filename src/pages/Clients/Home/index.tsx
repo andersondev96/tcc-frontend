@@ -3,7 +3,7 @@ import { Header } from "../../../components/Header";
 import { SearchInput } from "../../../components/SearchInput";
 import { Container, Content } from "./styles";
 
-export const Dashboard: React.FC = () => {
+export const Home: React.FC = () => {
   return (
     <Container>
       <Header />
@@ -11,9 +11,6 @@ export const Dashboard: React.FC = () => {
         <SearchInput />
         <BusinessListing />
       </Content>
-
-
-
     </Container>
   );
 };
