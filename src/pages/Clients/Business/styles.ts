@@ -1,13 +1,21 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 export const Content = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 64rem;
   margin-left: 10.5rem;
+  padding: 2.5rem;
+`;
+
+export const Main = styled.div`
+  display: flex;
+  flex-direction: row;
 `;
 
 export const SectionsWithTextContainer = styled.div`

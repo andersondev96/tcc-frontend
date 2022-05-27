@@ -1,9 +1,11 @@
 import React from 'react';
-import BoxServices from '../../../components/BoxServices';
+import { Assessments } from '../../../components/Assessments';
+import{ BoxServices } from '../../../components/BoxServices';
+import { CarouselPhotos } from '../../../components/CarouselPhotos';
 import { Header } from '../../../components/Header';
 import { HeaderCompany } from '../../../components/HeaderCompany';
 
-import { Container, Content, Section, TitleSection, Text, SectionsWithTextContainer, BoxContainer } from './styles';
+import { Container, Content, Main, Section, TitleSection, Text, SectionsWithTextContainer, BoxContainer } from './styles';
 
 export const Business: React.FC = () => {
   return (
@@ -11,6 +13,7 @@ export const Business: React.FC = () => {
       <Header />
       <HeaderCompany />
       <Content>
+        <Main>
         <SectionsWithTextContainer>
           <Section>
             <TitleSection>Sobre o negócio:</TitleSection>
@@ -49,6 +52,9 @@ export const Business: React.FC = () => {
         <BoxContainer>
           <BoxServices />
         </BoxContainer>
+      </Main>
+      <CarouselPhotos />
+      <Assessments />
       </Content>
     </Container>
   )

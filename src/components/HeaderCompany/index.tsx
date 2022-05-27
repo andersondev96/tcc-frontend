@@ -40,8 +40,8 @@ export const HeaderCompany: React.FC = () => {
         </StarsAndTypeContainer>
         <IconsContainer>
           <BiWorld />
-          <AiOutlineWhatsApp />
           <AiOutlineMail />
+          <AiOutlineWhatsApp />
           <BsChatLeft />
           <AiOutlineCalculator />
         </IconsContainer>

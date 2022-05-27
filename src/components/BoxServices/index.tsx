@@ -8,7 +8,7 @@ import {
   Header,
   Content } from './styles';
 
-const BoxServices: React.FC = () => {
+export const BoxServices: React.FC = () => {
   return (
     <Container>
       <Header>Serviços</Header>
@@ -23,4 +23,3 @@ const BoxServices: React.FC = () => {
   );
 }
 
-export default BoxServices;

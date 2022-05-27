@@ -6,7 +6,6 @@ export const Container = styled.div`
   align-items: center;
   gap: 3rem;
 
-  width: 100vw;
   padding: 0.375rem 10.5rem;
   margin-top: 2.25rem;
   background: rgba(252, 252, 252, 0.9);
@@ -18,7 +17,6 @@ export const IconBusiness = styled.img`
 `;
 
 export const Content = styled.div`
-  width: 100vw;
   display: flex;
   flex-direction: column;
 `;
@@ -68,7 +66,7 @@ export const StarsContainer = styled.div`
 
   svg {
     color: #2F5AC7;
-    width: 1rem;
+    font-size: 1rem;
   }
 `;
 
