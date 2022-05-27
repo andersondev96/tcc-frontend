@@ -19,9 +19,6 @@ export const BusinessListing: React.FC = () => {
       <Content>
       <Header>
         4 resultados encontrados
-        <div onClick={() => navigate('/business')}>
-          a
-        </div>
       </Header>
       <ItemsContent>
         <Item/>
