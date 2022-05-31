@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import  ImageStart  from "../../assets/image-start.png";
 
 import {
@@ -12,13 +13,16 @@ import {
 } from './styles';
 
 export const Start: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <Container>
-      <Image src={ImageStart} alt="Image Start" />
+      <Image>
+        <img  src={ImageStart} alt="Image Start" />
+      </Image>
       <OptionsContainer>
         <Text>Faça um bom negócio e ajude um pequeno empreendedor</Text>
         <ButtonsContainer>
-          <Button>Entrar</Button>
+          <Button onClick={() => navigate('/login')}>Entrar</Button>
           <Button>Cadastrar</Button>
         </ButtonsContainer>
       </OptionsContainer>

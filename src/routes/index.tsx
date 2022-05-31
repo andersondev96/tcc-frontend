@@ -5,6 +5,7 @@ import {Home} from '../pages/Clients/Home';
 import { Business } from "../pages/Clients/Business";
 import { Service } from "../pages/Clients/Service";
 import { Start } from "../pages/Start";
+import { Login } from "../pages/Start/Login";
 
  export const Router: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ import { Start } from "../pages/Start";
         <Route path="/business" element={<Business />}/>
         <Route path="/service" element={<Service />}/>
         <Route path="/start" element={<Start />}/>
+        <Route path="/login" element={<Login />}/>
       </Routes>
     </BrowserRouter>
   );
