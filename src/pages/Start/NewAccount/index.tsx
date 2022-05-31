@@ -1,6 +1,6 @@
 import React from 'react';
-import { BiArrowBack, BiLogIn } from "react-icons/bi";
-import { FcGoogle } from "react-icons/fc";
+import { AiOutlineSave } from 'react-icons/ai';
+import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from 'react-router-dom';
 import UserImage from "../../../assets/user.png";
 
@@ -22,7 +22,7 @@ import {
 
 } from './styles';
 
-export const Login: React.FC = () => {
+export const NewAccount: React.FC = () => {
   const navigate = useNavigate();
   return (
     <Container>
@@ -30,13 +30,18 @@ export const Login: React.FC = () => {
         <img src={UserImage} alt="Image Start" />
       </Image>
       <LoginContainer onClick={() => navigate('/start')}>
-        <Header>LOGIN</Header>
+        <Header>NOVO USUÁRIO</Header>
         <BackPage>
           <BiArrowBack />
           <a href="/">Voltar</a>
           </BackPage>
         <Content>
           <Form>
+          <InputController>
+              <Label htmlFor="inputNome">Nome</Label>
+              <Input type="text" name="nome" placeholder="Digite o seu nome" />
+            </InputController>
+
             <InputController>
               <Label htmlFor="inputEmail">E-mail</Label>
               <Input type="text" name="email" placeholder="Digite o seu e-mail" />
@@ -47,20 +52,21 @@ export const Login: React.FC = () => {
               <Input type="password" name="email" placeholder="Digite a sua senha" />
             </InputController>
 
+            <InputController>
+              <Label htmlFor="inputPasswordConfirmation">Confirmar senha</Label>
+              <Input type="password" name="passwordConfirmation" placeholder="Digite a sua senha" />
+            </InputController>
+
             <ButtonController>
 
               <Button type="submit">
-              <BiLogIn />
-                Entrar
+              <AiOutlineSave />
+                Salvar
               </Button>
             </ButtonController>
           </Form>
 
-          <LinkForgotPassword>Esqueci a senha</LinkForgotPassword>
-          <SignInGoogleButton>
-            <FcGoogle />
-            Entrar com o Google
-            </SignInGoogleButton>
+
         </Content>
       </LoginContainer>
     </Container>
