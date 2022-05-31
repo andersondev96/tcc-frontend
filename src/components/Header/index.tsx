@@ -12,12 +12,13 @@ export const Header: React.FC = () => {
     navigate('/');
   }
 
+
   return (
     <Container>
       <ButtonBack onClick={returnToBackPage}>
       <AiOutlineArrowLeft />
       </ButtonBack>
-      <UserMenu>
+      <UserMenu onClick={() => navigate('/start')}>
         <AiOutlineUser />
         <Text>Entrar</Text>
       </UserMenu>
