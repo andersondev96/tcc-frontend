@@ -37,12 +37,8 @@ export const BackPage = styled.div`
   font-weight: 400;
   font-size: 0.75rem;
   color: #547DE5;
+  cursor: pointer;
 
-
-  a {
-    text-decoration: none;
-    color: #547DE5;
-  }
 `;
 
 export const Header = styled.div`

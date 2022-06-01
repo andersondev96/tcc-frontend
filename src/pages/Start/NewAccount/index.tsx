@@ -29,12 +29,12 @@ export const NewAccount: React.FC = () => {
       <Image>
         <img src={UserImage} alt="Image Start" />
       </Image>
-      <LoginContainer onClick={() => navigate('/start')}>
+      <LoginContainer>
         <Header>NOVO USUÁRIO</Header>
-        <BackPage>
+        <BackPage onClick={() => navigate('/select')}>
           <BiArrowBack />
-          <a href="/">Voltar</a>
-          </BackPage>
+          Voltar
+        </BackPage>
         <Content>
           <Form>
           <InputController>

@@ -29,11 +29,11 @@ export const Login: React.FC = () => {
       <Image>
         <img src={UserImage} alt="Image Start" />
       </Image>
-      <LoginContainer onClick={() => navigate('/start')}>
+      <LoginContainer>
         <Header>LOGIN</Header>
-        <BackPage>
+        <BackPage onClick={() => navigate('/start')}>
           <BiArrowBack />
-          <a href="/">Voltar</a>
+          Voltar
           </BackPage>
         <Content>
           <Form>
@@ -49,7 +49,7 @@ export const Login: React.FC = () => {
 
             <ButtonController>
 
-              <Button type="submit">
+              <Button type="submit" onClick={() => navigate('/')}>
               <BiLogIn />
                 Entrar
               </Button>
