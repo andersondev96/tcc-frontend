@@ -1,7 +1,12 @@
-import { Container, Input, Button, Image, InputContainer, AdvancedSearch, AdvancedSearchText } from "./styles";
+import { useNavigate } from "react-router-dom";
 import  ArrowRight  from '../../assets/arrow-right-3d.svg';
+import { Container, Input, Button, Image, InputContainer, AdvancedSearchContainer, AdvancedSearchText } from "./styles";
+
+import { AdvancedSearch } from "../../pages/Clients/Business/Search/AdvancedSearch";
 
 export const SearchInput: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <Container>
       <InputContainer>
@@ -10,9 +15,9 @@ export const SearchInput: React.FC = () => {
           <Image src={ArrowRight} alt="Search" />
       </Button>
       </InputContainer>
-      <AdvancedSearch>
-        <AdvancedSearchText href="/">Pesquisa avançada</AdvancedSearchText>
-        </AdvancedSearch>
+      <AdvancedSearchContainer>
+        <AdvancedSearchText onClick={() => navigate('/advanced-search')}>Pesquisa avançada</AdvancedSearchText>
+        </AdvancedSearchContainer>
     </Container>
 
   );

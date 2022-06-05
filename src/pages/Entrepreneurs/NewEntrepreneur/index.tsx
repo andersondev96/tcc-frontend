@@ -27,7 +27,7 @@ export const NewEntrepreneur: React.FC = () => {
 
   return (
     <Container>
-      <BackPage onClick={() => navigate('/select')}>
+      <BackPage onClick={() => navigate('/start/select')}>
         <BiArrowBack />
         Voltar
       </BackPage>

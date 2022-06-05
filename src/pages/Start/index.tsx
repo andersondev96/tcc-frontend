@@ -23,7 +23,7 @@ export const Start: React.FC = () => {
         <Text>Faça um bom negócio e ajude um pequeno empreendedor</Text>
         <ButtonsContainer>
           <Button onClick={() => navigate('/login')}>Entrar</Button>
-          <Button onClick={() => navigate('/select')}>Cadastrar</Button>
+          <Button onClick={() => navigate('/start/select')}>Cadastrar</Button>
         </ButtonsContainer>
       </OptionsContainer>
     </Container>

@@ -31,7 +31,7 @@ export const NewAccount: React.FC = () => {
       </Image>
       <LoginContainer>
         <Header>NOVO USUÁRIO</Header>
-        <BackPage onClick={() => navigate('/select')}>
+        <BackPage onClick={() => navigate('/start/select')}>
           <BiArrowBack />
           Voltar
         </BackPage>

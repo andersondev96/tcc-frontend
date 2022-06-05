@@ -8,7 +8,9 @@ export const Container = styled.div`
 `;
 
 export const Content = styled.div`
-  padding: 5.625rem 17.75rem;
+  width: 100%;
+  height: 100%;
+  padding: 2rem 17.75rem;
   background: #D9ECFE;
 
   display: flex;
@@ -22,7 +24,14 @@ export const  Title = styled.div`
   color: #757575;
 `;
 
-export const SearchContainer = styled.div`
-  padding-top: 2rem;
+export const Form = styled.div`
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
 `;
 
+export const Legend = styled.p`
+  font-family: Montserrat, sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+`;

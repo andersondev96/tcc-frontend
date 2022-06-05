@@ -6,7 +6,6 @@ export const Container = styled.div`
 `;
 
 export const InputContainer = styled.div`
-  padding-top: 3.125rem;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -45,7 +44,7 @@ export const Image = styled.img`
   height: 1.4rem;
 `;
 
-export const AdvancedSearch = styled.div`
+export const AdvancedSearchContainer = styled.div`
   margin-top: 0.5rem;
 `;
 

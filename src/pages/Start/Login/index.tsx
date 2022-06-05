@@ -1,7 +1,7 @@
 import React from 'react';
 import { BiArrowBack, BiLogIn } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate  } from 'react-router-dom';
 import UserImage from "../../../assets/user.png";
 
 import {

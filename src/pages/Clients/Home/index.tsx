@@ -1,16 +1,24 @@
-import { BusinessListing } from "../../../components/BusinessListing";
-import { Header } from "../../../components/Header";
-import { SearchInput } from "../../../components/SearchInput";
-import { Container, Content } from "./styles";
+import React from 'react';
+import { SearchInput } from '../../../components/SearchInput';
+
+import {
+  Container,
+  Content,
+  Title,
+  SearchContainer,
+} from './styles';
 
 export const Home: React.FC = () => {
   return (
     <Container>
-      <Header />
       <Content>
-        <SearchInput />
-        <BusinessListing />
+        <Title>Que negócio você está procurando?</Title>
+        <SearchContainer>
+          <SearchInput />
+        </SearchContainer>
       </Content>
     </Container>
   );
-};
+}
+
+export default Home;
