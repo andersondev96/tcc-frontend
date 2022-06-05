@@ -16,6 +16,8 @@ export const Map: React.FC = () => {
       const { latitude, longitude } = position.coords;
 
       setInitialPosition([latitude, longitude]);
+
+      console.log(initialPosition);
     })
   }, []);
 
@@ -37,20 +39,9 @@ export const Map: React.FC = () => {
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: "AIzaSyCgNh3u12QXomYWG3eLb-pM1qvZhjduxso",
+    googleMapsApiKey: "AIzaSyAS6iQlkF3hAHMTmFyItkoW4Sd8j0wKKSM",
   });
 
-  const [map, setMap] = useState(null);
-
-  const onLoad = useCallback(function callback(map: any) {
-    const bounds = new window.google.maps.LatLngBounds(center);
-    map.fitBounds(bounds);
-    setMap(map);
-  }, []);
-
-  const onUnmount = useCallback(function callback(map: any) {
-    setMap(null);
-  }, []);
 
   function clickOnMap(event: google.maps.MapMouseEvent): void | undefined {
     if (event.latLng) {
@@ -69,8 +60,6 @@ export const Map: React.FC = () => {
           mapContainerStyle={containerStyle}
           center={center}
           zoom={15}
-          onLoad={onLoad}
-          onUnmount={onUnmount}
           onClick={clickOnMap}
         >
 

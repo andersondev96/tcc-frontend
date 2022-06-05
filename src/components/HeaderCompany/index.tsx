@@ -1,5 +1,10 @@
-import React from 'react';
-import { AiOutlineMail, AiOutlineWhatsApp, AiTwotoneStar, AiOutlineCalculator } from 'react-icons/ai';
+import React, { useState } from 'react';
+import {
+  AiOutlineMail,
+  AiOutlineWhatsApp,
+  AiTwotoneStar,
+  AiOutlineCalculator
+} from 'react-icons/ai';
 import DancerImg from "../../assets/dancer.png";
 import { BiWorld } from 'react-icons/bi';
 import { BsChatLeft } from 'react-icons/bs';
@@ -17,8 +22,19 @@ import {
   TypeAndAddress,
   IconsContainer,
 } from './styles';
+import ModalContainer from '../ModalContainer';
 
 export const HeaderCompany: React.FC = () => {
+  const [modalIsOpen, setIsOpen] = useState(false);
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
   return (
     <Container>
       <IconBusiness src={DancerImg} alt="Dancer" />
@@ -43,9 +59,13 @@ export const HeaderCompany: React.FC = () => {
           <AiOutlineMail />
           <AiOutlineWhatsApp />
           <BsChatLeft />
-          <AiOutlineCalculator />
+          <AiOutlineCalculator onClick={openModal}/>
         </IconsContainer>
       </Content>
+      <ModalContainer
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+      />
     </Container>
   );
 }

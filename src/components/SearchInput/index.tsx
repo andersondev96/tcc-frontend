@@ -12,7 +12,7 @@ export const SearchInput: React.FC = () => {
       <InputContainer>
         <Input type="text" placeholder="Digite o nome ou a categoria do negócio" />
         <Button type="submit">
-          <Image src={ArrowRight} alt="Search" />
+          <Image src={ArrowRight} alt="Search" onClick={() => navigate('/results')} />
       </Button>
       </InputContainer>
       <AdvancedSearchContainer>
