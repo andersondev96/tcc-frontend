@@ -119,7 +119,7 @@ export const FileContainer = styled.div`
 
 `;
 
-export const FileButton = styled.div`
+export const FileButton = styled.label`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -149,23 +149,51 @@ export const File = styled.input`
   display: none;
 `;
 
-export const FileDescription = styled.div``;
-
-export const Button = styled.button`
-  width: 16.25rem;
-  height: 2.5rem;
+export const FileDescription = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 2rem;
+  align-items: center;
+  gap: 0.375rem;
+
+  svg {
+    :nth-child(1) {
+      color: #757575;
+    }
+
+    :nth-child(2) {
+      color: #840E18;
+      cursor: pointer;
+      transition: filter 0.3s;
+
+      :hover {
+        filter: brightness(0.9);
+      }
+    }
+  }
+`;
+
+export const ButtonContainer = styled.div`
+  margin-top: 1.2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const Button = styled.button`
+  width: 9.813rem;
+  height: 2.125rem;
+  display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   border: none;
   border-radius: 0.25rem;
   background: #478AD8;
 
-  font-family: Inter, sans-serif;
-  font-weight: 600;
-  font-size: 1.25rem;
+  font-family: Montserrat, sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
   color: #FFFFFF;
 
   transition: filter 0.3s;
