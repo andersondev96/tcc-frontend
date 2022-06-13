@@ -5,6 +5,8 @@ import {
   AiTwotoneStar,
   AiOutlineCalculator
 } from 'react-icons/ai';
+import { ModalContainer } from '../ModalContainer';
+import { ChatModalContainer } from '../ChatModalContainer';
 import DancerImg from "../../assets/dancer.png";
 import { BiWorld } from 'react-icons/bi';
 import { BsChatLeft } from 'react-icons/bs';
@@ -22,17 +24,26 @@ import {
   TypeAndAddress,
   IconsContainer,
 } from './styles';
-import ModalContainer from '../ModalContainer';
+
 
 export const HeaderCompany: React.FC = () => {
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [chatModalIsOpen, setChatModalIsOpen] = useState(false);
 
   function openModal() {
     setIsOpen(true);
   }
 
+  function openChatModal() {
+    setChatModalIsOpen(true);
+  }
+
   function closeModal() {
     setIsOpen(false);
+  }
+
+  function closeChatModal() {
+    setChatModalIsOpen(false);
   }
 
   return (
@@ -58,13 +69,18 @@ export const HeaderCompany: React.FC = () => {
           <BiWorld />
           <AiOutlineMail />
           <AiOutlineWhatsApp />
-          <BsChatLeft />
+          <BsChatLeft onClick={openChatModal} />
           <AiOutlineCalculator onClick={openModal}/>
         </IconsContainer>
       </Content>
       <ModalContainer
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
+      />
+
+      <ChatModalContainer
+        isOpen={chatModalIsOpen}
+        onRequestClose={closeChatModal}
       />
     </Container>
   );

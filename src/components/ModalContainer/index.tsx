@@ -32,7 +32,7 @@ interface IModalContainerProps {
 
 
 
-const ModalContainer: React.FC<IModalContainerProps> = ({
+export const ModalContainer: React.FC<IModalContainerProps> = ({
   isOpen,
   onRequestClose,
 }) => {
@@ -151,5 +151,3 @@ const ModalContainer: React.FC<IModalContainerProps> = ({
     </Modal>
   )
 }
-
-export default ModalContainer;

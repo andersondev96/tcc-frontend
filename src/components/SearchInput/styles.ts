@@ -3,6 +3,7 @@ import styled from "styled-components";
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
+  padding-left: 9.2rem;
 `;
 
 export const InputContainer = styled.div`
