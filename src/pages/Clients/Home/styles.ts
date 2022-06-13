@@ -8,6 +8,8 @@ export const Container = styled.div`
 `;
 
 export const Content = styled.div`
+  width: 100%;
+  height: 100%;
   padding: 5.625rem 17.75rem;
   background: #D9ECFE;
 

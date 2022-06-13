@@ -21,7 +21,7 @@ export const Item: React.FC = () => {
           <NameService>Balé</NameService>
           <DescriptionService>A partir de R$ 300,00</DescriptionService>
           </Information>
-          <Button onClick={() => navigate('/service')}>
+          <Button onClick={() => navigate('/business/service')}>
               <AiOutlineRight />
           </Button>
     </Container>

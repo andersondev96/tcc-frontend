@@ -9,7 +9,7 @@ export const Header: React.FC = () => {
   const navigate = useNavigate();
 
   function returnToBackPage() {
-    navigate('/');
+    history.back();
   }
 
 
