@@ -9,7 +9,7 @@ import { DropdownMenu } from "./DropdownMenu";
 import { Item } from "./Item";
 
 export const Header: React.FC = () => {
-  const { user, signInWithGoogle } = useAuth();
+  const { user } = useAuth();
 
   return (
     <nav className="flex flex-row items-center px-[3.75rem]  bg-blue-400 mobile:hidden">
