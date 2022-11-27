@@ -1,14 +1,32 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth";
+import { auth } from "../services/firebase";
+
 import { ImArrowLeft } from "react-icons/im";
-import { BiLogIn } from 'react-icons/bi'
-import { FcGoogle } from 'react-icons/fc';
-import Banner from '../assets/image_onboarding.png';
-import { Input } from '../components/Input';
-import { Button } from '../components/Button';
+import { BiLogIn } from "react-icons/bi";
+import { FcGoogle } from "react-icons/fc";
+import Banner from "../assets/image_onboarding.png";
+import { Input } from "../components/Input";
+import { Button } from "../components/Button";
 
 export const SignIn: React.FC = () => {
-  const navigate = useNavigate();
+  const [user, setUser] = useState<User>({} as User);
 
+  function handleGoogleSignIn() {
+    const provider = new GoogleAuthProvider();
+
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        setUser(result.user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-row mobile:flex-col justify-between mobile:justify-start min-h-screen mobile:w-screen">
@@ -20,13 +38,12 @@ export const SignIn: React.FC = () => {
         />
       </div>
       <div className="flex flex-col items-center mobile:items-start justify-center w-1/2 bg-blue-900 mobile:bg-white mobile:w-screen">
-        <Link
-          className="mobile:hidden"
-          to="/"
-        >
+        <Link className="mobile:hidden" to="/">
           <div className="flex flex-row items-center gap-2">
             <ImArrowLeft color="#FFFFFF" />
-            <span className="font-montserrat text-white tex-mobile">Voltar</span>
+            <span className="font-montserrat text-white tex-mobile">
+              Voltar
+            </span>
           </div>
         </Link>
         <div className="flex flex-col bg-white h-[34.188rem] w-[28.5rem] rounded mt-4 mobile:mt-0">
@@ -50,44 +67,38 @@ export const SignIn: React.FC = () => {
                 placeholder="Digite a sua senha"
               />
 
-              <Button
-                onClick={() => navigate("/home")}
-              >
-
+              <Button onClick={() => navigate("/home")}>
                 <BiLogIn size={24} color="#FFFFFF" />
-                <span
-                  className="font-inter text-lg text-white uppercase"
-                >
+                <span className="font-inter text-lg text-white uppercase">
                   Entrar
                 </span>
-
               </Button>
             </form>
 
-
             <div className="flex flex-row justify-between mt-12 px-[3.875rem]">
-              <span
-                className="font-montserrat font-light text-sm text-indigo-200 cursor-pointer hover:brightness-90 hover:underline"
-              >
+              <span className="font-montserrat font-light text-sm text-indigo-200 cursor-pointer hover:brightness-90 hover:underline">
                 Esqueci a senha
               </span>
 
               <Link to="/sign-up">
-                <span
-                  className="font-montserrat font-light text-sm text-indigo-200 cursor-pointer hover:brightness-90 hover:underline"
-                >
+                <span className="font-montserrat font-light text-sm text-indigo-200 cursor-pointer hover:brightness-90 hover:underline">
                   Cadastrar
                 </span>
               </Link>
             </div>
 
-            <div className="flex flex-row items-center gap-[0.938rem] px-[3.875rem] mt-10 cursor-pointer hover:brightness-90">
+            <div
+              className="flex flex-row items-center gap-[0.938rem] px-[3.875rem] mt-10 cursor-pointer hover:brightness-90"
+              onClick={handleGoogleSignIn}
+            >
               <FcGoogle size={24} />
-              <span className="font-montserrat font-semibold text-sm">Entrar com o Google</span>
+              <span className="font-montserrat font-semibold text-sm">
+                Entrar com o Google
+              </span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
