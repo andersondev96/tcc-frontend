@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth";
-import { auth } from "../services/firebase";
+import { useAuth } from "../hooks/useAuth";
 
 import { ImArrowLeft } from "react-icons/im";
 import { BiLogIn } from "react-icons/bi";
@@ -12,21 +10,17 @@ import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 
 export const SignIn: React.FC = () => {
-  const [user, setUser] = useState<User>({} as User);
-
-  function handleGoogleSignIn() {
-    const provider = new GoogleAuthProvider();
-
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        setUser(result.user);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
   const navigate = useNavigate();
+
+  const { user, signInWithGoogle } = useAuth();
+
+  async function handleGoogleSignIn() {
+    if (!user) {
+      await signInWithGoogle();
+    }
+
+    navigate("/home");
+  }
 
   return (
     <div className="flex flex-row mobile:flex-col justify-between mobile:justify-start min-h-screen mobile:w-screen">
