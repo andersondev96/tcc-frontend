@@ -2,36 +2,31 @@ import React from "react";
 import { useAuth } from "../../hooks/useAuth";
 
 import { AiOutlineHome } from "react-icons/ai";
-import { FiShoppingBag } from "react-icons/fi";
-import { MdOutlineBusinessCenter } from "react-icons/md";
 import AvatarImg from "../../assets/avatar.jpg";
 import { DropdownMenu } from "./DropdownMenu";
 import { Item } from "./Item";
 
 export const Header: React.FC = () => {
-  const { user } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
 
   return (
     <nav className="flex flex-row items-center px-[3.75rem]  bg-blue-400 mobile:hidden">
       <div className="flex flex-row items-center justify-between w-full">
-        <ul className="flex flex-row items-center h-[4.125rem]  gap-12">
+        <ul className="flex flex-row items-center h-[2.75rem]  gap-12">
           <Item title="Home" redirect="/home">
-            <AiOutlineHome size={32} color="#FFFFFF" />
-          </Item>
-
-          <Item title="Negócio" redirect="/business">
-            <MdOutlineBusinessCenter size={32} color="#FFFFFF" />
-          </Item>
-
-          <Item title="Serviços" redirect="/service">
-            <FiShoppingBag size={32} color="#FFFFFF" />
+            <AiOutlineHome size={24} color="#FFFFFF" />
           </Item>
         </ul>
 
         {user ? (
-          <DropdownMenu name={user?.name} imageAvatar={user?.avatar} />
+          <DropdownMenu name={user?.name} avatar={user?.avatar} />
         ) : (
-          ""
+          <span
+            className="font-montserrat font-medium text-sm text-white"
+            onClick={signInWithGoogle}
+          >
+            Login ou cadastre
+          </span>
         )}
       </div>
     </nav>
