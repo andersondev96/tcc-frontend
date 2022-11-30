@@ -7,6 +7,8 @@ import { Range } from "../../components/Range";
 import { Select } from "../../components/Select";
 
 import { Header } from "../../components/Header";
+import { useAuth } from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface IBGEUFResponse {
   id: string;
@@ -20,11 +22,21 @@ type IBGECityResponse = {
 };
 
 export const Home: React.FC = () => {
+  const { user, signInWithGoogle, signOutWithGoogle } = useAuth();
+
+  const navigate = useNavigate();
+
   const [ufs, setUfs] = useState<IBGEUFResponse[]>([]);
   const [cities, setCities] = useState<IBGECityResponse[]>([]);
 
   const [selectedUf, setSelectedUf] = useState("0");
   const [selectedCity, setSelectedCity] = useState("0");
+
+  function handleSignOutWithGoogle() {
+    signOutWithGoogle();
+
+    navigate("/login");
+  }
 
   useEffect(() => {
     axios
@@ -64,58 +76,77 @@ export const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col mobile:flex-col-reverse">
-      <Header />
       <div className="flex flex-row">
-        <div className="flex flex-col gap-4 bg-blue-400 min-h-screen min-w-min py-[4.25rem] px-[3.125rem] mobile:hidden">
-          <Select
-            name="states"
-            label="Estado"
-            value={selectedUf}
-            onChange={handleSelectedUf}
-          >
-            <option value="0" disabled>
-              Selecione uma opção
-            </option>
-            {ufs.map((uf) => (
-              <option key={uf.id} value={uf.sigla}>
-                {uf.nome}
+        <div className="flex flex-col justify-between gap-3 bg-blue-400 min-h-screen min-w-min py-24 px-16 mobile:hidden">
+          <div className="flex flex-col justify-center">
+            <Select
+              name="states"
+              label="Estado"
+              value={selectedUf}
+              onChange={handleSelectedUf}
+            >
+              <option value="0" disabled>
+                Selecione uma opção
               </option>
-            ))}
-          </Select>
+              {ufs.map((uf) => (
+                <option key={uf.id} value={uf.sigla}>
+                  {uf.nome}
+                </option>
+              ))}
+            </Select>
 
-          <Select
-            name="cities"
-            label="Cidade"
-            value={selectedCity}
-            onChange={handleSelectedCity}
-          >
-            <option value="0" disabled>
-              Selecione uma opção
-            </option>
-            {cities.map((city) => (
-              <option key={city.id} value={city.nome}>
-                {city.nome}
+            <Select
+              name="cities"
+              label="Cidade"
+              value={selectedCity}
+              onChange={handleSelectedCity}
+            >
+              <option value="0" disabled>
+                Selecione uma opção
               </option>
-            ))}
-          </Select>
+              {cities.map((city) => (
+                <option key={city.id} value={city.nome}>
+                  {city.nome}
+                </option>
+              ))}
+            </Select>
 
-          <Select name="categories" label="Categoria do negócio">
-            <option value="default" disabled>
-              Selecione uma opção
-            </option>
-            <option value="Cafeteria">Cafeteria</option>
-            <option value="Sorveteria">Sorveteria</option>
-          </Select>
+            <Select name="categories" label="Categoria do negócio">
+              <option value="default" disabled>
+                Selecione uma opção
+              </option>
+              <option value="Cafeteria">Cafeteria</option>
+              <option value="Sorveteria">Sorveteria</option>
+            </Select>
 
-          <div className="flex flex-col mt-8">
+            <div className="flex flex-row justify-center mt-4">
+              <button className="bg-indigo-500 h-10 w-28 rounded font-montserrat font-semibold text-white hover:brightness-90 transition-opacity">
+                Pesquisar
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-row items-center gap-4">
+            <img
+              src={user?.avatar}
+              alt={user?.name}
+              className="h-12 w-12 rounded-full border-x-slate-900 border-2 border-white"
+            />
+            <div className="flex flex-col">
+              <span className="font-montserrat font-medium text-sm text-white">
+                {user?.name}
+              </span>
+              <span
+                className="font-montserrat font-light text-xs text-white text-right cursor-pointer hover:brightness-90 transition-shadow"
+                onClick={handleSignOutWithGoogle}
+              >
+                Sair
+              </span>
+            </div>
+          </div>
+          {/* <div className="flex flex-col mt-8">
             <Range />
-          </div>
-
-          <div className="flex flex-row justify-center mt-[4.25rem]">
-            <button className="bg-indigo-500 h-[2.5rem] w-[7.813rem] rounded font-montserrat font-semibold text-white hover:brightness-90 transition-opacity">
-              Pesquisar
-            </button>
-          </div>
+          </div> */}
         </div>
         <div>
           <Map />
