@@ -21,6 +21,19 @@ type IBGECityResponse = {
   nome: string;
 };
 
+type IGeometry = {
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+};
+
+type ICoords = {
+  results: IGeometry[];
+};
+
 export const Home: React.FC = () => {
   const { user, signInWithGoogle, signOutWithGoogle } = useAuth();
 
@@ -31,6 +44,7 @@ export const Home: React.FC = () => {
 
   const [selectedUf, setSelectedUf] = useState("0");
   const [selectedCity, setSelectedCity] = useState("0");
+  const [coords, setCoords] = useState([0, 0]);
 
   function handleSignOutWithGoogle() {
     signOutWithGoogle();
@@ -72,6 +86,25 @@ export const Home: React.FC = () => {
     const city = event.target.value;
 
     setSelectedCity(city);
+  }
+
+  function getLocation() {
+    const address = `${selectedCity}, ${selectedUf}`;
+
+    axios
+      .get<ICoords>(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
+          import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+        }`
+      )
+      .then((response) => {
+        setCoords([
+          response.data.results[0].geometry.location.lat,
+          response.data.results[0].geometry.location.lng,
+        ]);
+      });
+
+    console.log(coords);
   }
 
   return (
@@ -120,7 +153,10 @@ export const Home: React.FC = () => {
             </Select>
 
             <div className="flex flex-row justify-center mt-4">
-              <button className="bg-indigo-500 h-10 w-28 rounded font-montserrat font-semibold text-white hover:brightness-90 transition-opacity">
+              <button
+                className="bg-indigo-500 h-10 w-28 rounded font-montserrat font-semibold text-white hover:brightness-90 transition-opacity"
+                onClick={getLocation}
+              >
                 Pesquisar
               </button>
             </div>
