@@ -9,6 +9,7 @@ import { Select } from "../../components/Select";
 import { Header } from "../../components/Header";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { LatLngExpression } from "leaflet";
 
 interface IBGEUFResponse {
   id: string;
@@ -103,14 +104,12 @@ export const Home: React.FC = () => {
           response.data.results[0].geometry.location.lng,
         ]);
       });
-
-    console.log(coords);
   }
 
   return (
     <div className="flex flex-col mobile:flex-col-reverse">
       <div className="flex flex-row">
-        <div className="flex flex-col justify-between gap-3 bg-blue-400 min-h-screen min-w-min py-24 px-16 mobile:hidden">
+        <div className="flex flex-col justify-between gap-3 bg-blue-400 min-h-screen min-w-min py-24 px-24 mobile:hidden">
           <div className="flex flex-col justify-center">
             <Select
               name="states"
@@ -185,7 +184,7 @@ export const Home: React.FC = () => {
           </div> */}
         </div>
         <div>
-          <Map />
+          <Map lat={coords[0]} lng={coords[1]} />
         </div>
       </div>
     </div>
