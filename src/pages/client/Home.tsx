@@ -110,7 +110,7 @@ export const Home: React.FC = () => {
     <div className="flex flex-col mobile:flex-col-reverse">
       <div className="flex flex-row">
         <div className="flex flex-col justify-between gap-3 bg-blue-400 min-h-screen min-w-min py-24 px-24 mobile:hidden">
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col gap-4 justify-center">
             <Select
               name="states"
               label="Estado"

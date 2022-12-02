@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   MapContainer,
   Marker,
@@ -38,10 +38,10 @@ export const Map: React.FC<IMapProps> = ({ lat, lng }) => {
   const center = [51.505, -0.09];
   const zoom = 13;
 
-  function handleSetView() {
+  const handleSetView = useCallback(() => {
     const map = useMap();
     map.setView([51.505, -0.09], zoom);
-  }
+  }, []);
 
   function SetViewOnClick({ animateRef }: any) {
     const map = useMapEvent("click", (e) => {
@@ -59,7 +59,6 @@ export const Map: React.FC<IMapProps> = ({ lat, lng }) => {
 
   return latitude && longitude ? (
     <div>
-      <button onClick={setLocalization}>Atualizar</button>
       <MapContainer
         className="w-screen h-screen absolute flex mobile:min-w-min"
         center={[latitude, longitude]}

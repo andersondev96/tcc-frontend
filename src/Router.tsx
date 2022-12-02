@@ -1,7 +1,9 @@
 import { Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./hooks/protectedRoute";
 import { Business } from "./pages/client/Business";
 import { Service } from "./pages/client/Service";
 import { Home } from "./pages/client/Home";
+import { useAuth } from "./hooks/useAuth";
 import { EditProfile } from "./pages/client/Profile/EditProfile";
 import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
@@ -24,12 +26,17 @@ import { ChatMessageEntrepreneur } from "./pages/entrepreneur/ChatEntrepreneur/C
 import { Settings } from "./pages/entrepreneur/Settings";
 
 export const Router: React.FC = () => {
+  const { user } = useAuth();
+
   return (
     <Routes>
       <Route path="/" element={<Welcome />} />
       <Route path="/login" element={<SignIn />} />
       <Route path="/sign-up" element={<SignUp />} />
-      <Route path="/home" element={<Home />} />
+
+      <Route path="/home" element={<ProtectedRoute />}>
+        <Route path="/home" element={<Home />} />
+      </Route>
       <Route path="/business" element={<Business />} />
       <Route path="/service" element={<Service />} />
       <Route path="/profile" element={<EditProfile />} />
