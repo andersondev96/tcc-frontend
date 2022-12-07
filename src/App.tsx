@@ -1,7 +1,9 @@
 import { BrowserRouter } from "react-router-dom";
-import { Router } from "./Router";
+import { Router } from "./routes";
 
-import { AuthContextProvider } from "./contexts/AuthContext";
+import api from "./services/api";
+
+import { AuthContextProvider } from "./contexts/AuthContextWithGoogle";
 
 export const App: React.FC = () => {
   return (

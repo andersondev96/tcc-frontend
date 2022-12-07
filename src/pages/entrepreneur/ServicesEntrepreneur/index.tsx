@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ModalContainer } from "../../../components/ModalContainer";
 import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
-import { DeleteModal } from "../components/DeleteModal";
 import { ServiceCard } from "../components/ServiceCard";
 
 export const ServicesEntrepreneur: React.FC = () => {
@@ -42,5 +40,3 @@ export const ServicesEntrepreneur: React.FC = () => {
     </div>
   );
 };
-
-export default ServicesEntrepreneur;

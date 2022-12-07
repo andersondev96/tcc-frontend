@@ -9,7 +9,7 @@ type User = {
   avatar: string;
 };
 
-type AuthContextType = {
+type AuthContextWithGoogleType = {
   user: User | undefined;
   signInWithGoogle: () => Promise<void>;
   signOutWithGoogle: () => Promise<void>;
@@ -19,7 +19,9 @@ type AuthContextProviderProps = {
   children: ReactNode;
 };
 
-export const AuthContext = createContext({} as AuthContextType);
+export const AuthContextWithGoogle = createContext(
+  {} as AuthContextWithGoogleType
+);
 
 export function AuthContextProvider(props: AuthContextProviderProps) {
   const [user, setUser] = useState<User>();
@@ -75,8 +77,10 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, signInWithGoogle, signOutWithGoogle }}>
+    <AuthContextWithGoogle.Provider
+      value={{ user, signInWithGoogle, signOutWithGoogle }}
+    >
       {props.children}
-    </AuthContext.Provider>
+    </AuthContextWithGoogle.Provider>
   );
 }

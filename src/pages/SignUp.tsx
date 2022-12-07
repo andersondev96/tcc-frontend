@@ -1,19 +1,57 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ImArrowLeft } from 'react-icons/im';
-import { FcGoogle } from 'react-icons/fc';
-import { AiOutlineArrowRight } from 'react-icons/ai';
-import { FiSave } from 'react-icons/fi';
-import { Input } from '../components/Input';
-import Banner from '../assets/image_onboarding.png';
-import BusinessImg from '../assets/business_image.png';
-import PurchaseImg from '../assets/purchase_image.png';
-import { Button } from '../components/Button';
-
+import { ChangeEvent, FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ImArrowLeft } from "react-icons/im";
+import { FcGoogle } from "react-icons/fc";
+import { AiOutlineArrowRight } from "react-icons/ai";
+import { FiSave } from "react-icons/fi";
+import { Input } from "../components/Input";
+import Banner from "../assets/image_onboarding.png";
+import BusinessImg from "../assets/business_image.png";
+import PurchaseImg from "../assets/purchase_image.png";
+import { Button } from "../components/Button";
+import api from "../services/api";
 
 export const SignUp: React.FC = () => {
   const navigate = useNavigate();
   const [type, setType] = useState(false);
+  const [selectedType, setSelectedType] = useState("");
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  function handleNextStep() {
+    console.log("Teste botão");
+    console.log(selectedType);
+    if (selectedType) {
+      setType(true);
+    }
+  }
+
+  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+    const { name, value } = event.target;
+
+    setFormData({ ...formData, [name]: value });
+  }
+
+  async function handleSubmit(event: FormEvent) {
+    try {
+      event.preventDefault();
+      const { name, email, password } = formData;
+
+      await api.post("users", {
+        name,
+        email,
+        password,
+      });
+
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <>
@@ -27,13 +65,12 @@ export const SignUp: React.FC = () => {
             />
           </div>
           <div className="flex flex-col items-center mobile:items-start justify-center w-1/2 bg-blue-900 mobile:bg-white mobile:w-screen">
-            <Link
-              className="mobile:hidden"
-              to="/"
-            >
+            <Link className="mobile:hidden" to="/">
               <div className="flex flex-row items-center gap-2">
                 <ImArrowLeft color="#FFFFFF" />
-                <span className="font-montserrat text-white tex-mobile">Voltar</span>
+                <span className="font-montserrat text-white tex-mobile">
+                  Voltar
+                </span>
               </div>
             </Link>
             <div className="flex flex-col bg-white h-[34.188rem] w-[28.5rem] rounded mt-4 mobile:mt-0">
@@ -44,22 +81,28 @@ export const SignUp: React.FC = () => {
               </div>
 
               <div className="flex flex-col mt-8">
-                <form className="flex flex-col items-center gap-2">
+                <form
+                  className="flex flex-col items-center gap-2"
+                  onSubmit={handleSubmit}
+                >
                   <Input
                     name="name"
                     label="Nome"
                     placeholder="Digite o seu nome"
+                    onChange={handleInputChange}
                   />
                   <Input
                     name="email"
                     label="E-mail"
                     placeholder="Digite o seu e-mail"
+                    onChange={handleInputChange}
                   />
                   <Input
                     name="password"
                     label="Senha"
                     type="password"
                     placeholder="Digite a sua senha"
+                    onChange={handleInputChange}
                   />
                   <Input
                     name="confirm_password"
@@ -69,22 +112,21 @@ export const SignUp: React.FC = () => {
                   />
 
                   <button
-                    onClick={() => navigate("/home")}
+                    type="submit"
                     className="flex items-center justify-center mt-6 gap-3 bg-indigo-400 w-40 h-12 rounded hover:brightness-90 transition-opacity"
                   >
                     <FiSave size={24} color="#FFFFFF" />
-                    <span
-                      className="font-inter text-lg text-white uppercase"
-                    >
+                    <span className="font-inter text-lg text-white uppercase">
                       Salvar
                     </span>
                   </button>
                 </form>
 
-
                 <div className="flex flex-row items-center gap-[0.938rem] px-[3.875rem] mt-8 cursor-pointer hover:brightness-90">
                   <FcGoogle size={24} />
-                  <span className="font-montserrat font-semibold text-sm">Cadastrar com o Google</span>
+                  <span className="font-montserrat font-semibold text-sm">
+                    Cadastrar com o Google
+                  </span>
                 </div>
               </div>
             </div>
@@ -96,11 +138,16 @@ export const SignUp: React.FC = () => {
             Qual o seu objetivo com a plataforma?
           </h1>
           <div className="flex flex-row mobile:flex-col items-center justify-center gap-[8.25rem] mobile:gap-[4.125rem] mt-[3.625rem]">
-            <div className="flex flex-col items-center justify-center gap-6 mobile:gap-3">
+            <div
+              className="flex flex-col items-center justify-center gap-6 mobile:gap-3"
+              onClick={() => {
+                setSelectedType("Compra");
+              }}
+            >
               <img
                 src={PurchaseImg}
                 alt=""
-                className="h-[18.75rem] w-[18.75rem] mobile:h-[12.5rem] mobile:w-[12.5rem] rounded-full border-4 border-gray-600"
+                className="h-[18.75rem] w-[18.75rem] mobile:h-[12.5rem] mobile:w-[12.5rem] rounded-full border-4 border-gray-600  hover:border-blue-400 duration-200"
               />
               <span className="font-inter text-3xl text-white uppercase">
                 Compra
@@ -109,27 +156,30 @@ export const SignUp: React.FC = () => {
 
             <div
               className="flex flex-col items-center justify-center gap-6"
+              onClick={() => {
+                setSelectedType("Venda");
+              }}
             >
               <img
                 src={BusinessImg}
                 alt=""
-                className="h-[18.75rem] w-[18.75rem] mobile:h-[12.5rem] mobile:w-[12.5rem] rounded-full border-4 border-gray-600"
+                className="h-[18.75rem] w-[18.75rem] mobile:h-[12.5rem] mobile:w-[12.5rem] rounded-full border-4 border-gray-600 hover:border-blue-400 duration-200"
               />
               <span className="font-inter text-3xl text-white uppercase">
                 Venda
               </span>
             </div>
           </div>
-          <div className="flex flex-row items-center mt-12">
-            <Button
-              onClick={() => setType(true)}
-            >
-              <span className="font-inter text-xl uppercase">Avançar</span>
+          <div className="flex flex-row items-center mt-12 text-white">
+            <Button onClick={handleNextStep}>
+              <span className="font-inter font-semibold text-xl uppercase">
+                Avançar
+              </span>
               <AiOutlineArrowRight size={24} />
             </Button>
           </div>
         </div>
       )}
     </>
-  )
-}
+  );
+};
