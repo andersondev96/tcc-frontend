@@ -1,4 +1,8 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { Form } from "@unform/web";
+import { FormHandles } from "@unform/core";
+import getValidationErrors from "../utils/getValidateErrors";
+import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { ImArrowLeft } from "react-icons/im";
 import { FcGoogle } from "react-icons/fc";
@@ -11,47 +15,59 @@ import PurchaseImg from "../assets/purchase_image.png";
 import { Button } from "../components/Button";
 import api from "../services/api";
 
+interface SignUpFormData {
+  name: string;
+  email: string;
+  password: string;
+}
+
 export const SignUp: React.FC = () => {
+  const formRef = useRef<FormHandles>(null);
+
   const navigate = useNavigate();
   const [type, setType] = useState(false);
   const [selectedType, setSelectedType] = useState("");
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-
   function handleNextStep() {
-    console.log("Teste botão");
     console.log(selectedType);
     if (selectedType) {
       setType(true);
     }
   }
 
-  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.target;
+  const handleSubmit = useCallback(
+    async (data: SignUpFormData) => {
+      try {
+        formRef.current?.setErrors({});
 
-    setFormData({ ...formData, [name]: value });
-  }
+        const schema = Yup.object().shape({
+          name: Yup.string().required("Nome obrigatório"),
+          email: Yup.string().email().required("E-mail obrigatório"),
+          password: Yup.string()
+            .required()
+            .min(8, "A senha deve possuir no mínimo 8 dígitos"),
+        });
 
-  async function handleSubmit(event: FormEvent) {
-    try {
-      event.preventDefault();
-      const { name, email, password } = formData;
+        await schema.validate(data, {
+          abortEarly: false,
+        });
 
-      await api.post("users", {
-        name,
-        email,
-        password,
-      });
+        await api.post("/users", data);
 
-      navigate("/");
-    } catch (error) {
-      console.log(error);
-    }
-  }
+        alert("Usuário criado com sucesso");
+        navigate("/");
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+
+          formRef.current?.setErrors(errors);
+
+          return;
+        }
+      }
+    },
+    [history]
+  );
 
   return (
     <>
@@ -81,32 +97,24 @@ export const SignUp: React.FC = () => {
               </div>
 
               <div className="flex flex-col mt-8">
-                <form
+                <Form
                   className="flex flex-col items-center gap-2"
+                  ref={formRef}
                   onSubmit={handleSubmit}
                 >
                   <Input
                     name="name"
                     label="Nome"
                     placeholder="Digite o seu nome"
-                    onChange={handleInputChange}
                   />
                   <Input
                     name="email"
                     label="E-mail"
                     placeholder="Digite o seu e-mail"
-                    onChange={handleInputChange}
                   />
                   <Input
                     name="password"
                     label="Senha"
-                    type="password"
-                    placeholder="Digite a sua senha"
-                    onChange={handleInputChange}
-                  />
-                  <Input
-                    name="confirm_password"
-                    label="Confirmar a senha"
                     type="password"
                     placeholder="Digite a sua senha"
                   />
@@ -120,7 +128,7 @@ export const SignUp: React.FC = () => {
                       Salvar
                     </span>
                   </button>
-                </form>
+                </Form>
 
                 <div className="flex flex-row items-center gap-[0.938rem] px-[3.875rem] mt-8 cursor-pointer hover:brightness-90">
                   <FcGoogle size={24} />
