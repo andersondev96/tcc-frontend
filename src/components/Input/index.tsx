@@ -20,10 +20,6 @@ export const Input: React.FC<InputProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
 
-  useEffect(() => {
-    console.log("Hello");
-  }, []);
-
   const { fieldName, defaultValue, error, registerField } = useField(name);
 
   const handleInputFocus = useCallback(() => {

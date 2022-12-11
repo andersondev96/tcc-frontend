@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Form } from "@unform/web";
@@ -26,17 +26,23 @@ interface SignUpFormData {
 
 export const SignUp: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
-
   const navigate = useNavigate();
-  const [type, setType] = useState(false);
-  const [selectedType, setSelectedType] = useState("");
 
-  function handleNextStep() {
-    if (selectedType) {
-      console.log(selectedType);
-      setType(true);
-    }
-  }
+  const [selectedType, setSelectedType] = useState("");
+  const [type, setType] = useState(false);
+
+  const handleSelectedType = useCallback(
+    (value: string) => {
+      setSelectedType(String(value));
+    },
+    [setSelectedType]
+  );
+
+  const handleNextStep = useCallback(() => {
+    setType(true);
+
+    console.log(selectedType);
+  }, [setType, selectedType]);
 
   const handleSubmit = useCallback(
     async (data: SignUpFormData) => {
@@ -45,7 +51,9 @@ export const SignUp: React.FC = () => {
 
         const schema = Yup.object().shape({
           name: Yup.string().required("Nome obrigatório"),
-          email: Yup.string().email().required("E-mail obrigatório"),
+          email: Yup.string()
+            .email("Digite um e-mail válido")
+            .required("E-mail obrigatório"),
           password: Yup.string()
             .required()
             .min(8, "A senha deve possuir no mínimo 8 dígitos"),
@@ -84,7 +92,7 @@ export const SignUp: React.FC = () => {
       <ToastContainer />
       {type ? (
         <div className="flex flex-row mobile:flex-col justify-between mobile:justify-start min-h-screen mobile:w-screen">
-          <div></div>
+          <div>{selectedType}</div>
           <div className="flex w-1/2 h-screen mobile:h-48 mobile:w-full">
             <img
               src={Banner}
@@ -158,10 +166,10 @@ export const SignUp: React.FC = () => {
             Qual o seu objetivo com a plataforma?
           </h1>
           <div className="flex flex-row mobile:flex-col items-center justify-center gap-[8.25rem] mobile:gap-[4.125rem] mt-[3.625rem]">
-            <div
+            <button
               className="flex flex-col items-center justify-center gap-6 mobile:gap-3"
               onClick={() => {
-                setSelectedType("Compra");
+                handleSelectedType("Compra");
               }}
             >
               <img
@@ -174,12 +182,12 @@ export const SignUp: React.FC = () => {
               <span className="font-inter text-3xl text-white uppercase">
                 Compra
               </span>
-            </div>
+            </button>
 
-            <div
+            <button
               className="flex flex-col items-center justify-center gap-6"
               onClick={() => {
-                setSelectedType("Venda");
+                handleSelectedType("Venda");
               }}
             >
               <img
@@ -192,10 +200,10 @@ export const SignUp: React.FC = () => {
               <span className="font-inter text-3xl text-white uppercase">
                 Venda
               </span>
-            </div>
+            </button>
           </div>
           <div className="flex flex-row items-center mt-12 text-white">
-            <Button onClick={handleNextStep}>
+            <Button onClick={handleNextStep} disabled={!selectedType}>
               <span className="font-inter font-semibold text-xl uppercase">
                 Avançar
               </span>
