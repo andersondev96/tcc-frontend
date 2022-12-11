@@ -1,4 +1,6 @@
 import { useCallback, useRef, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Form } from "@unform/web";
 import { FormHandles } from "@unform/core";
 import getValidationErrors from "../utils/getValidateErrors";
@@ -19,6 +21,7 @@ interface SignUpFormData {
   name: string;
   email: string;
   password: string;
+  isEntrepreneur: boolean;
 }
 
 export const SignUp: React.FC = () => {
@@ -29,8 +32,8 @@ export const SignUp: React.FC = () => {
   const [selectedType, setSelectedType] = useState("");
 
   function handleNextStep() {
-    console.log(selectedType);
     if (selectedType) {
+      console.log(selectedType);
       setType(true);
     }
   }
@@ -52,10 +55,15 @@ export const SignUp: React.FC = () => {
           abortEarly: false,
         });
 
+        if (selectedType === "Venda") {
+          data.isEntrepreneur = true;
+        }
+
         await api.post("/users", data);
 
-        alert("Usuário criado com sucesso");
         navigate("/");
+
+        toast.success("Usuário cadastrado com sucesso");
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -64,6 +72,8 @@ export const SignUp: React.FC = () => {
 
           return;
         }
+
+        toast.error("Erro ao cadastrar usuário");
       }
     },
     [history]
@@ -71,8 +81,10 @@ export const SignUp: React.FC = () => {
 
   return (
     <>
+      <ToastContainer />
       {type ? (
         <div className="flex flex-row mobile:flex-col justify-between mobile:justify-start min-h-screen mobile:w-screen">
+          <div></div>
           <div className="flex w-1/2 h-screen mobile:h-48 mobile:w-full">
             <img
               src={Banner}
@@ -155,7 +167,9 @@ export const SignUp: React.FC = () => {
               <img
                 src={PurchaseImg}
                 alt=""
-                className="h-[18.75rem] w-[18.75rem] mobile:h-[12.5rem] mobile:w-[12.5rem] rounded-full border-4 border-gray-600  hover:border-blue-400 duration-200"
+                className={`h-[18.75rem] w-[18.75rem] mobile:h-[12.5rem] mobile:w-[12.5rem] rounded-full border-4 border-gray-600  hover:border-blue-400 duration-200 hover:cursor-pointer ${
+                  selectedType == "Compra" ? "border-blue-400" : ""
+                }`}
               />
               <span className="font-inter text-3xl text-white uppercase">
                 Compra
@@ -171,7 +185,9 @@ export const SignUp: React.FC = () => {
               <img
                 src={BusinessImg}
                 alt=""
-                className="h-[18.75rem] w-[18.75rem] mobile:h-[12.5rem] mobile:w-[12.5rem] rounded-full border-4 border-gray-600 hover:border-blue-400 duration-200"
+                className={`h-[18.75rem] w-[18.75rem] mobile:h-[12.5rem] mobile:w-[12.5rem] rounded-full border-4 border-gray-600 hover:border-blue-400 duration-200 hover:cursor-pointer ${
+                  selectedType == "Venda" ? "border-blue-400" : ""
+                }`}
               />
               <span className="font-inter text-3xl text-white uppercase">
                 Venda

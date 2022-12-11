@@ -1,5 +1,5 @@
 import { useField } from "@unform/core";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface InputProps {
   name: string;
@@ -19,6 +19,10 @@ export const Input: React.FC<InputProps> = ({
 
   const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
+
+  useEffect(() => {
+    console.log("Hello");
+  }, []);
 
   const { fieldName, defaultValue, error, registerField } = useField(name);
 
@@ -50,7 +54,11 @@ export const Input: React.FC<InputProps> = ({
       </label>
 
       <input
-        className="h-10 border-2 border-black rounded px-6 outline-0 focus:border-indigo-600 font-montserrat font-light text-[0.938rem]"
+        className={`h-10 border-2 rounded px-6 outline-0
+          font-montserrat font-light text-[0.938rem] 
+          ${isFocused ? "focus:border-blue-600" : ""}
+          ${isFilled ? "border-green-400" : ""}
+          ${error ? "border-red-200" : " border-black"}`}
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
         defaultValue={defaultValue}
@@ -59,6 +67,12 @@ export const Input: React.FC<InputProps> = ({
         placeholder={placeholder}
         ref={inputRef}
       />
+
+      {error && (
+        <span className="font-montserrat font-light text-red-200 text-xs">
+          {error}
+        </span>
+      )}
     </div>
   );
 };
