@@ -63,6 +63,8 @@ export const SignUp: React.FC = () => {
           abortEarly: false,
         });
 
+        console.log(data);
+
         if (selectedType === "Venda") {
           data.isEntrepreneur = true;
         }
@@ -84,7 +86,7 @@ export const SignUp: React.FC = () => {
         toast.error("Erro ao cadastrar usuário");
       }
     },
-    [history]
+    [navigate, toast, selectedType]
   );
 
   return (
