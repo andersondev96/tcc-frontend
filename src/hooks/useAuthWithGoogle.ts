@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { AuthContextWithGoogle } from "../contexts/AuthContextWithGoogle";
 
-export function useAuth() {
+export function useAuthWithGoogle() {
     const value = useContext(AuthContextWithGoogle);
 
     return value;

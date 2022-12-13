@@ -1,8 +1,10 @@
 import { useCallback, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
 import { ToastContainer, toast } from "react-toastify";
 import * as Yup from "yup";
+
+import { useAuthWithGoogle } from "../hooks/useAuthWithGoogle";
+import { useAuth } from "../contexts/AuthContext";
 
 import { ImArrowLeft } from "react-icons/im";
 import { BiLogIn } from "react-icons/bi";
@@ -23,7 +25,8 @@ export const SignIn: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
 
-    const { user, signInWithGoogle } = useAuth();
+    const { user, signInWithGoogle } = useAuthWithGoogle();
+    const { signIn } = useAuth();
 
     async function handleGoogleSignIn() {
         if (!user) {
@@ -51,7 +54,12 @@ export const SignIn: React.FC = () => {
                     abortEarly: false,
                 });
 
-                console.log(data);
+                const response = await signIn({
+                    email: data.email,
+                    password: data.password
+                });
+
+                navigate('/home');
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
@@ -64,10 +72,11 @@ export const SignIn: React.FC = () => {
 
                 toast.error("Error ao autenticar, tente novamente!");
             }
-        }, []);
+        }, [signIn, toast]);
 
     return (
         <div className="flex flex-row mobile:flex-col justify-between mobile:justify-start min-h-screen mobile:w-screen">
+            <ToastContainer />
             <div className="flex w-1/2 h-screen mobile:h-48 mobile:w-full">
                 <img
                     src={Banner}

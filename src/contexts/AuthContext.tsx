@@ -33,7 +33,7 @@ type AuthContextProviderProps = {
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
-export function AuthContextProvider({ children }: AuthContextProviderProps) {
+function AuthContextProvider({ children }: AuthContextProviderProps) {
     const [data, setData] = useState<AuthState>(() => {
         const token = localStorage.getItem('@web:token');
         const user = localStorage.getItem('web:user');
@@ -47,6 +47,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     });
 
     const signIn = useCallback(async ({ email, password }: SignInCredentials) => {
+
         const response = await api.post('/sessions', {
             email,
             password
@@ -55,7 +56,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         const { token, user } = response.data;
 
         localStorage.setItem('@web:token', token);
-        localStorage.setItem('web:user', JSON.stringify(user));
+        localStorage.setItem('@web:user', JSON.stringify(user));
 
         api.defaults.headers.authorization = `Bearer ${token}`;
 
@@ -64,7 +65,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
     const signOut = useCallback(() => {
         localStorage.removeItem('@web:token');
-        localStorage.removeItem('web:user');
+        localStorage.removeItem('@web:user');
 
         setData({} as AuthState);
     }, []);
@@ -85,8 +86,10 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     );
 };
 
-export function useAuth(): AuthContextData {
+function useAuth(): AuthContextData {
     const context = useContext(AuthContext);
 
     return context;
 }
+
+export { AuthContextProvider, useAuth };
