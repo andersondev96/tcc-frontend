@@ -1,16 +1,12 @@
 import { ChangeEvent, useEffect, useState } from "react";
-
 import axios from "axios";
+import { useAuth } from "../../contexts/AuthContext";
+import { useAuthWithGoogle } from "../../hooks/useAuthWithGoogle";
+import { FaUserCircle } from "react-icons/fa";
 
 import { Map } from "../../components/Map";
-import { Range } from "../../components/Range";
 import { Select } from "../../components/Select";
-
-import { Header } from "../../components/Header";
-import { useAuthWithGoogle } from "../../hooks/useAuthWithGoogle";
 import { useNavigate } from "react-router-dom";
-import { LatLngExpression } from "leaflet";
-
 interface IBGEUFResponse {
     id: string;
     sigla: string;
@@ -36,7 +32,8 @@ type ICoords = {
 };
 
 export const Home: React.FC = () => {
-    const { user, signInWithGoogle, signOutWithGoogle } = useAuthWithGoogle();
+    /*  const { user, signInWithGoogle, signOutWithGoogle } = useAuthWithGoogle(); */
+    const { user, signOut } = useAuth();
 
     const navigate = useNavigate();
 
@@ -47,11 +44,11 @@ export const Home: React.FC = () => {
     const [selectedCity, setSelectedCity] = useState("0");
     const [coords, setCoords] = useState([0, 0]);
 
-    function handleSignOutWithGoogle() {
+    /* function handleSignOutWithGoogle() {
         signOutWithGoogle();
 
         navigate("/login");
-    }
+    } */
 
     useEffect(() => {
         axios
@@ -160,24 +157,41 @@ export const Home: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="flex flex-row items-center gap-4">
-                        <img
-                            src={user?.avatar}
-                            alt={user?.name}
-                            className="h-12 w-12 rounded-full border-x-slate-900 border-2 border-white"
-                        />
-                        <div className="flex flex-col">
-                            <span className="font-montserrat font-medium text-sm text-white">
-                                {user?.name}
-                            </span>
-                            <span
-                                className="font-montserrat font-light text-xs text-white text-right cursor-pointer hover:brightness-90 transition-shadow"
-                                onClick={handleSignOutWithGoogle}
-                            >
-                                Sair
-                            </span>
-                        </div>
-                    </div>
+                    {
+                        user ? (
+                            <div className="flex flex-row items-center gap-4">
+                                {
+                                    user.avatar ? (
+                                        <img
+                                            src={user?.avatar}
+                                            alt={user?.name}
+                                            className="h-12 w-12 rounded-full border-x-slate-900 border-2 border-white"
+                                        />
+                                    ) : <FaUserCircle size={36} />
+                                }
+                                <div className="flex flex-col">
+                                    <span className="font-montserrat font-medium text-sm text-white">
+                                        {user?.name}
+                                    </span>
+                                    <span
+                                        className="font-montserrat font-light text-xs text-white text-right cursor-pointer hover:brightness-90 transition-shadow"
+                                        onClick={signOut}
+                                    >
+                                        Sair
+                                    </span>
+                                </div>
+                            </div>
+                        ) :
+                            <div className="flex flex-row items-center px-16">
+                                <button
+                                    onClick={() => navigate("/login")}
+                                    type="button"
+                                    className="px-8 py-3 text-white bg-indigo-500 rounded focus:outline-none disabled:opacity-100 cursor-pointer hover:brightness-90"
+                                >
+                                    Login
+                                </button>
+                            </div>
+                    }
                     {/* <div className="flex flex-col mt-8">
             <Range />
           </div> */}

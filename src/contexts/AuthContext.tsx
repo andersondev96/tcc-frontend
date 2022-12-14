@@ -36,7 +36,7 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 function AuthContextProvider({ children }: AuthContextProviderProps) {
     const [data, setData] = useState<AuthState>(() => {
         const token = localStorage.getItem('@web:token');
-        const user = localStorage.getItem('web:user');
+        const user = localStorage.getItem('@web:user');
 
         if (token && user) {
             api.defaults.headers.authorization = `Bearer ${token}`;
