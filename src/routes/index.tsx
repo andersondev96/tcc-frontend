@@ -1,5 +1,6 @@
-import { Route, Routes, Navigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+
 
 import { Business } from "../pages/client/Business";
 import { Service } from "../pages/client/Service";
@@ -26,91 +27,31 @@ import { ChatMessageEntrepreneur } from "../pages/entrepreneur/ChatEntrepreneur/
 import { Settings } from "../pages/entrepreneur/Settings";
 
 export const Router: React.FC = () => {
-    const { user } = useAuth();
 
     return (
         <Routes>
-            <Route
-                path="/"
-                element={<Welcome />}
-            />
-            <Route
-                path="/login"
-                element={
-                    !user ?
-                        <SignIn /> : <Navigate to="/home" />
-                }
-            />
-            <Route
-                path="/sign-up"
-                element={
-                    !user ?
-                        <SignUp /> : <Navigate to="/home" />
-                }
-            />
-            <Route
-                path="/home"
-                element={<Home />} />
-
-            <Route
-                path="/business"
-                element={<Business />} />
-            <Route
-                path="/service"
-                element={<Service />} />
-            <Route
-                path="/profile"
-                element={<EditProfile />} />
-            <Route
-                path="/favorites"
-                element={<Favorites />} />
-            <Route
-                path="/budget"
-                element={<Budget />} />
-            <Route
-                path="/budget/details"
-                element={<BudgetDetails />} />
-
-            <Route
-                path="/dashboard"
-                element={
-                    user ? <Dashboard /> : <Navigate to="/login" />
-                }
-            />
-            <Route
-                path="/dashboard/business"
-                element={<BusinessEntrepreneur />} />
-            <Route
-                path="/dashboard/business/create"
-                element={<BusinessCreate />} />
-            <Route
-                path="/dashboard/services"
-                element={<ServicesEntrepreneur />} />
-            <Route
-                path="/dashboard/create"
-                element={<CreateServicesEntrepreneur />}
-            />
-            <Route
-                path="/dashboard/services/show"
-                element={<ShowServicesEntrepreneur />}
-            />
+            <Route path="/" element={<Welcome />} />
+            <Route path="/login" element={<SignIn />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/business" element={<Business />} />
+            <Route path="/service" element={<Service />} />
+            <Route path="/profile" element={<EditProfile />} />
+            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/budget" element={<Budget />} />
+            <Route path="/budget/details" element={<BudgetDetails />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/business" element={<BusinessEntrepreneur />} />
+            <Route path="/dashboard/business/create" element={<BusinessCreate />} />
+            <Route path="/dashboard/services" element={<ServicesEntrepreneur />} />
+            <Route path="/dashboard/create" element={<CreateServicesEntrepreneur />} />
+            <Route path="/dashboard/services/show" element={<ShowServicesEntrepreneur />} />
             <Route path="/dashboard/clients" element={<ClientsEntrepreneur />} />
             <Route path="/dashboard/budget" element={<BudgetEntrepreneur />} />
-            <Route
-                path="/dashboard/budget/details"
-                element={<DetailsBudgetEntrepreneur />}
-            />
-            <Route
-                path="/dashboard/budget/create-proposal"
-                element={<CreateProposal />}
-            />
+            <Route path="/dashboard/budget/details" element={<DetailsBudgetEntrepreneur />} />
+            <Route path="/dashboard/budget/create-proposal" element={<CreateProposal />} />
             <Route path="/dashboard/chat" element={<ChatEntrepreneur />} />
-
-            <Route
-                path="/dashboard/chat/message"
-                element={<ChatMessageEntrepreneur />}
-            />
-
+            <Route path="/dashboard/chat/message" element={<ChatMessageEntrepreneur />} />
             <Route path="/dashboard/settings" element={<Settings />} />
         </Routes>
     );
