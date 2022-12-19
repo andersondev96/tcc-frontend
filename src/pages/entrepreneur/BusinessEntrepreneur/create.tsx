@@ -2,13 +2,19 @@ import { SideBar } from "../../../components/Sidebar";
 import { AiOutlineCamera } from "react-icons/ai";
 import { IoMdAddCircle } from "react-icons/io";
 import { FiSave } from "react-icons/fi";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { MdAdd } from "react-icons/md";
+import api from "../../../services/api";
+import { useNavigate } from "react-router-dom";
 
 export const BusinessCreate: React.FC = () => {
+    const navigate = useNavigate();
+
     const [images, setImages] = useState<File[]>([]);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [hasPhysicalLocation, setHasPhysicalLocation] = useState<boolean>(false);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [description, setDescription] = useState('');
     const [scheduleItems, setScheduleItems] = useState([
         {
             day_of_week: "",
@@ -17,6 +23,24 @@ export const BusinessCreate: React.FC = () => {
             lunch_time: "",
         }
     ]);
+
+    const [formData, setFormData] = useState({
+        name: '',
+        cnpj: '',
+        category: '',
+        services: [''],
+        cep: '',
+        street: '',
+        district: '',
+        number: 0,
+        state: '',
+        city: '',
+        telephone: '',
+        whatsapp: '',
+        email: '',
+        website: '',
+
+    });
 
     function setPhysicalLocation() {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -33,8 +57,14 @@ export const BusinessCreate: React.FC = () => {
             }
         ])
 
-        console.log(scheduleItems);
+        console.log(scheduleItems.length);
     }
+
+    function removeScheduleItem() {
+        console.log('Removing schedule item');
+    }
+
+
 
     function setScheduleItemValue(position: number, field: string, value: string) {
         const updateScheduleItems = scheduleItems.map((scheduleItem, index) => {
@@ -46,6 +76,8 @@ export const BusinessCreate: React.FC = () => {
         });
 
         setScheduleItems(updateScheduleItems);
+
+        console.log(scheduleItems.length >= (scheduleItems.length - 1));
     }
 
     function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
@@ -65,6 +97,70 @@ export const BusinessCreate: React.FC = () => {
         });
 
         setPreviewImages(selectedImagesPreview);
+    }
+
+    function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+        const { name, value } = event.target;
+
+        setFormData({ ...formData, [name]: value });
+    }
+
+    async function handleSubmit(event: FormEvent) {
+        event.preventDefault();
+        const {
+            name,
+            cnpj,
+            services,
+            cep,
+            street,
+            district,
+            number,
+            state,
+            city,
+            telephone,
+            whatsapp,
+            email,
+            website } = formData;
+
+        console.log(formData);
+
+        const servicesArray = [];
+
+        servicesArray.push(services);
+
+        const category = selectedCategory;
+        console.log(category);
+        console.log(description);
+        console.log(scheduleItems);
+        console.log(hasPhysicalLocation);
+
+        api.post('companies', {
+            name,
+            cnpj,
+            category,
+            description,
+            services: servicesArray,
+            schedules: scheduleItems,
+            physical_localization: hasPhysicalLocation,
+            telephone,
+            whatsapp,
+            email,
+            website,
+            address: {
+                cep,
+                street,
+                district,
+                number,
+                state,
+                city
+            }
+        }).then(() => {
+            alert('Empresa cadastrada com sucesso');
+
+            navigate("/dashboard/business");
+        }).catch(() => {
+            alert('Erro no cadastro');
+        })
     }
 
     return (
@@ -87,7 +183,7 @@ export const BusinessCreate: React.FC = () => {
                         Singhtglass Coffee
                     </span>
                 </div>
-                <div className="flex flex-col w-[64rem] pt-52 pb-12 px-8 gap-6">
+                <form className="flex flex-col w-[64rem] pt-52 pb-12 px-8 gap-6" onSubmit={handleSubmit}>
                     <div className="flex flex-row gap-16 mobile:flex-col mobile:gap-4">
                         <div className="flex flex-col w-1/2 gap-1 mobile:w-72">
                             <label
@@ -100,6 +196,7 @@ export const BusinessCreate: React.FC = () => {
                                 name="name"
                                 className="h-12 rounded"
                                 type="text"
+                                onChange={handleInputChange}
                             />
                         </div>
                         <div className="flex flex-col w-1/2 gap-1 mobile:w-72">
@@ -109,7 +206,7 @@ export const BusinessCreate: React.FC = () => {
                             >
                                 CNPJ
                             </label>
-                            <input className="h-12 rounded" type="text" name="cnpj" />
+                            <input className="h-12 rounded" type="text" name="cnpj" onChange={handleInputChange} />
                         </div>
                     </div>
 
@@ -121,7 +218,7 @@ export const BusinessCreate: React.FC = () => {
                             >
                                 Categoria
                             </label>
-                            <select className="h-12 rounded" name="category">
+                            <select className="h-12 rounded" name="category" onChange={(e) => setSelectedCategory(e.target.value)}>
                                 <option value="" disabled>Selecione uma opção</option>
                                 <option value="Agricultura">Agricultura</option>
                                 <option value="Design">Design</option>
@@ -136,7 +233,7 @@ export const BusinessCreate: React.FC = () => {
                             >
                                 Serviços oferecidos
                             </label>
-                            <input className="h-12 rounded" type="text" name="services" />
+                            <input className="h-12 rounded" type="text" name="services" onChange={handleInputChange} />
                         </div>
                     </div>
 
@@ -151,6 +248,8 @@ export const BusinessCreate: React.FC = () => {
                             className="rounded resize-none mobile:w-72"
                             name="description"
                             id="description"
+                            onChange={(e) => setDescription(e.target.value)}
+
                         />
                     </div>
 
@@ -162,7 +261,7 @@ export const BusinessCreate: React.FC = () => {
                             >
                                 Telefone
                             </label>
-                            <input className="h-12 rounded" type="text" name="telephone" />
+                            <input className="h-12 rounded" type="text" name="telephone" onChange={handleInputChange} />
                         </div>
                         <div className="flex flex-col gap-1 w-1/2 mobile:w-72">
                             <label
@@ -171,7 +270,7 @@ export const BusinessCreate: React.FC = () => {
                             >
                                 Whatsapp
                             </label>
-                            <input className="h-12 rounded" type="text" name="whatsapp" />
+                            <input className="h-12 rounded" type="text" name="whatsapp" onChange={handleInputChange} />
                         </div>
                     </div>
 
@@ -183,7 +282,7 @@ export const BusinessCreate: React.FC = () => {
                             >
                                 E-mail
                             </label>
-                            <input className="h-12 rounded" type="text" name="email" />
+                            <input className="h-12 rounded" type="text" name="email" onChange={handleInputChange} />
                         </div>
                         <div className="flex flex-col gap-1 w-1/2 mobile:w-72">
                             <label
@@ -192,7 +291,7 @@ export const BusinessCreate: React.FC = () => {
                             >
                                 Website
                             </label>
-                            <input className="h-12 rounded" type="text" name="website" />
+                            <input className="h-12 rounded" type="text" name="website" onChange={handleInputChange} />
                         </div>
                     </div>
 
@@ -228,27 +327,48 @@ export const BusinessCreate: React.FC = () => {
                                     <div className="flex flex-row w-1/2 gap-4 items-center mobile:w-72">
 
                                         <div className="relative">
-                                            <input type="time" id="close_time" className="block h-12 w-28 rounded px-2.5 pb-2.5 pt-4 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 peer" placeholder=" " />
-                                            <label htmlFor="close_time" className="absolute font-montserrat font-medium text-sm text-cyan-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+                                            <input
+                                                type="time"
+                                                id="opening_time"
+                                                className="block h-12 w-28 rounded px-2.5 pb-2.5 pt-4 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 peer"
+                                                placeholder=" "
+                                                name="opening_time"
+                                                onChange={e => setScheduleItemValue(index, 'opening_time', e.target.value)}
+                                            />
+                                            <label htmlFor="opening_time" className="absolute font-montserrat font-medium text-sm text-cyan-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
                                                 Aberto de
                                             </label>
                                         </div>
 
                                         <div className="relative">
-                                            <input type="time" id="close_time" className="block h-12 w-28 rounded px-2.5 pb-2.5 pt-4 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 peer" placeholder=" " />
-                                            <label htmlFor="close_time" className="absolute font-montserrat font-medium text-sm text-cyan-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+                                            <input
+                                                type="time"
+                                                id="closing_time"
+                                                className="block h-12 w-28 rounded px-2.5 pb-2.5 pt-4 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 peer"
+                                                placeholder=" "
+                                                name="closing_time"
+                                                onChange={e => setScheduleItemValue(index, 'closing_time', e.target.value)}
+                                            />
+                                            <label htmlFor="closing_time" className="absolute font-montserrat font-medium text-sm text-cyan-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
                                                 Até às
                                             </label>
                                         </div>
 
                                         <div className="relative">
-                                            <input type="time" id="close_time" className="block h-12 w-28 rounded px-2.5 pb-2.5 pt-4 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 peer" placeholder=" " />
-                                            <label htmlFor="close_time" className="absolute font-montserrat font-medium text-sm text-cyan-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+                                            <input
+                                                type="time"
+                                                id="lunch_time"
+                                                className="block h-12 w-28 rounded px-2.5 pb-2.5 pt-4 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 peer"
+                                                placeholder=" "
+                                                name="lunch_time"
+                                                onChange={e => setScheduleItemValue(index, 'lunch_time', e.target.value)}
+                                            />
+                                            <label htmlFor="lunch_time" className="absolute font-montserrat font-medium text-sm text-cyan-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
                                                 Almoço
                                             </label>
                                         </div>
-
                                         <IoMdAddCircle size={32} color="#8E82CA" onClick={addNewScheduleItem} />
+
                                     </div>
                                 </div>
                             )
@@ -271,12 +391,12 @@ export const BusinessCreate: React.FC = () => {
                                 <div className="flex flex-row gap-16 mobile:flex-col mobile:gap-4">
                                     <div className="flex flex-col gap-1 w-1/2 mobile:w-72">
                                         <label
-                                            htmlFor="address"
+                                            htmlFor="street"
                                             className="font-montserrat font-semibold text-sm text-indigo-200"
                                         >
                                             Endereço
                                         </label>
-                                        <input className="h-12 rounded" type="text" name="address" />
+                                        <input className="h-12 rounded" type="text" name="street" onChange={handleInputChange} />
                                     </div>
                                     <div className="flex flex-col gap-1 w-1/2 mobile:w-72">
                                         <label
@@ -285,27 +405,27 @@ export const BusinessCreate: React.FC = () => {
                                         >
                                             Bairro
                                         </label>
-                                        <input className="h-12 rounded" type="text" name="district" />
+                                        <input className="h-12 rounded" type="text" name="district" onChange={handleInputChange} />
                                     </div>
                                 </div>
                                 <div className="flex flex-row gap-16 mobile:flex-col mobile:gap-4">
                                     <div className="flex flex-col gap-1 w-48 mobile:w-72">
                                         <label
-                                            htmlFor="address"
+                                            htmlFor="number"
                                             className="font-montserrat font-semibold text-sm text-indigo-200"
                                         >
                                             Número
                                         </label>
-                                        <input className="h-12 rounded" type="text" name="address" />
+                                        <input className="h-12 rounded" type="text" name="number" onChange={handleInputChange} />
                                     </div>
                                     <div className="flex flex-col gap-1 w-48 mobile:w-72">
                                         <label
-                                            htmlFor="district"
+                                            htmlFor="cep"
                                             className="font-montserrat font-semibold text-sm text-indigo-200"
                                         >
                                             CEP
                                         </label>
-                                        <input className="h-12 rounded" type="text" name="district" />
+                                        <input className="h-12 rounded" type="text" name="cep" onChange={handleInputChange} />
                                     </div>
                                     <div className="flex flex-col gap-1 w-36 mobile:w-72">
                                         <label
@@ -314,16 +434,16 @@ export const BusinessCreate: React.FC = () => {
                                         >
                                             Estado
                                         </label>
-                                        <input className="h-12 rounded" type="text" name="state" />
+                                        <input className="h-12 rounded" type="text" name="state" onChange={handleInputChange} />
                                     </div>
                                     <div className="flex flex-col gap-1 w-60 mobile:w-72">
                                         <label
-                                            htmlFor="district"
+                                            htmlFor="city"
                                             className="font-montserrat font-semibold text-sm text-indigo-200"
                                         >
                                             Cidade
                                         </label>
-                                        <input className="h-12 rounded" type="text" name="district" />
+                                        <input className="h-12 rounded" type="text" name="city" onChange={handleInputChange} />
                                     </div>
                                 </div>
                             </div>
@@ -367,7 +487,7 @@ export const BusinessCreate: React.FC = () => {
                             Salvar
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     );
