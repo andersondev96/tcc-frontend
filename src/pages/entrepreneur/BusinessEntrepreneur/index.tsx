@@ -29,7 +29,7 @@ interface CompanyData {
         email: string,
         website: string,
     },
-    address: {
+    Address: {
         cep: string,
         street: string,
         district: string,
@@ -37,12 +37,15 @@ interface CompanyData {
         state: string,
         city: string
     },
-    schedule: {
-        day_of_week: string,
-        opening_time: string,
-        closing_time: string,
-        lunch_time: string,
-    }
+    Schedule: [
+        {
+            id: string,
+            day_of_week: string,
+            opening_time: string,
+            closing_time: string,
+            lunch_time: string,
+        }
+    ]
     user_id: string
 }
 
@@ -146,15 +149,14 @@ export const BusinessEntrepreneur: React.FC = () => {
                         <span className="font-inter font-medium text-base mobile:text-sm">
                             Horários de funcionamento
                         </span>
-                        <p className="font-inter text-sm text-justify">
-                            Segunda à Sexta: 07:00 - 17:00
-                        </p>
-                        <p className="font-inter text-sm text-justify">
-                            Sábado: 07:00 - 19:00
-                        </p>
-                        <p className="font-inter text-sm text-justify">
-                            Domingo: 07:00 - 21:00
-                        </p>
+                        {
+                            company?.Schedule.map(schedule => (
+                                <div key={schedule.id} className="flex flex-row items-center gap-4 font-inter text-sm">
+                                    <span className="font-bold">{schedule.day_of_week}: </span>
+                                    <p className="font-normal">{schedule.opening_time} - {schedule.closing_time}</p>
+                                </div>
+                            ))
+                        }
                     </div>
 
                     <div className="flex flex-col gap-1">
@@ -162,7 +164,10 @@ export const BusinessEntrepreneur: React.FC = () => {
                             Endereço
                         </span>
                         <p className="font-inter text-sm text-justify">
-                            Av. dos Estudantes, 107 - Paraíso, Ibiporã - PR, 86200-000
+                            {company?.Address.street}, {" "}
+                            {company?.Address.number} - {company?.Address.district}, {" "}
+                            {company?.Address.city} - {company?.Address.state}, {" "}
+                            {company?.Address.cep}
                         </p>
                     </div>
 
