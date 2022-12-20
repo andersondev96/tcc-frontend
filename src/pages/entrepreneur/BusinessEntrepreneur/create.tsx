@@ -2,7 +2,7 @@ import { SideBar } from "../../../components/Sidebar";
 import { AiOutlineCamera } from "react-icons/ai";
 import { IoMdAddCircle } from "react-icons/io";
 import { FiSave } from "react-icons/fi";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
@@ -10,11 +10,11 @@ import { useNavigate } from "react-router-dom";
 export const BusinessCreate: React.FC = () => {
     const navigate = useNavigate();
 
-    const [images, setImages] = useState<File[]>([]);
-    const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [hasPhysicalLocation, setHasPhysicalLocation] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [description, setDescription] = useState('');
+    const [images, setImages] = useState<File[]>([]);
+    const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [scheduleItems, setScheduleItems] = useState([
         {
             day_of_week: "",
@@ -80,7 +80,7 @@ export const BusinessCreate: React.FC = () => {
         console.log(scheduleItems.length >= (scheduleItems.length - 1));
     }
 
-    function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
+    function handleSelectedImages(event: ChangeEvent<HTMLInputElement>) {
         console.log("Entra");
         if (!event.target.files) {
             return;
@@ -88,13 +88,13 @@ export const BusinessCreate: React.FC = () => {
 
         const selectedImages = Array.from(event.target.files);
 
-        console.log(selectedImages);
-
         setImages(selectedImages);
 
         const selectedImagesPreview = selectedImages.map(image => {
             return URL.createObjectURL(image);
         });
+
+        console.log(selectedImagesPreview);
 
         setPreviewImages(selectedImagesPreview);
     }
@@ -134,33 +134,39 @@ export const BusinessCreate: React.FC = () => {
         console.log(scheduleItems);
         console.log(hasPhysicalLocation);
 
-        api.post('companies', {
-            name,
-            cnpj,
-            category,
-            description,
-            services: servicesArray,
-            schedules: scheduleItems,
-            physical_localization: hasPhysicalLocation,
-            telephone,
-            whatsapp,
-            email,
-            website,
-            address: {
-                cep,
-                street,
-                district,
-                number,
-                state,
-                city
-            }
-        }).then(() => {
-            alert('Empresa cadastrada com sucesso');
+        try {
+            const company = api.post('companies', {
+                name,
+                cnpj,
+                category,
+                description,
+                services: servicesArray,
+                schedules: scheduleItems,
+                physical_localization: hasPhysicalLocation,
+                telephone,
+                whatsapp,
+                email,
+                website,
+                address: {
+                    cep,
+                    street,
+                    district,
+                    number,
+                    state,
+                    city
+                }
+            });
 
-            navigate("/dashboard/business");
-        }).catch(() => {
+            console.log(company);
+
+            /* const imagesCompany = images.forEach(async (image) => {
+                await api.post(`companies/images/${company.}`)
+            }) */
+        } catch (error) {
             alert('Erro no cadastro');
-        })
+        }
+
+
     }
 
     return (
@@ -180,7 +186,7 @@ export const BusinessCreate: React.FC = () => {
                         </label>
                     </div>
                     <span className="font-inter font-bold text-2xl text-gray-800 mobile:text-lg">
-                        Singhtglass Coffee
+                        Cadastrar empresa
                     </span>
                 </div>
                 <form className="flex flex-col w-[64rem] pt-52 pb-12 px-8 gap-6" onSubmit={handleSubmit}>
@@ -453,33 +459,22 @@ export const BusinessCreate: React.FC = () => {
                     <div className="mt-8 flex flex-row border-b border-gray-400 pb-2">
                         <span className="font-inter text-xl">Adicionar imagens</span>
                     </div>
-                    <div className="flex flex-row gap-3">
-                        {previewImages.map(image => {
-                            return (
-                                <img key={image} src={image} />
-                            )
-                        })}
 
-                        <label
-                            htmlFor="dropzone-file"
-                            className="flex flex-col justify-center items-center w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300"
-                        >
-                            <div className="flex flex-col justify-center items-center ">
+                    <div className="flex flex-row gap-6">
+                        <div className="flex w-16 h-16 rounded border border-1 border-gray-400">
+                            {previewImages.map(image => {
+                                return (
+                                    <img key={image} src={image} alt={formData.name} />
+                                )
+                            })}
+                        </div>
+
+                        <div className="w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300 relative">
+                            <input type="file" multiple id="image[]" className="cursor-pointer relative block opacity-0 w-full h-full p-20 z-20" onChange={handleSelectedImages} />
+                            <div className="text-center absolute p-5 top-0 right-0 left-0 m-auto">
                                 <AiOutlineCamera size={24} />
                             </div>
-                        </label>
-                        <input multiple onChange={handleSelectImages} id="images[]" type="file" className="hidden" />
-
-                        <label
-                            htmlFor="dropzone-file"
-                            className="flex flex-col justify-center items-center w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300"
-                        >
-                            <div className="flex flex-col justify-center items-center ">
-                                <MdAdd size={24} />
-                            </div>
-                            <input id="dropzone-file" type="file" className="hidden" />
-                        </label>
-
+                        </div>
                     </div>
                     <div className="mt-4 flex flex-row items-center justify-center">
                         <button className="w-[10rem] h-[3.125rem] flex flex-row items-center gap-2 justify-center rounded bg-indigo-400 font-inter text-2xl text-white uppercase hover:brightness-90 transition-colors">
