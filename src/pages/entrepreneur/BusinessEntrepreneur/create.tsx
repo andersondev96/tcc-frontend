@@ -188,270 +188,275 @@ export const BusinessCreate: React.FC = () => {
         <div className="flex flex-row">
             <ToastContainer />
             <SideBar />
-            <div className="flex flex-col w-full sm:ml-64">
-                <div className="fixed w-full z-40 flex flex-row items-center gap-12 mobile:gap-6 px-[6.25rem] py-8 bg-gray-200 border-b-2 border-gray-500">
-                    <div className="flex">
-                        <label
-                            htmlFor="dropzone-file"
-                            className="flex flex-col justify-center items-center w-16 h-24 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300"
-                        >
-                            <div className="flex flex-col justify center items-center ">
-                                <AiOutlineCamera size={24} />
-                            </div>
-                            <input id="dropzone-file" type="file" className="hidden" />
-                        </label>
-                    </div>
-                    <span className="font-inter font-bold text-2xl text-gray-800 mobile:text-lg">
-                        Cadastrar empresa
-                    </span>
-                </div>
-                <Form
-                    ref={formRef}
-                    onSubmit={handleSubmit}
-                    className="flex flex-col w-[64rem] pt-52 pb-12 px-8 gap-6"
-                >
-                    <div className="flex flex-col gap-4 mobile:flex-col mobile:gap-4">
-                        <div className="flex flex-row w-full gap-4 mobile:w-72">
-                            <Input
-                                name="name"
-                                label="Nome da empresa"
-                                placeholder="Nome da empresa"
-                                type="text"
-                            />
-
-                            <Input
-                                name="cnpj"
-                                label="CNPJ"
-                                placeholder="Informe o CNPJ"
-                                type="text"
-                            />
-
-                            <Select name="category" label="Categoria">
-                                <option value="" disabled>Selecione uma opção</option>
-                                <option value="Agricultura">Agricultura</option>
-                                <option value="Design">Design</option>
-                                <option value="Engenharia">Engenharia</option>
-                                <option value="Informática">Informática</option>
-                            </Select>
-                        </div>
-                        <div className="flex flex-row w-full gap-4 mobile:w-72">
-                            <Input
-                                name="services"
-                                label="Serviços oferecidos"
-                                placeholder="Cite os principais serviços"
-                            />
-
-                            <div className="flex flex-col">
+            <div className="flex flex-col w-full items-center px-24 md:ml-64 md:mt-16">
+                <div className="flex flex-col w-full">
+                    <span className="font-bold text-2xl mb-12">Cadatrar empresa</span>
+                    <form className="w-full max-w-4xl">
+                        <div className="flex flex-wrap -mx-3 mb-6">
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <label
-                                    htmlFor="description"
-                                    className="font-montserrat font-semibold text-sm text-indigo-200"
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="name"
                                 >
+                                    Nome da empresa
+                                </label>
+                                <input
+                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-2 leading-tight focus:outline-none focus:bg-white"
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    placeholder="Nome da empresa"
+                                />
+                                <p className="text-red-500 text-xs italic">Por favor informe o nome da empresa</p>
+                            </div>
+                            <div className="w-full md:w-1/2 px-3">
+                                <label
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="grid-last-name"
+                                >
+                                    CNPJ
+                                </label>
+                                <input
+                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                    id="cnpj"
+                                    type="text"
+                                    placeholder="CNPJ" />
+                            </div>
+                        </div>
+
+
+                        <div className="flex flex-wrap -mx-3 mb-6">
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <label
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="category"
+                                >
+                                    Categoria
+                                </label>
+                                <div className="relative">
+                                    <select
+                                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                        id="category"
+                                        name="category"
+                                    >
+                                        <option value="" disabled>Selecione uma opção</option>
+                                        <option value="Agricultura">Agricultura</option>
+                                        <option value="Design">Design</option>
+                                        <option value="Engenharia">Engenharia</option>
+                                        <option value="Informática">Informática</option>
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <label
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="services">
+                                    Serviços
+                                </label>
+                                <input
+                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                    id="services"
+                                    type="text"
+                                    placeholder="Serviços oferecidos"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-wrap -mx-3 mb-6">
+                            <div className="w-full px-3 mb-6 md:mb-0">
+                                <label
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="description">
                                     Descrição
                                 </label>
                                 <textarea
-                                    className="rounded resize-none w-80 mobile:w-72"
-                                    name="description"
                                     id="description"
-                                    onChange={(e) => setDescription(e.target.value)}
+                                    name="description"
+                                    className="appearance-none block w-full resize-none bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                    placeholder="Escreva a descrição da empresa" />
+                            </div>
+                        </div>
 
+                        <div className="flex flex-wrap -mx-3 mb-6">
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <label
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="telephone">
+                                    Telefone
+                                </label>
+                                <input
+                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                    id="telephone"
+                                    name="telephone"
+                                    type="text"
+                                    placeholder="(XX) XXXXX-XXXX"
                                 />
                             </div>
-
-                            <Input
-                                name="telephone"
-                                label="Telefone"
-                                placeholder="Informe o telefone"
-                            />
-                        </div>
-
-                        <div className="flex flex-row w-full gap-4 mobile:w-72">
-                            <Input
-                                name="whatsapp"
-                                label="Whatsapp"
-                                placeholder="Informe o whatsapp"
-                            />
-                            <Input
-                                name="email"
-                                label="E-mail"
-                                placeholder="Informe o e-mail"
-                            />
-                            <Input
-                                name="website"
-                                label="Website"
-                                placeholder="Informe o website"
-                            />
-                        </div>
-                        <div className="flex flex-row w-full gap-4 mobile:w-72">
-                            <div className="flex flex-col w-full">
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <label
-                                    htmlFor="category"
-                                    className="font-montserrat font-semibold text-sm text-indigo-200"
-                                >
-                                    Horários de funcionamento
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="whatsapp">
+                                    Whatsapp
                                 </label>
-
-                                {scheduleItems.map((scheduleItem, index) => {
-                                    return (
-                                        <div key={scheduleItem.day_of_week} className="flex flex-row items-center mt-4 w-full gap-16">
-                                            <div className="flex flex-row w-1/2  mobile:flex-col mobile:gap-2">
-                                                <select
-                                                    name="day_of_week"
-                                                    value={scheduleItem.day_of_week}
-                                                    onChange={e => setScheduleItemValue(index, 'day_of_week', e.target.value)}
-                                                    className="h-12 w-full rounded mobile:w-72"
-                                                >
-                                                    <option value="" disabled>Selecione uma opção</option>
-                                                    <option value="segunda">Segunda-feira</option>
-                                                    <option value="terça">Terça-feira</option>
-                                                    <option value="quarta">Quarta-feira</option>
-                                                    <option value="quinta">Quinta-feira</option>
-                                                    <option value="sexta">Sexta-feira</option>
-                                                    <option value="sábado">Sábado</option>
-                                                    <option value="domingp">Domingo</option>
-                                                </select>
-                                            </div>
-
-                                            <div className="flex flex-row w-1/2 gap-4 items-center mobile:w-72">
-
-                                                <div className="relative">
-                                                    <input
-                                                        type="time"
-                                                        id="opening_time"
-                                                        className="block h-12 w-28 rounded px-2.5 pb-2.5 pt-4 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 peer"
-                                                        placeholder=" "
-                                                        name="opening_time"
-                                                        onChange={e => setScheduleItemValue(index, 'opening_time', e.target.value)}
-                                                    />
-                                                    <label htmlFor="opening_time" className="absolute font-montserrat font-medium text-sm text-cyan-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                                                        Aberto de
-                                                    </label>
-                                                </div>
-
-                                                <div className="relative">
-                                                    <input
-                                                        type="time"
-                                                        id="closing_time"
-                                                        className="block h-12 w-28 rounded px-2.5 pb-2.5 pt-4 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 peer"
-                                                        placeholder=" "
-                                                        name="closing_time"
-                                                        onChange={e => setScheduleItemValue(index, 'closing_time', e.target.value)}
-                                                    />
-                                                    <label htmlFor="closing_time" className="absolute font-montserrat font-medium text-sm text-cyan-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                                                        Até às
-                                                    </label>
-                                                </div>
-
-                                                <div className="relative">
-                                                    <input
-                                                        type="time"
-                                                        id="lunch_time"
-                                                        className="block h-12 w-28 rounded px-2.5 pb-2.5 pt-4 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 peer"
-                                                        placeholder=" "
-                                                        name="lunch_time"
-                                                        onChange={e => setScheduleItemValue(index, 'lunch_time', e.target.value)}
-                                                    />
-                                                    <label htmlFor="lunch_time" className="absolute font-montserrat font-medium text-sm text-cyan-600 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                                                        Almoço
-                                                    </label>
-                                                </div>
-                                                <IoMdAddCircle size={32} color="#8E82CA" onClick={addNewScheduleItem} />
-
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-
-                            </div>
-                        </div>
-                        <div className="flex flex-row w-full gap-4 mobile:w-72">
-                            <input type="checkbox" name="hasLocation" onChange={setPhysicalLocation} />
-                            <label
-                                htmlFor="hasLocation"
-                                className="font-montserrat font-semibold text-sm text-indigo-200"
-                            >
-                                Possui localização física
-                            </label>
-                        </div>
-                        {
-                            hasPhysicalLocation ? (
-                                <div>
-                                    <div className="flex flex-row gap-16 mobile:flex-col mobile:gap-4">
-                                        <Input
-                                            name="street"
-                                            label="Endereço"
-                                            placeholder="Informe o endereço"
-                                        />
-
-                                        <Input
-                                            name="district"
-                                            label="Bairro"
-                                            placeholder="Informe o bairro"
-                                        />
-
-                                        <Input
-                                            name="number"
-                                            label="Número"
-                                            placeholder="Informe o número"
-                                        />
-
-                                    </div>
-                                    <div className="flex flex-row gap-16 mobile:flex-col mobile:gap-4">
-                                        <Input
-                                            name="cep"
-                                            label="CEP"
-                                            placeholder="Informe o cep"
-                                        />
-
-                                        <Input
-                                            name="state"
-                                            label="Estado"
-                                            placeholder="Informe o estado"
-                                        />
-
-                                        <Input
-                                            name="city"
-                                            label="Cidade"
-                                            placeholder="Informe a ciddade"
-                                        />
-
-                                    </div>
-                                </div>
-                            ) : ''
-                        }
-
-                        <div className="flex flex-col gap-4">
-                            <div className="mt-8 flex flex-row border-b border-gray-400 pb-2">
-                                <span className="font-inter text-xl">Adicionar imagens</span>
-                            </div>
-
-                            <div className="flex flex-row gap-6">
-                                <div className="flex w-16 h-16 rounded border border-1 border-gray-400">
-                                    {previewImages.map(image => {
-                                        return (
-                                            <img key={image} src={image} alt={formData.name} />
-                                        )
-                                    })}
-                                </div>
-
-                                <div className="w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300 relative">
-                                    <input type="file" multiple id="image[]" className="cursor-pointer relative block opacity-0 w-full h-full p-20 z-20" onChange={handleSelectedImages} />
-                                    <div className="text-center absolute p-5 top-0 right-0 left-0 m-auto">
-                                        <AiOutlineCamera size={24} />
-                                    </div>
-                                </div>
+                                <input
+                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                    id="whatsapp"
+                                    name="whatsapp"
+                                    type="text"
+                                    placeholder="(XX) XXXXX-XXXX"
+                                />
                             </div>
                         </div>
 
-                        <div className="mt-4 flex flex-row items-center justify-center">
-                            <button className="w-[10rem] h-[3.125rem] flex flex-row items-center gap-2 justify-center rounded bg-indigo-400 font-inter text-2xl text-white uppercase hover:brightness-90 transition-colors">
-                                <FiSave />
-                                Salvar
-                            </button>
+                        <div className="flex flex-wrap -mx-3 mb-6">
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <label
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="email">
+                                    E-mail
+                                </label>
+                                <input
+                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                    id="email"
+                                    name="email"
+                                    type="text"
+                                    placeholder="mail@example.com"
+                                />
+                            </div>
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <label
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="website">
+                                    Website
+                                </label>
+                                <input
+                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                    id="website"
+                                    name="website"
+                                    type="text"
+                                    placeholder="http://example.example"
+                                />
+                            </div>
                         </div>
 
-                    </div>
-                </Form>
-            </div>
+                        <div className="flex flex-wrap items-center justify-between -mx-3 mb-6 border-b py-4 border-gray-400">
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <span className="w-full px-3 mb-6 md:mb-0 uppercase font-semibold text-sm text-gray-700">
+                                    Horários de funcionamento
+                                </span>
+                            </div>
+                            <div className="w-full md:w-1/2 px-56 mb-6 md:mb-0">
+                                <button className="bg-sky-500 text-white active:bg-sky-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button"
+                                >
+                                    Adicionar
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <div className="flex flex-wrap -mx-3 mb-6">
+                            <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+                                <label
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="day_of_week"
+                                >
+                                    Dia da semana
+                                </label>
+                                <div className="relative">
+                                    <select
+                                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                        id="day_of_week"
+                                        name="day_of_week"
+                                    >
+                                        <option value="" disabled>Selecione uma opção</option>
+                                        <option value="segunda">Segunda-feira</option>
+                                        <option value="terça">Terça-feira</option>
+                                        <option value="quarta">Quarta-feira</option>
+                                        <option value="quinta">Quinta-feira</option>
+                                        <option value="sexta">Sexta-feira</option>
+                                        <option value="sábado">Sábado</option>
+                                        <option value="domingp">Domingo</option>
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+                                <label
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="opening_time">
+                                    Abre às
+                                </label>
+                                <input
+                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                    id="opening_time"
+                                    name="opening_time"
+                                    type="time"
+                                />
+                            </div>
+                            <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+                                <label
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                    htmlFor="closing_time">
+                                    Fecha às
+                                </label>
+                                <input
+                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                    id="closing_time"
+                                    name="closing_time"
+                                    type="time"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-wrap -mx-3 mb-6">
+                            <div className="w-full items-center md:w-1/4 px-3 mb-6 md:mb-0">
+                                <input className="h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" />
+                                <label
+                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-1"
+                                    htmlFor="physical_localization">
+                                    Possui localização física
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <div className="flex flex-wrap -mx-3 mb-2">
+                            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                                <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-city">
+                                    City
+                                </label>
+                                <input className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-city" type="text" placeholder="Albuquerque" />
+                            </div>
+                            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                                <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-state">
+                                    State
+                                </label>
+                                <div className="relative">
+                                    <select className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state">
+                                        <option>New Mexico</option>
+                                        <option>Missouri</option>
+                                        <option>Texas</option>
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                                <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-zip">
+                                    Zip
+                                </label>
+                                <input className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-zip" type="text" placeholder="90210" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div >
         </div >
     );
 };
