@@ -1,7 +1,7 @@
+import { InputHTMLAttributes, useCallback, useEffect, useRef, useState } from "react";
 import { useField } from "@unform/core";
-import { useCallback, useEffect, useRef, useState } from "react";
 
-interface InputProps {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     name: string;
     label: string;
     type?: string;

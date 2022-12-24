@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useCallback, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, Fragment, useCallback, useRef, useState } from "react";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
 import * as Yup from "yup";
@@ -14,33 +14,31 @@ import { Input } from "../../../components/Form/Input";
 import { Select } from "../../../components/Form/Select";
 import { TextArea } from "../../../components/Form/TextArea";
 
+interface IScheduleItem {
+    weekday: string;
+    opening_time: string;
+    closing_time: string;
+    lunch_time: string;
+}
 interface CreateBusinessEntrepreneurFormData {
     name: string;
     cnpj: string;
     category: string;
     description: string;
     services: string[];
-    schedules: [
-        {
-            day_of_week: string;
-            opening_time: string;
-            closing_time: string;
-            lunch_time: string;
-        }
-    ],
     physical_localization: boolean;
     telephone: string;
     whatsapp: string;
     email: string;
     website: string;
-    address: {
-        cep: string;
-        street: string;
-        district: string;
-        number: number;
-        state: string;
-        city: string;
-    }
+    schedules: IScheduleItem[],
+    cep: string;
+    street: string;
+    district: string;
+    number: number;
+    state: string;
+    city: string;
+
 }
 
 export const BusinessCreate: React.FC = () => {
@@ -58,27 +56,9 @@ export const BusinessCreate: React.FC = () => {
             weekday: '',
             opening_time: '',
             closing_time: '',
-            lunch_time: '',
+            lunch_time: '00:00',
         }
     ]);
-
-    const [formData, setFormData] = useState({
-        name: '',
-        cnpj: '',
-        category: '',
-        services: [''],
-        cep: '',
-        street: '',
-        district: '',
-        number: 0,
-        state: '',
-        city: '',
-        telephone: '',
-        whatsapp: '',
-        email: '',
-        website: '',
-
-    });
 
     function setPhysicalLocation() {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -95,7 +75,7 @@ export const BusinessCreate: React.FC = () => {
             }
         ])
 
-        console.log(scheduleItems.length);
+        console.log(scheduleItems);
     }
 
     function removeScheduleItem() {
@@ -135,30 +115,25 @@ export const BusinessCreate: React.FC = () => {
         setPreviewImages(selectedImagesPreview);
     }
 
-    function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
-        const { name, value } = event.target;
-
-        setFormData({ ...formData, [name]: value });
-    }
-
     const handleSubmit = useCallback(
         async (data: CreateBusinessEntrepreneurFormData) => {
             try {
                 formRef.current?.setErrors({});
 
+                console.log(data);
+
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
-                    cnpj: Yup.string().required('CNPJ obrigatório'),
+                    cnpj: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('CNPJ obrigatório'),
                     category: Yup.string().required('Categoria obrigatório'),
                     description: Yup.string().required('Descrição obrigatória'),
                     services: Yup.string().required('Serviços obrigatório'),
-                    day_of_week: Yup.string().required('Dia da semana obrigatório'),
-                    opening_time: Yup.string().required('Horário de abertura obrigatório'),
-                    closing_time: Yup.string().required('Horário de fechamento obrigatório'),
-                    telephone: Yup.string().required('Telefone obrigatório'),
+                    telephone: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Telefone obrigatório'),
+                    whatsapp: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Whatsapp obrigatório'),
                     email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
+                    website: Yup.string().required('O campo website é obrigatório'),
                     cep: Yup.string().required("CEP obrigatório"),
-                    address: Yup.string().required("Rua obrigatória"),
+                    street: Yup.string().required("Rua obrigatória"),
                     district: Yup.string().required("Bairro obrigatório"),
                     number: Yup.number().positive('Deve ser um número positivo').typeError('Deve ser um número').required("Número obrigatório"),
                     state: Yup.string().required("Estado obrigatório"),
@@ -169,7 +144,28 @@ export const BusinessCreate: React.FC = () => {
                     abortEarly: false,
                 });
 
-                console.log(data);
+                await api.post('/companies', {
+                    name: data.name,
+                    cnpj: data.cnpj,
+                    category: data.category,
+                    description: data.description,
+                    services: [data.services],
+                    physical_localization: hasPhysicalLocation,
+                    telephone: data.telephone,
+                    whatsapp: data.whatsapp,
+                    email: data.email,
+                    website: data.website,
+                    address: {
+                        cep: data.cep,
+                        street: data.street,
+                        district: data.district,
+                        number: data.number,
+                        state: data.state,
+                        city: data.city
+                    }
+                });
+
+                navigate('/dashboard');
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
@@ -219,14 +215,13 @@ export const BusinessCreate: React.FC = () => {
                                 <Select
                                     name="category"
                                     label="Categoria"
-                                    value={selectedCategory}
-                                    onChange={(e) => setSelectedCategory(e.target.value)}
                                     options={[
                                         { value: 'agricultura', label: 'Agricultura' },
                                         { value: 'Design', label: 'Design' },
                                         { value: 'engenharia', label: 'Engenharia' },
                                         { value: 'informática', label: 'Informática' },
                                     ]}
+                                    placeholder="Selecione uma opção"
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -303,13 +298,13 @@ export const BusinessCreate: React.FC = () => {
                         {scheduleItems.map((scheduleItem, index) => {
                             return (
 
-                                <div key={scheduleItem.weekday} className="flex flex-wrap -mx-3 md:mb-4">
+                                <div key={index} className="flex flex-wrap -mx-3 md:mb-4">
                                     <div className="w-full md:w-1/4 px-3 mb-3 md:mb-0">
                                         <Select
                                             name="weekday"
                                             label="Dia da semana"
                                             value={scheduleItem.weekday}
-                                            onChange={e => setScheduleItemValue(index, 'weekday', e.target.value)}
+                                            onChange={(e) => { setScheduleItemValue(index, 'weekday', e.target.value) }}
                                             options={[
                                                 { value: 'Domingo', label: 'Domingo' },
                                                 { value: 'Segunda-feira', label: 'Segunda-feira' },
@@ -319,6 +314,7 @@ export const BusinessCreate: React.FC = () => {
                                                 { value: 'Sexta-feira', label: 'Sexta-feira' },
                                                 { value: 'Sábado', label: 'Sábado' },
                                             ]}
+                                            placeholder="Selecione uma opção"
                                         />
                                     </div>
                                     <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
@@ -327,6 +323,8 @@ export const BusinessCreate: React.FC = () => {
                                             type="time"
                                             label="Abre às"
                                             placeholder="XX:XX"
+                                            value={scheduleItem.opening_time}
+                                            onChange={(e) => { setScheduleItemValue(index, 'opening_time', e.target.value) }}
 
                                         />
                                     </div>
@@ -336,6 +334,8 @@ export const BusinessCreate: React.FC = () => {
                                             type="time"
                                             label="Fecha às"
                                             placeholder="XX:XX"
+                                            value={scheduleItem.closing_time}
+                                            onChange={(e) => { setScheduleItemValue(index, 'closing_time', e.target.value) }}
                                         />
                                     </div>
                                 </div>
@@ -345,7 +345,11 @@ export const BusinessCreate: React.FC = () => {
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full items-center md:w-1/4 px-3 mb-6 md:mb-0">
-                                <input className="h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" />
+                                <input
+                                    className="h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                                    type="checkbox"
+                                    onChange={setPhysicalLocation}
+                                />
                                 <label
                                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-1"
                                     htmlFor="physical_localization">
@@ -354,85 +358,90 @@ export const BusinessCreate: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap -mx-3 md:mb-6">
-                            <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="address"
-                                    label="Endereço"
-                                    placeholder="Rua XXX"
-                                />
-                            </div>
-                            <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="district"
-                                    label="Bairro"
-                                    placeholder="Bairro XXX"
-                                />
-                            </div>
-                            <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="number"
-                                    label="Número"
-                                    placeholder="00"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex flex-wrap -mx-3 md:mb-6">
-                            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="cep"
-                                    label="CEP"
-                                    placeholder="XXXXX-XXX"
-                                />
-                            </div>
-                            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                                <div className="relative">
-                                    <Select
-                                        name="state"
-                                        label="Estado"
-                                        value={selectedState}
-                                        onChange={(e) => setSelectedState(e.target.value)}
-                                        options={[
-                                            { value: 'AL', label: 'Acre' },
-                                            { value: 'AP', label: 'Alagoas' },
-                                            { value: 'AM', label: 'Amapá' },
-                                            { value: 'BA', label: 'Amazonas' },
-                                            { value: 'CE', label: 'Bahia' },
-                                            { value: 'DF', label: 'Ceará' },
-                                            { value: 'ES', label: 'Distrito Federal' },
-                                            { value: 'GO', label: 'Espírito Santo' },
-                                            { value: 'MA', label: 'Goiás' },
-                                            { value: 'MT', label: 'Maranhão' },
-                                            { value: 'MS', label: 'Mato Grosso' },
-                                            { value: 'MG', label: 'Mato Grosso do Sul' },
-                                            { value: 'PA', label: 'Minas Gerais' },
-                                            { value: 'PB', label: 'Pará' },
-                                            { value: 'PR', label: 'Paraíba' },
-                                            { value: 'PE', label: 'Paraná' },
-                                            { value: 'PI', label: 'Pernambuco' },
-                                            { value: 'RJ', label: 'Piauí' },
-                                            { value: 'RN', label: 'Rio de Janeiro' },
-                                            { value: 'RS', label: 'Rio Grande do Norte' },
-                                            { value: 'RO', label: 'Rio Grande do Sul' },
-                                            { value: 'RR', label: 'Rondônia' },
-                                            { value: 'SC', label: 'Roraima' },
-                                            { value: 'SP', label: 'Santa Catarina' },
-                                            { value: 'SE', label: 'São Paulo' },
-                                            { value: 'TO', label: 'Sergipe' },
-                                            { value: '  ', label: 'Tocantins' },
-
-                                        ]}
-                                    />
+                        {hasPhysicalLocation && (
+                            <Fragment>
+                                <div className="flex flex-wrap -mx-3 md:mb-6">
+                                    <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
+                                        <Input
+                                            name="street"
+                                            label="Endereço"
+                                            placeholder="Rua XXX"
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
+                                        <Input
+                                            name="district"
+                                            label="Bairro"
+                                            placeholder="Bairro XXX"
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
+                                        <Input
+                                            name="number"
+                                            label="Número"
+                                            placeholder="00"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="city"
-                                    label="Cidade"
-                                />
-                            </div>
-                        </div>
+
+                                <div className="flex flex-wrap -mx-3 md:mb-6">
+                                    <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                                        <Input
+                                            name="cep"
+                                            label="CEP"
+                                            placeholder="XXXXX-XXX"
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                                        <div className="relative">
+                                            <Select
+                                                name="state"
+                                                label="Estado"
+                                                value={selectedState}
+                                                onChange={(e) => setSelectedState(e.target.value)}
+                                                options={[
+                                                    { value: 'AL', label: 'Acre' },
+                                                    { value: 'AP', label: 'Alagoas' },
+                                                    { value: 'AM', label: 'Amapá' },
+                                                    { value: 'BA', label: 'Amazonas' },
+                                                    { value: 'CE', label: 'Bahia' },
+                                                    { value: 'DF', label: 'Ceará' },
+                                                    { value: 'ES', label: 'Distrito Federal' },
+                                                    { value: 'GO', label: 'Espírito Santo' },
+                                                    { value: 'MA', label: 'Goiás' },
+                                                    { value: 'MT', label: 'Maranhão' },
+                                                    { value: 'MS', label: 'Mato Grosso' },
+                                                    { value: 'MG', label: 'Mato Grosso do Sul' },
+                                                    { value: 'PA', label: 'Minas Gerais' },
+                                                    { value: 'PB', label: 'Pará' },
+                                                    { value: 'PR', label: 'Paraíba' },
+                                                    { value: 'PE', label: 'Paraná' },
+                                                    { value: 'PI', label: 'Pernambuco' },
+                                                    { value: 'RJ', label: 'Piauí' },
+                                                    { value: 'RN', label: 'Rio de Janeiro' },
+                                                    { value: 'RS', label: 'Rio Grande do Norte' },
+                                                    { value: 'RO', label: 'Rio Grande do Sul' },
+                                                    { value: 'RR', label: 'Rondônia' },
+                                                    { value: 'SC', label: 'Roraima' },
+                                                    { value: 'SP', label: 'Santa Catarina' },
+                                                    { value: 'SE', label: 'São Paulo' },
+                                                    { value: 'TO', label: 'Sergipe' },
+                                                    { value: '  ', label: 'Tocantins' },
+
+                                                ]}
+                                                placeholder="Selecione uma opção"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                                        <Input
+                                            name="city"
+                                            label="Cidade"
+                                        />
+                                    </div>
+                                </div>
+                            </Fragment>
+                        )}
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
@@ -446,7 +455,7 @@ export const BusinessCreate: React.FC = () => {
                                     <div className="flex w-16 h-16 rounded border border-1 border-gray-400">
                                         {previewImages.map(image => {
                                             return (
-                                                <img key={image} src={image} alt={formData.name} />
+                                                <img key={image} src={image} alt="" />
                                             )
                                         })}
                                     </div>
