@@ -10,7 +10,7 @@ import { ImArrowLeft } from "react-icons/im";
 import { FcGoogle } from "react-icons/fc";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { FiSave } from "react-icons/fi";
-import { Input } from "../components/Input";
+import { Input } from "../components/Form/Input";
 import Banner from "../assets/image_onboarding.png";
 import BusinessImg from "../assets/business_image.png";
 import PurchaseImg from "../assets/purchase_image.png";

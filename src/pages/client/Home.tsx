@@ -5,7 +5,7 @@ import { useAuthWithGoogle } from "../../hooks/useAuthWithGoogle";
 import { FaUserCircle } from "react-icons/fa";
 
 import { Map } from "../../components/Map";
-import { Select } from "../../components/Select";
+import { Select } from "../../components/Form/Select";
 import { useNavigate } from "react-router-dom";
 interface IBGEUFResponse {
     id: string;

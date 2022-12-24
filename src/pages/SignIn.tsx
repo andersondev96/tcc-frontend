@@ -10,7 +10,7 @@ import { ImArrowLeft } from "react-icons/im";
 import { BiLogIn } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
 import Banner from "../assets/image_onboarding.png";
-import { Input } from "../components/Input";
+import { Input } from "../components/Form/Input";
 import { Button } from "../components/Button";
 import { Form } from "@unform/web";
 import { FormHandles } from "@unform/core";

@@ -10,8 +10,9 @@ import { FiSave } from "react-icons/fi";
 import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
 import getValidationErrors from "../../../utils/getValidateErrors";
-import { Input } from "../../../components/Input";
-import { Select } from "../../../components/Select";
+import { Input } from "../../../components/Form/Input";
+import { Select } from "../../../components/Form/Select";
+import { TextArea } from "../../../components/Form/TextArea";
 
 interface CreateBusinessEntrepreneurFormData {
     name: string;
@@ -48,15 +49,16 @@ export const BusinessCreate: React.FC = () => {
 
     const [hasPhysicalLocation, setHasPhysicalLocation] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedState, setSelectedState] = useState('');
     const [description, setDescription] = useState('');
     const [images, setImages] = useState<File[]>([]);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [scheduleItems, setScheduleItems] = useState([
         {
-            day_of_week: "",
-            opening_time: "",
-            closing_time: "",
-            lunch_time: "",
+            weekday: '',
+            opening_time: '',
+            closing_time: '',
+            lunch_time: '',
         }
     ]);
 
@@ -86,10 +88,10 @@ export const BusinessCreate: React.FC = () => {
         setScheduleItems([
             ...scheduleItems,
             {
-                day_of_week: "",
-                opening_time: "",
-                closing_time: "",
-                lunch_time: "",
+                weekday: '',
+                opening_time: '',
+                closing_time: '',
+                lunch_time: '',
             }
         ])
 
@@ -112,8 +114,6 @@ export const BusinessCreate: React.FC = () => {
         });
 
         setScheduleItems(updateScheduleItems);
-
-        console.log(scheduleItems.length >= (scheduleItems.length - 1));
     }
 
     function handleSelectedImages(event: ChangeEvent<HTMLInputElement>) {
@@ -158,9 +158,9 @@ export const BusinessCreate: React.FC = () => {
                     telephone: Yup.string().required('Telefone obrigatório'),
                     email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
                     cep: Yup.string().required("CEP obrigatório"),
-                    street: Yup.string().required("Rua obrigatória"),
+                    address: Yup.string().required("Rua obrigatória"),
                     district: Yup.string().required("Bairro obrigatório"),
-                    number: Yup.number().required("Número obrigatório"),
+                    number: Yup.number().positive('Deve ser um número positivo').typeError('Deve ser um número').required("Número obrigatório"),
                     state: Yup.string().required("Estado obrigatório"),
                     city: Yup.string().required("Cidade obrigatória"),
                 });
@@ -191,75 +191,48 @@ export const BusinessCreate: React.FC = () => {
             <div className="flex flex-col w-full items-center px-24 md:ml-64 mt-6 md:mt-16">
                 <div className="flex flex-col md:w-full">
                     <span className="font-bold text-xl md:text-2xl mb-8 mb:mb-12">Cadatrar empresa</span>
-                    <form className="w-full md:max-w-4xl">
+                    <Form
+                        ref={formRef}
+                        onSubmit={handleSubmit}
+                        className="w-full md:max-w-4xl">
                         <div className="flex flex-wrap -mx-3 mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="name"
-                                >
-                                    Nome da empresa
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-2 leading-tight focus:outline-none focus:bg-white"
-                                    id="name"
+                                <Input
                                     name="name"
-                                    type="text"
+                                    label="Nome da empresa"
                                     placeholder="Nome da empresa"
+
                                 />
-                                <p className="text-red-500 text-xs italic">Por favor informe o nome da empresa</p>
                             </div>
                             <div className="w-full md:w-1/2 px-3">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="grid-last-name"
-                                >
-                                    CNPJ
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="cnpj"
-                                    type="text"
-                                    placeholder="CNPJ" />
+                                <Input
+                                    name="cnpj"
+                                    label="CNPJ"
+                                    placeholder="XX. XXX. XXX/0001-XX"
+                                />
                             </div>
                         </div>
 
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="category"
-                                >
-                                    Categoria
-                                </label>
-                                <div className="relative">
-                                    <select
-                                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                        id="category"
-                                        name="category"
-                                    >
-                                        <option value="" disabled>Selecione uma opção</option>
-                                        <option value="Agricultura">Agricultura</option>
-                                        <option value="Design">Design</option>
-                                        <option value="Engenharia">Engenharia</option>
-                                        <option value="Informática">Informática</option>
-                                    </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-                                    </div>
-                                </div>
+                                <Select
+                                    name="category"
+                                    label="Categoria"
+                                    value={selectedCategory}
+                                    onChange={(e) => setSelectedCategory(e.target.value)}
+                                    options={[
+                                        { value: 'agricultura', label: 'Agricultura' },
+                                        { value: 'Design', label: 'Design' },
+                                        { value: 'engenharia', label: 'Engenharia' },
+                                        { value: 'informática', label: 'Informática' },
+                                    ]}
+                                />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="services">
-                                    Serviços
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="services"
-                                    type="text"
+                                <Input
+                                    name="services"
+                                    label="Serviços"
                                     placeholder="Serviços oferecidos"
                                 />
                             </div>
@@ -267,45 +240,26 @@ export const BusinessCreate: React.FC = () => {
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="description">
-                                    Descrição
-                                </label>
-                                <textarea
-                                    id="description"
+                                <TextArea
                                     name="description"
-                                    className="appearance-none block w-full resize-none bg-gray-200 text-gray-700 border border-gray-200 rounded py-6 mb:py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    placeholder="Escreva a descrição da empresa" />
+                                    label="Descrição"
+                                    placeholder="Descrição da empresa"
+                                />
                             </div>
                         </div>
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="telephone">
-                                    Telefone
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="telephone"
+                                <Input
                                     name="telephone"
-                                    type="text"
+                                    label="Telefone"
                                     placeholder="(XX) XXXXX-XXXX"
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="whatsapp">
-                                    Whatsapp
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="whatsapp"
+                                <Input
                                     name="whatsapp"
-                                    type="text"
+                                    label="Whatsapp"
                                     placeholder="(XX) XXXXX-XXXX"
                                 />
                             </div>
@@ -313,31 +267,17 @@ export const BusinessCreate: React.FC = () => {
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="email">
-                                    E-mail
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="email"
+                                <Input
                                     name="email"
-                                    type="text"
-                                    placeholder="mail@example.com"
+                                    label="E-mail"
+                                    placeholder="example@example.com"
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="website">
-                                    Website
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="website"
+                                <Input
                                     name="website"
-                                    type="text"
-                                    placeholder="http://example.example"
+                                    label="Website"
+                                    placeholder="https://www.website.com"
                                 />
                             </div>
                         </div>
@@ -349,7 +289,10 @@ export const BusinessCreate: React.FC = () => {
                                 </span>
                             </div>
                             <div className=" mb-6 md:mb-0">
-                                <button className="bg-sky-500 text-white active:bg-sky-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button"
+                                <button
+                                    className="bg-sky-500 text-white active:bg-sky-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                    type="button"
+                                    onClick={addNewScheduleItem}
                                 >
                                     Adicionar
                                 </button>
@@ -357,61 +300,48 @@ export const BusinessCreate: React.FC = () => {
 
                         </div>
 
-                        <div className="flex flex-wrap -mx-3 md:mb-6">
-                            <div className="w-full md:w-1/4 px-3 mb-3 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="day_of_week"
-                                >
-                                    Dia da semana
-                                </label>
-                                <div className="relative">
-                                    <select
-                                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                        id="day_of_week"
-                                        name="day_of_week"
-                                    >
-                                        <option value="" disabled>Selecione uma opção</option>
-                                        <option value="segunda">Segunda-feira</option>
-                                        <option value="terça">Terça-feira</option>
-                                        <option value="quarta">Quarta-feira</option>
-                                        <option value="quinta">Quinta-feira</option>
-                                        <option value="sexta">Sexta-feira</option>
-                                        <option value="sábado">Sábado</option>
-                                        <option value="domingp">Domingo</option>
-                                    </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                        {scheduleItems.map((scheduleItem, index) => {
+                            return (
+
+                                <div key={scheduleItem.weekday} className="flex flex-wrap -mx-3 md:mb-4">
+                                    <div className="w-full md:w-1/4 px-3 mb-3 md:mb-0">
+                                        <Select
+                                            name="weekday"
+                                            label="Dia da semana"
+                                            value={scheduleItem.weekday}
+                                            onChange={e => setScheduleItemValue(index, 'weekday', e.target.value)}
+                                            options={[
+                                                { value: 'Domingo', label: 'Domingo' },
+                                                { value: 'Segunda-feira', label: 'Segunda-feira' },
+                                                { value: 'Terça-feira', label: 'Terça-feira' },
+                                                { value: 'Quarta-feira', label: 'Quarta-feira' },
+                                                { value: 'Quinta-feira', label: 'Quinta-feira' },
+                                                { value: 'Sexta-feira', label: 'Sexta-feira' },
+                                                { value: 'Sábado', label: 'Sábado' },
+                                            ]}
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+                                        <Input
+                                            name="opening_time"
+                                            type="time"
+                                            label="Abre às"
+                                            placeholder="XX:XX"
+
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+                                        <Input
+                                            name="closing_time"
+                                            type="time"
+                                            label="Fecha às"
+                                            placeholder="XX:XX"
+                                        />
                                     </div>
                                 </div>
-                            </div>
-                            <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="opening_time">
-                                    Abre às
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="opening_time"
-                                    name="opening_time"
-                                    type="time"
-                                />
-                            </div>
-                            <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="closing_time">
-                                    Fecha às
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="closing_time"
-                                    name="closing_time"
-                                    type="time"
-                                />
-                            </div>
-                        </div>
+                            )
+                        })}
+
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full items-center md:w-1/4 px-3 mb-6 md:mb-0">
@@ -426,121 +356,80 @@ export const BusinessCreate: React.FC = () => {
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="address">
-                                    Endereço
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="grid-city"
+                                <Input
                                     name="address"
-                                    type="text"
-                                    placeholder="Endereço"
+                                    label="Endereço"
+                                    placeholder="Rua XXX"
                                 />
                             </div>
                             <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="district"
-                                >
-                                    Bairro
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="grid-city"
+                                <Input
                                     name="district"
-                                    type="text"
-                                    placeholder="Bairro"
+                                    label="Bairro"
+                                    placeholder="Bairro XXX"
                                 />
                             </div>
                             <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="number">
-                                    Número
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="number"
-                                    type="text"
-                                    placeholder="Número"
+                                <Input
+                                    name="number"
+                                    label="Número"
+                                    placeholder="00"
                                 />
                             </div>
                         </div>
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="zip_code">
-                                    CEP
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="zip_code"
-                                    name="zip_code"
-                                    type="text"
-                                    placeholder="CEP"
+                                <Input
+                                    name="cep"
+                                    label="CEP"
+                                    placeholder="XXXXX-XXX"
                                 />
                             </div>
                             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="state"
-                                >
-                                    Estado
-                                </label>
                                 <div className="relative">
-                                    <select
-                                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                        id="state"
+                                    <Select
                                         name="state"
-                                    >
-                                        <option value="AC">Acre</option>
-                                        <option value="AL">Alagoas</option>
-                                        <option value="AP">Amapá</option>
-                                        <option value="AM">Amazonas</option>
-                                        <option value="BA">Bahia</option>
-                                        <option value="CE">Ceará</option>
-                                        <option value="DF">Distrito Federal</option>
-                                        <option value="ES">Espírito Santo</option>
-                                        <option value="GO">Goiás</option>
-                                        <option value="MA">Maranhão</option>
-                                        <option value="MT">Mato Grosso</option>
-                                        <option value="MS">Mato Grosso do Sul</option>
-                                        <option value="MG">Minas Gerais</option>
-                                        <option value="PA">Pará</option>
-                                        <option value="PB">Paraíba</option>
-                                        <option value="PR">Paraná</option>
-                                        <option value="PE">Pernambuco</option>
-                                        <option value="PI">Piauí</option>
-                                        <option value="RJ">Rio de Janeiro</option>
-                                        <option value="RN">Rio Grande do Norte</option>
-                                        <option value="RS">Rio Grande do Sul</option>
-                                        <option value="RO">Rondônia</option>
-                                        <option value="RR">Roraima</option>
-                                        <option value="SC">Santa Catarina</option>
-                                        <option value="SP">São Paulo</option>
-                                        <option value="SE">Sergipe</option>
-                                        <option value="TO">Tocantins</option>
-                                    </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-                                    </div>
+                                        label="Estado"
+                                        value={selectedState}
+                                        onChange={(e) => setSelectedState(e.target.value)}
+                                        options={[
+                                            { value: 'AL', label: 'Acre' },
+                                            { value: 'AP', label: 'Alagoas' },
+                                            { value: 'AM', label: 'Amapá' },
+                                            { value: 'BA', label: 'Amazonas' },
+                                            { value: 'CE', label: 'Bahia' },
+                                            { value: 'DF', label: 'Ceará' },
+                                            { value: 'ES', label: 'Distrito Federal' },
+                                            { value: 'GO', label: 'Espírito Santo' },
+                                            { value: 'MA', label: 'Goiás' },
+                                            { value: 'MT', label: 'Maranhão' },
+                                            { value: 'MS', label: 'Mato Grosso' },
+                                            { value: 'MG', label: 'Mato Grosso do Sul' },
+                                            { value: 'PA', label: 'Minas Gerais' },
+                                            { value: 'PB', label: 'Pará' },
+                                            { value: 'PR', label: 'Paraíba' },
+                                            { value: 'PE', label: 'Paraná' },
+                                            { value: 'PI', label: 'Pernambuco' },
+                                            { value: 'RJ', label: 'Piauí' },
+                                            { value: 'RN', label: 'Rio de Janeiro' },
+                                            { value: 'RS', label: 'Rio Grande do Norte' },
+                                            { value: 'RO', label: 'Rio Grande do Sul' },
+                                            { value: 'RR', label: 'Rondônia' },
+                                            { value: 'SC', label: 'Roraima' },
+                                            { value: 'SP', label: 'Santa Catarina' },
+                                            { value: 'SE', label: 'São Paulo' },
+                                            { value: 'TO', label: 'Sergipe' },
+                                            { value: '  ', label: 'Tocantins' },
+
+                                        ]}
+                                    />
                                 </div>
                             </div>
                             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    htmlFor="city">
-                                    Cidade
-                                </label>
-                                <input
-                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    id="city"
-                                    type="text"
-                                    placeholder="Cidade"
+                                <Input
+                                    name="city"
+                                    label="Cidade"
                                 />
                             </div>
                         </div>
@@ -579,7 +468,7 @@ export const BusinessCreate: React.FC = () => {
                                 </button>
                             </div>
                         </div>
-                    </form>
+                    </Form>
                 </div>
             </div >
         </div >

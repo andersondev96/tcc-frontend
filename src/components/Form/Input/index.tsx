@@ -5,7 +5,7 @@ interface InputProps {
     name: string;
     label: string;
     type?: string;
-    placeholder: string;
+    placeholder?: string;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -41,34 +41,33 @@ export const Input: React.FC<InputProps> = ({
     }, [fieldName, registerField]);
 
     return (
-        <div className="w-full px-3 mb-6">
+        <>
             <label
                 htmlFor={name}
-                className="block font-inter font-semibold text-xs text-gray-100"
+                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
             >
                 {label}
             </label>
-
             <input
-                className={`appearance-none mt-2 block w-full border-2 rounded px-6 outline-0
-          font-montserrat font-light text-[0.938rem] 
-          ${isFocused ? "focus:border-blue-600" : ""}
-          ${isFilled ? "border-green-400" : ""}
-          ${error ? "border-red-200" : " border-black"}`}
+                className={
+                    `appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-2 leading-tight focus:outline-none focus:bg-white
+                    ${isFocused ? 'focus:border-blue-500' : ''}
+                    ${isFilled ? 'focus:border-green-500' : ''}
+                    ${error ? 'border-red-500' : ''}`}
                 onFocus={handleInputFocus}
                 onBlur={handleInputBlur}
                 defaultValue={defaultValue}
+                id={name}
                 name={name}
                 type={type}
                 placeholder={placeholder}
                 ref={inputRef}
+                {...rest}
             />
 
             {error && (
-                <span className="font-montserrat font-light text-red-200 text-xs">
-                    {error}
-                </span>
+                <p className="text-red-500 text-xs italic">{error}</p>
             )}
-        </div>
+        </>
     );
 };
