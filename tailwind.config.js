@@ -371,6 +371,8 @@ module.exports = {
         'BlinkMacSystemFont',
         '"Segoe UI"',
         'Roboto',
+        'Inter',
+        'Montserrat',
         '"Helvetica Neue"',
         'Arial',
         '"Noto Sans"',
@@ -379,6 +381,9 @@ module.exports = {
         '"Segoe UI Emoji"',
         '"Segoe UI Symbol"',
         '"Noto Color Emoji"',
+      ],
+      cursive: [
+        'Pacifico', 'cursive'
       ],
       serif: ['ui-serif', 'Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
       mono: [

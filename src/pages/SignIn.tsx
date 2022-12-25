@@ -56,7 +56,9 @@ export const SignIn: React.FC = () => {
                     password: data.password
                 });
 
-                navigate('/home');
+                console.log(response);
+
+                navigate('/dashboard');
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
