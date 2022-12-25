@@ -4,8 +4,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useAuthWithGoogle } from "../../hooks/useAuthWithGoogle";
 import { FaUserCircle } from "react-icons/fa";
 
-import Avatar from '../../assets/avatar.jpg';
-
 import { Map } from "../../components/Map";
 import { Select } from "../../components/Form/Select";
 import { useNavigate } from "react-router-dom";
@@ -36,9 +34,7 @@ type ICoords = {
 
 export const Home: React.FC = () => {
     /*  const { user, signInWithGoogle, signOutWithGoogle } = useAuthWithGoogle(); */
-    const { user, signOut } = useAuth();
 
-    const navigate = useNavigate();
 
     const [ufs, setUfs] = useState<IBGEUFResponse[]>([]);
     const [cities, setCities] = useState<IBGECityResponse[]>([]);
@@ -112,7 +108,7 @@ export const Home: React.FC = () => {
     return (
 
         <div>
-            <NavBar user_avatar={user.avatar || Avatar} />
+            <NavBar />
 
             {/* <div className="flex flex-col mobile:flex-col-reverse">
                                         <div className="flex flex-row">

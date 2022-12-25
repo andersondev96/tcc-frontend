@@ -59,7 +59,7 @@ export const SignUp: React.FC = () => {
 
                 await api.post("/users", data);
 
-                navigate("/");
+                navigate("/login");
 
                 toast.success("Usuário cadastrado com sucesso");
             } catch (err) {

@@ -2,17 +2,19 @@ import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { ChatIcon, XIcon, MenuIcon } from '@heroicons/react/solid';
 import Avatar from '../../assets/avatar.jpg';
+import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-interface NavBarProps {
-    user_avatar: string;
-}
+export const NavBar: React.FC = () => {
+    const { user, signOut } = useAuth();
 
-export const NavBar: React.FC<NavBarProps> = ({ user_avatar }) => {
+    const navigate = useNavigate();
+
     const navigation = [
-        { name: 'Home', href: '#', current: true },
-        { name: 'Negócio', href: '#', current: false },
-        { name: 'Serviços', href: '#', current: false },
-        { name: 'Orçamentos', href: '#', current: false },
+        { name: 'Home', href: '/', current: true },
+        { name: 'Negócio', href: '/business', current: false },
+        { name: 'Serviços', href: '/service', current: false },
+        { name: 'Orçamentos', href: '/budget', current: false },
         { name: 'Chat', href: '#', current: false }
     ]
 
@@ -70,63 +72,73 @@ export const NavBar: React.FC<NavBarProps> = ({ user_avatar }) => {
                                     <ChatIcon className="h-6 w-6" aria-hidden="true" />
                                 </button>
 
-                                <Menu as="div" className="relative ml-3">
-                                    <div>
-                                        <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                                            <span className="sr-only">Abrir menu do usuário</span>
-                                            <img
-                                                className="h-8 w-8 rounded-full"
-                                                src={user_avatar}
-                                                alt="Avatar"
-                                            />
-                                        </Menu.Button>
+                                {user ? (
+                                    <Menu as="div" className="relative ml-3">
+                                        <div>
+                                            <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                                <span className="sr-only">Abrir menu do usuário</span>
+                                                <img
+                                                    className="h-8 w-8 rounded-full"
+                                                    src={user.avatar || Avatar}
+                                                    alt="Avatar"
+                                                />
+                                            </Menu.Button>
+                                        </div>
+                                        <Transition
+                                            as={Fragment}
+                                            enter="transition ease-out duration-100"
+                                            enterFrom="transform opacity-0 scale-95"
+                                            enterTo="transform opacity-100 scale-100"
+                                            leave="transition ease-in duration-75"
+                                            leaveFrom="transform opacity-100 scale-100"
+                                            leaveTo="transform opacity-0 scale-95"
+                                        >
+                                            <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                <Menu.Item>
+                                                    {({ active }) => (
+                                                        <a
+                                                            href="#"
+                                                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                        >
+                                                            Perfil
+                                                        </a>
+                                                    )}
+                                                </Menu.Item>
+
+                                                <Menu.Item>
+                                                    {({ active }) => (
+                                                        <a
+                                                            href="#"
+                                                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                        >
+                                                            Configurações
+                                                        </a>
+                                                    )}
+                                                </Menu.Item>
+
+                                                <Menu.Item>
+                                                    {({ active }) => (
+                                                        <a
+                                                            href="/"
+                                                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                        >
+                                                            Sair
+                                                        </a>
+                                                    )}
+                                                </Menu.Item>
+                                            </Menu.Items>
+
+                                        </Transition>
+                                    </Menu>
+                                ) : (
+                                    <div className="relative ml-3">
+                                        <button
+                                            onClick={() => navigate('/login')}
+                                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded-full">
+                                            Login
+                                        </button>
                                     </div>
-                                    <Transition
-                                        as={Fragment}
-                                        enter="transition ease-out duration-100"
-                                        enterFrom="transform opacity-0 scale-95"
-                                        enterTo="transform opacity-100 scale-100"
-                                        leave="transition ease-in duration-75"
-                                        leaveFrom="transform opacity-100 scale-100"
-                                        leaveTo="transform opacity-0 scale-95"
-                                    >
-                                        <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <a
-                                                        href="#"
-                                                        className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                                                    >
-                                                        Perfil
-                                                    </a>
-                                                )}
-                                            </Menu.Item>
-
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <a
-                                                        href="#"
-                                                        className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                                                    >
-                                                        Configurações
-                                                    </a>
-                                                )}
-                                            </Menu.Item>
-
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <a
-                                                        href="#"
-                                                        className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                                                    >
-                                                        Sair
-                                                    </a>
-                                                )}
-                                            </Menu.Item>
-                                        </Menu.Items>
-
-                                    </Transition>
-                                </Menu>
+                                )}
                             </div>
                         </div>
                     </div>
