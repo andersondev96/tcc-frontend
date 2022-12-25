@@ -30,9 +30,8 @@ export const Router: React.FC = () => {
 
     return (
         <Routes>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/login" element={<SignIn />} />
-            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/" element={<SignIn />} />
+            <Route path="/register" element={<SignUp />} />
             <Route path="/home" element={<Home />} />
             <Route path="/business" element={<Business />} />
             <Route path="/service" element={<Service />} />
