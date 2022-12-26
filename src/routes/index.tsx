@@ -39,19 +39,20 @@ export const Router: React.FC = () => {
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/budget" element={<Budget />} />
             <Route path="/budget/details" element={<BudgetDetails />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/dashboard/business" element={<BusinessEntrepreneur />} />
-            <Route path="/dashboard/business/create" element={<BusinessCreate />} />
-            <Route path="/dashboard/services" element={<ServicesEntrepreneur />} />
-            <Route path="/dashboard/create" element={<CreateServicesEntrepreneur />} />
-            <Route path="/dashboard/services/show" element={<ShowServicesEntrepreneur />} />
-            <Route path="/dashboard/clients" element={<ClientsEntrepreneur />} />
-            <Route path="/dashboard/budget" element={<BudgetEntrepreneur />} />
-            <Route path="/dashboard/budget/details" element={<DetailsBudgetEntrepreneur />} />
-            <Route path="/dashboard/budget/create-proposal" element={<CreateProposal />} />
-            <Route path="/dashboard/chat" element={<ChatEntrepreneur />} />
-            <Route path="/dashboard/chat/message" element={<ChatMessageEntrepreneur />} />
-            <Route path="/dashboard/settings" element={<Settings />} />
+
+            <Route path="/admin" element={<Dashboard />} />
+            <Route path="/admin/business" element={<BusinessEntrepreneur />} />
+            <Route path="/admin/business/create" element={<BusinessCreate />} />
+            <Route path="/admin/services" element={<ServicesEntrepreneur />} />
+            <Route path="/admin/create" element={<CreateServicesEntrepreneur />} />
+            <Route path="/admin/services/show" element={<ShowServicesEntrepreneur />} />
+            <Route path="/admin/clients" element={<ClientsEntrepreneur />} />
+            <Route path="/admin/budget" element={<BudgetEntrepreneur />} />
+            <Route path="/admin/budget/details" element={<DetailsBudgetEntrepreneur />} />
+            <Route path="/admin/budget/create-proposal" element={<CreateProposal />} />
+            <Route path="/admin/chat" element={<ChatEntrepreneur />} />
+            <Route path="/admin/chat/message" element={<ChatMessageEntrepreneur />} />
+            <Route path="/admin/settings" element={<Settings />} />
         </Routes>
     );
 };
