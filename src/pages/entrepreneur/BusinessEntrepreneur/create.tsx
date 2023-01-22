@@ -126,18 +126,10 @@ export const BusinessCreate: React.FC = () => {
                     name: Yup.string().required('Nome obrigatório'),
                     cnpj: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('CNPJ obrigatório'),
                     category: Yup.string().required('Categoria obrigatório'),
-                    description: Yup.string().required('Descrição obrigatória'),
-                    services: Yup.string().required('Serviços obrigatório'),
                     telephone: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Telefone obrigatório'),
                     whatsapp: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Whatsapp obrigatório'),
                     email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
                     website: Yup.string().required('O campo website é obrigatório'),
-                    cep: Yup.string().required("CEP obrigatório"),
-                    street: Yup.string().required("Rua obrigatória"),
-                    district: Yup.string().required("Bairro obrigatório"),
-                    number: Yup.number().positive('Deve ser um número positivo').typeError('Deve ser um número').required("Número obrigatório"),
-                    state: Yup.string().required("Estado obrigatório"),
-                    city: Yup.string().required("Cidade obrigatória"),
                 });
 
                 await schema.validate(data, {
@@ -165,7 +157,7 @@ export const BusinessCreate: React.FC = () => {
                     }
                 });
 
-                navigate('/admin');
+                navigate('/admin/business');
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {

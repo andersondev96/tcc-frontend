@@ -61,7 +61,7 @@ export const BusinessEntrepreneur: React.FC = () => {
 
     useEffect(() => {
         api
-            .get('/companies/fbc2fdb8-366b-4070-abd1-4d1135a0398f')
+            .get('/companies/me')
             .then(response => setCompany(response.data)
             )
 
@@ -72,7 +72,7 @@ export const BusinessEntrepreneur: React.FC = () => {
         <div className="flex flex-row">
             <SideBar />
             <div className="flex flex-col w-full sm:ml-64">
-                <div className="flex flex-row items-center gap-12 mobile:gap-6 px-[6.25rem] py-12 bg-gray-200 border-b-2 border-gray-500 mobile:py-6">
+                <div className="flex flex-row items-center gap-12 mobile:gap-6 px-[6.25rem] py-12 mobile:py-6">
                     <img
                         src={Coffee}
                         alt=""
@@ -82,7 +82,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                         {company?.name}
                     </span>
                 </div>
-                <div className="flex flex-col gap-6 mobile:gap-4 py-16 mobile:py-8 px-[6.25rem]">
+                <div className="flex flex-col gap-6 mobile:gap-4 py-2 mobile:py-8 px-[6.25rem]">
                     <div className="flex flex-col gap-1">
 
                         <span className="font-inter font-medium text-base mobile:text-sm">
@@ -116,7 +116,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                         </p>
                     </div>
 
-                    <div className="flex flex-col gap-1">
+                    {/*                     <div className="flex flex-col gap-1">
                         <span className="font-inter font-medium text-base mobile:text-sm">
                             Telefone
                         </span>
@@ -143,9 +143,9 @@ export const BusinessEntrepreneur: React.FC = () => {
                             {company?.contact.website}
                             <GoLinkExternal />
                         </p>
-                    </div>
+                    </div> */}
 
-                    <div className="flex flex-col gap-1">
+                    {/*  <div className="flex flex-col gap-1">
                         <span className="font-inter font-medium text-base mobile:text-sm">
                             Horários de funcionamento
                         </span>
@@ -169,7 +169,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                             {company?.Address.city} - {company?.Address.state}, {" "}
                             {company?.Address.cep}
                         </p>
-                    </div>
+                    </div> */}
 
                     <span className="py-3 border-b border-black font-inter font-medium text-base mobile:text-sm">
                         Imagens
