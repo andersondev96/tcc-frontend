@@ -2,7 +2,7 @@ import { SideBar } from "../../../components/Sidebar";
 import Coffee from "../../../assets/coffee-img1.jpg";
 
 import { GoLinkExternal } from "react-icons/go";
-import { FiEdit, FiEdit2 } from "react-icons/fi";
+import { FiEdit2 } from "react-icons/fi";
 
 import Coffee1 from "../../../assets/coffee-img1.jpg";
 import Coffee2 from "../../../assets/coffee-img2.jpg";
@@ -29,7 +29,7 @@ interface CompanyData {
         email: string,
         website: string,
     },
-    Address: {
+    Address?: {
         cep: string,
         street: string,
         district: string,
@@ -37,13 +37,21 @@ interface CompanyData {
         state: string,
         city: string
     },
-    Schedule: [
+    Schedule?: [
         {
             id: string,
             day_of_week: string,
             opening_time: string,
             closing_time: string,
             lunch_time: string,
+        }
+    ],
+    ImageCompany?: [
+        {
+            id: string,
+            title: string,
+            image_name: string,
+            image_url: string,
         }
     ]
     user_id: string
@@ -107,16 +115,18 @@ export const BusinessEntrepreneur: React.FC = () => {
                         <p className="font-inter text-sm text-justify">{company?.category}</p>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                        <span className="font-inter font-medium text-base mobile:text-sm">
-                            Serviços
-                        </span>
-                        <p className="font-inter text-sm text-justify">
-                            {company?.services.map(service => service)}
-                        </p>
-                    </div>
+                    {company?.services.length !== 0 && (
+                        <div className="flex flex-col gap-1">
+                            <span className="font-inter font-medium text-base mobile:text-sm">
+                                Serviços
+                            </span>
+                            <p className="font-inter text-sm text-justify">
+                                {company?.services.map(service => service)}
+                            </p>
+                        </div>
+                    )}
 
-                    {/*                     <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1">
                         <span className="font-inter font-medium text-base mobile:text-sm">
                             Telefone
                         </span>
@@ -125,7 +135,12 @@ export const BusinessEntrepreneur: React.FC = () => {
 
                     <div className="flex flex-col gap-1">
                         <span className="font-inter font-medium text-base">Whatsapp</span>
-                        <p className="font-inter text-sm text-justify">{company?.contact.whatsapp}</p>
+                        <a
+                            href={`https://api.whatsapp.com/send/?phone=${company?.contact.whatsapp}`}
+                            target="_blank"
+                            className="font-inter text-sm text-justify cursor-pointer hover:underline hover:text-blue-600">
+                            {company?.contact.whatsapp}
+                        </a>
                     </div>
 
                     <div className="flex flex-col gap-1">
@@ -139,47 +154,58 @@ export const BusinessEntrepreneur: React.FC = () => {
                         <span className="font-inter font-medium text-base mobile:text-sm">
                             Website
                         </span>
-                        <p className="flex flex-row items-center gap-1 font-inter text-sm text-justify">
+                        <a
+                            href={company?.contact.website}
+                            target="_blank"
+                            className="flex flex-row items-center gap-1 font-inter text-sm text-justify cursor-pointer hover:underline hover:text-blue-600">
                             {company?.contact.website}
                             <GoLinkExternal />
-                        </p>
-                    </div> */}
-
-                    {/*  <div className="flex flex-col gap-1">
-                        <span className="font-inter font-medium text-base mobile:text-sm">
-                            Horários de funcionamento
-                        </span>
-                        {
-                            company?.Schedule.map(schedule => (
-                                <div key={schedule.id} className="flex flex-row items-center gap-4 font-inter text-sm">
-                                    <span className="font-bold">{schedule.day_of_week}: </span>
-                                    <p className="font-normal">{schedule.opening_time} - {schedule.closing_time}</p>
-                                </div>
-                            ))
-                        }
+                        </a>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                        <span className="font-inter font-medium text-base mobile:text-sm">
-                            Endereço
-                        </span>
-                        <p className="font-inter text-sm text-justify">
-                            {company?.Address.street}, {" "}
-                            {company?.Address.number} - {company?.Address.district}, {" "}
-                            {company?.Address.city} - {company?.Address.state}, {" "}
-                            {company?.Address.cep}
-                        </p>
-                    </div> */}
+                    {
+                        company?.Schedule?.length === 1 && (
+                            <div className="flex flex-col gap-1">
+                                <span className="font-inter font-medium text-base mobile:text-sm">
+                                    Horários de funcionamento
+                                </span>
+                                {
+                                    company?.Schedule?.map(schedule => (
+                                        <div key={schedule.id} className="flex flex-row items-center gap-4 font-inter text-sm">
+                                            <span className="font-bold">{schedule.day_of_week}: </span>
+                                            <p className="font-normal">{schedule.opening_time} - {schedule.closing_time}</p>
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                        )
+                    }
+
+                    {
+                        company?.Address && (
+                            <div className="flex flex-col gap-1">
+                                <span className="font-inter font-medium text-base mobile:text-sm">
+                                    Endereço
+                                </span>
+                                <p className="font-inter text-sm text-justify">
+                                    {company?.Address.street}, {" "}
+                                    {company?.Address.number} - {company?.Address.district}, {" "}
+                                    {company?.Address.city} - {company?.Address.state}, {" "}
+                                    {company?.Address.cep}
+                                </p>
+                            </div>
+                        )
+                    }
 
                     <span className="py-3 border-b border-black font-inter font-medium text-base mobile:text-sm">
                         Imagens
                     </span>
                     <div className="flex flex-row mobile:grid mobile:grid-cols-2 gap-[1.25rem]">
-                        {images.map((img) => (
+                        {company?.ImageCompany?.map((img) => (
                             <Pictures
                                 key={img.id}
-                                image={img.image}
-                                description={img.description}
+                                image={img.image_url}
+                                description={img.title}
                             />
                         ))}
                     </div>
