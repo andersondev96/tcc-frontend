@@ -209,7 +209,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                         Veja todos os comentários
                     </span>
 
-                    <Link to="/dashboard/business/create">
+                    <Link to="/admin/business/create">
                         <button className="mt-12 mobile:mt-4 flex flex-row items-center justify-center gap-4 w-40 mobile:w-28 h-12 mobile:h-10 rounded bg-green-500 font-montserrat font-medium mobile:text-sm text-white cursor-pointer hover:brightness-90 duration-300">
                             <FiEdit2 />
                             <span>Editar</span>

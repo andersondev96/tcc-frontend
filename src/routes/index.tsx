@@ -8,7 +8,6 @@ import { Home } from "../pages/client/Home";
 import { EditProfile } from "../pages/client/Profile/EditProfile";
 import { SignIn } from "../pages/SignIn";
 import { SignUp } from "../pages/SignUp";
-import { Welcome } from "../pages/Welcome";
 import { Favorites } from "../pages/client/Favorites/Favorites";
 import { Budget } from "../pages/client/Budget";
 import { BudgetDetails } from "../pages/client/Budget/BudgetDetails";

@@ -12,6 +12,7 @@ import { Input } from "../components/Form/Input";
 import { Form } from "@unform/web";
 import { FormHandles } from "@unform/core";
 import getValidationErrors from "../utils/getValidateErrors";
+import api from "../services/api";
 
 interface SignInFormData {
     email: string;
@@ -21,6 +22,7 @@ interface SignInFormData {
 export const SignIn: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
+    const [companies, setCompanies] = useState([]);
 
     const { user, signInWithGoogle } = useAuthWithGoogle();
     const { signIn } = useAuth();
@@ -32,6 +34,20 @@ export const SignIn: React.FC = () => {
 
         navigate("/home");
     }
+
+    const redirectAdmin = useCallback(async () => {
+        try {
+            const response = await api.get('/companies');
+            setCompanies(response.data);
+            if (companies.length === 0) {
+                navigate("/admin/business/create");
+            } else if (companies.length > 0) {
+                navigate("/admin/business");
+            }
+        } catch (error) {
+            navigate('/');
+        }
+    }, [companies, navigate]);
 
     const handleSubmit = useCallback(
         async (data: SignInFormData) => {
@@ -56,9 +72,7 @@ export const SignIn: React.FC = () => {
                     password: data.password
                 });
 
-                console.log(response);
-
-                navigate('/dashboard');
+                redirectAdmin();
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {

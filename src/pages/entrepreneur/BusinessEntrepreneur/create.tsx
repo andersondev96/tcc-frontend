@@ -165,7 +165,7 @@ export const BusinessCreate: React.FC = () => {
                     }
                 });
 
-                navigate('/dashboard');
+                navigate('/admin');
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
