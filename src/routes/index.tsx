@@ -24,6 +24,7 @@ import { CreateProposal } from "../pages/entrepreneur/BudgetEntrepreneur/CreateP
 import { ChatEntrepreneur } from "../pages/entrepreneur/ChatEntrepreneur";
 import { ChatMessageEntrepreneur } from "../pages/entrepreneur/ChatEntrepreneur/ChatMessageEntrepreneur";
 import { Settings } from "../pages/entrepreneur/Settings";
+import { BusinessEdit } from '../pages/entrepreneur/BusinessEntrepreneur/edit';
 
 export const Router: React.FC = () => {
 
@@ -42,6 +43,7 @@ export const Router: React.FC = () => {
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/admin/business" element={<BusinessEntrepreneur />} />
             <Route path="/admin/business/create" element={<BusinessCreate />} />
+            <Route path="/admin/business/edit/:id" element={<BusinessEdit />} />
             <Route path="/admin/services" element={<ServicesEntrepreneur />} />
             <Route path="/admin/create" element={<CreateServicesEntrepreneur />} />
             <Route path="/admin/services/show" element={<ShowServicesEntrepreneur />} />

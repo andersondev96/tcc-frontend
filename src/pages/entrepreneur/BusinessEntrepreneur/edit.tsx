@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, Fragment, useCallback, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
 import * as Yup from "yup";
@@ -6,7 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { SideBar } from "../../../components/Sidebar";
 import { AiOutlineCamera } from "react-icons/ai";
 import api from "../../../services/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import getValidationErrors from "../../../utils/getValidateErrors";
 import { Input } from "../../../components/Form/Input";
 import { Select } from "../../../components/Form/Select";
@@ -18,7 +18,51 @@ interface IScheduleItem {
     closing_time: string;
     lunch_time: string;
 }
+
+interface CompanyData {
+    id: string,
+    name: string,
+    cnpj: string,
+    category: string,
+    description: string,
+    services: string[],
+    physical_localization: boolean,
+    contact?: {
+        telephone: string,
+        whatsapp: string,
+        email: string,
+        website: string,
+    },
+    Address?: {
+        cep: string,
+        street: string,
+        district: string,
+        number: number,
+        state: string,
+        city: string
+    },
+    Schedule?: [
+        {
+            id: string,
+            day_of_week: string,
+            opening_time: string,
+            closing_time: string,
+            lunch_time: string,
+        }
+    ],
+    ImageCompany?: [
+        {
+            id: string,
+            title: string,
+            image_name: string,
+            image_url: string,
+        }
+    ]
+    user_id: string
+}
+
 interface CreateBusinessEntrepreneurFormData {
+    id: string;
     name: string;
     cnpj: string;
     category: string;
@@ -39,7 +83,9 @@ interface CreateBusinessEntrepreneurFormData {
 
 }
 
-export const BusinessCreate: React.FC = () => {
+export const BusinessEdit: React.FC = () => {
+    const params = useParams();
+    const [company, setCompany] = useState({} as CompanyData);
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
 
@@ -57,6 +103,15 @@ export const BusinessCreate: React.FC = () => {
             lunch_time: '00:00',
         }
     ]);
+
+    useEffect(() => {
+        api.get(`companies/${params.id}`)
+            .then(response => {
+                setCompany(response.data);
+            });
+
+        console.log(company);
+    }, [setCompany])
 
     function setPhysicalLocation() {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -176,17 +231,19 @@ export const BusinessCreate: React.FC = () => {
             <SideBar />
             <div className="flex flex-col w-full items-center px-24 md:ml-64 mt-6 md:mt-16">
                 <div className="flex flex-col md:w-full">
-                    <span className="font-bold text-xl md:text-2xl mb-8 mb:mb-12">Cadatrar empresa</span>
+                    <span className="font-bold text-xl md:text-2xl mb-8 mb:mb-12">Editar empresa</span>
                     <Form
+                        key={company?.id}
                         ref={formRef}
                         onSubmit={handleSubmit}
                         className="w-full md:max-w-4xl">
                         <div className="flex flex-wrap -mx-3 mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Input
-                                    name="name"
+                                    name="company"
                                     label="Nome da empresa"
                                     placeholder="Nome da empresa"
+                                    value={company.name}
 
                                 />
                             </div>
@@ -195,6 +252,7 @@ export const BusinessCreate: React.FC = () => {
                                     name="cnpj"
                                     label="CNPJ"
                                     placeholder="XX. XXX. XXX/0001-XX"
+                                    value={company.cnpj}
                                 />
                             </div>
                         </div>
@@ -212,6 +270,7 @@ export const BusinessCreate: React.FC = () => {
                                         { value: 'informática', label: 'Informática' },
                                     ]}
                                     placeholder="Selecione uma opção"
+                                    value={company.category}
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -219,6 +278,7 @@ export const BusinessCreate: React.FC = () => {
                                     name="services"
                                     label="Serviços"
                                     placeholder="Serviços oferecidos"
+                                    value={company.services}
                                 />
                             </div>
                         </div>
@@ -229,6 +289,7 @@ export const BusinessCreate: React.FC = () => {
                                     name="description"
                                     label="Descrição"
                                     placeholder="Descrição da empresa"
+                                    value={company.description}
                                 />
                             </div>
                         </div>
@@ -239,6 +300,7 @@ export const BusinessCreate: React.FC = () => {
                                     name="telephone"
                                     label="Telefone"
                                     placeholder="(XX) XXXXX-XXXX"
+                                    value={company.contact?.telephone}
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -246,6 +308,7 @@ export const BusinessCreate: React.FC = () => {
                                     name="whatsapp"
                                     label="Whatsapp"
                                     placeholder="(XX) XXXXX-XXXX"
+                                    value={company.contact?.whatsapp}
                                 />
                             </div>
                         </div>
@@ -256,6 +319,7 @@ export const BusinessCreate: React.FC = () => {
                                     name="email"
                                     label="E-mail"
                                     placeholder="example@example.com"
+                                    value={company.contact?.email}
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -263,6 +327,7 @@ export const BusinessCreate: React.FC = () => {
                                     name="website"
                                     label="Website"
                                     placeholder="https://www.website.com"
+                                    value={company.contact?.website}
                                 />
                             </div>
                         </div>
