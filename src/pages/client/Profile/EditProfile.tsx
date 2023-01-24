@@ -1,97 +1,160 @@
-import { AiOutlineArrowLeft, AiOutlineCamera } from "react-icons/ai";
-import { FiSave } from "react-icons/fi";
-import { Header } from "../../../components/Header"
+import { useCallback, useRef } from "react";
+import { Form } from "@unform/web";
+import { FormHandles } from "@unform/core";
+import * as Yup from "yup";
+import { ToastContainer, toast } from "react-toastify";
+import { AiOutlineCamera } from "react-icons/ai";
+import getValidationErrors from "../../../utils/getValidateErrors";
 import { PreviousPageButton } from "../components/PreviousPageButton";
+import { NavBar } from "../../../components/NavBar/NavBar";
+import { useAuth } from "../../../contexts/AuthContext";
+import { Input } from "../../../components/Form/Input";
+import api from "../../../services/api";
+import { useNavigate } from "react-router-dom";
+
+interface ProfileFormData {
+    name: string;
+    email: string;
+    old_password: string;
+    password: string;
+    avatar?: string;
+}
 
 export const EditProfile: React.FC = () => {
-  return (
-    <div>
-      <Header />
+    const formRef = useRef<FormHandles>(null);
 
-      <div className="flex flex-col p-12">
-        <PreviousPageButton />
+    const navigate = useNavigate();
 
-        <div className="flex flex-col items-center py-[3.375rem] mobile:py-[1.75rem]">
-          <h1 className="font-montserrat font-medium text-2xl">Editar perfil</h1>
+    const { user, updateUser } = useAuth();
 
-          <div className="flex flex-col items-center mt-16 mobile:mt-12">
-            <div>
-              <label
-                htmlFor="dropzone-file"
-                className="flex flex-col justify-center items-center w-64 h-64 bg-green-300 rounded-full border-2 mobile:w-36 mobile:h-36 border-green-400 cursor-pointer hover:bg-green-400 transition-colors duration-300">
-                <div className="flex flex-col justify-center items-center pt-5 pb-6">
-                  <AiOutlineCamera size={48} color="#08A358" />
+    const handleSubmit = useCallback(
+        async (data: ProfileFormData) => {
+            try {
+                formRef.current?.setErrors({});
+
+                const schema = Yup.object().shape({
+                    name: Yup.string().required('Nome obrigatório'),
+                    email: Yup.string()
+                        .email("Digite um e-mail válido")
+                        .required("E-mail obrigatório"),
+                    old_password: Yup.string(),
+                    password: Yup.string().when("old_password", {
+                        is: (val: string) => !!val.length,
+                        then: Yup.string()
+                            .min(8, "A senha deve ter no mínimo 8 digitos")
+                            .required("Informe a sua nova senha"),
+                        otherwise: Yup.string()
+                    })
+                });
+
+                await schema.validate(data, {
+                    abortEarly: false,
+                });
+
+                const { name, email, old_password, password, avatar } = data;
+
+                const formData = {
+                    name,
+                    email,
+                    ...(old_password ? {
+                        password
+                    } : {}),
+                };
+
+                const response = await api.put("/users", formData);
+
+                navigate('/admin/business')
+            } catch (err) {
+                if (err instanceof Yup.ValidationError) {
+                    const errors = getValidationErrors(err);
+
+                    formRef.current?.setErrors(errors);
+
+                    return;
+                }
+
+                toast.error("Error ao editar usuário, tente novamente!");
+
+            }
+        }, []);
+    return (
+        <div>
+            <ToastContainer />
+            <NavBar />
+
+            <div className="flex flex-col p-12">
+                <PreviousPageButton />
+
+                <div className="flex flex-col py-[2.15rem] mobile:py-[1.75rem]">
+                    <h1 className="font-montserrat font-bold text-center text-2xl">Editar perfil</h1>
+
+                    <Form
+                        className="flex flex-col items-center mt-8 mobile:mt-12"
+                        ref={formRef}
+                        onSubmit={handleSubmit}
+                        initialData={{
+                            name: user.name,
+                            email: user.email,
+                        }}
+                    >
+
+                        <span className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                            Foto de perfil
+                        </span>
+                        <label
+                            htmlFor="dropzone-file"
+                            className="flex flex-col justify-center items-center w-36 h-36 bg-gray-200 rounded-full border-2 mobile:w-36 mobile:h-36 border-gray-400 cursor-pointer hover:bg-gray-400 transition-colors duration-300">
+                            <div className="flex flex-col justify-center items-center pt-5 pb-6">
+                                <AiOutlineCamera size={24} className="text-gray-600" />
+                            </div>
+                            <input id="dropzone-file" type="file" className="hidden" accept="image/*" />
+                        </label>
+
+                        <div className="flex flex-wrap -mx-3 mb-6 mt-4">
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <Input
+                                    name="name"
+                                    label="Nome"
+                                    placeholder="Digite o seu nome"
+                                />
+                            </div>
+
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <Input
+                                    name="email"
+                                    label="E-mail"
+                                    placeholder="Digite o seu e-mail"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex flex-wrap -mx-3 mb-6">
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <Input
+                                    name="old_password"
+                                    label="Senha atual"
+                                    type="password"
+                                    placeholder="Digite sua senha atual"
+                                />
+                            </div>
+
+                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <Input
+                                    name="password"
+                                    label="Nova senha"
+                                    type="password"
+                                    placeholder="Digite a sua nova senha"
+                                />
+                            </div>
+                        </div>
+
+                        <button type="submit" className=" text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                            Salvar alterações
+                        </button>
+                    </Form>
+
+
                 </div>
-                <input id="dropzone-file" type="file" className="hidden" accept="image/*" />
-              </label>
             </div>
-
-            <div className="mt-16 flex flex-col w-72 gap-4 mobile:mt-12 mobile:w-48">
-              <div className="flex flex-col gap-1 ">
-                <label htmlFor="">Nome</label>
-                <input
-                  type="text"
-                  placeholder="John Silva"
-                  className="border rounded bg-gray-200 font-montserrat font-light text-sm"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label htmlFor="">E-mail</label>
-                <input
-                  type="text"
-                  placeholder="john@example.com"
-                  className="border rounded bg-gray-200 font-montserrat font-light text-sm"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label htmlFor="">Telefone</label>
-                <input
-                  type="text"
-                  placeholder="(31) 99999-99999"
-                  className="border rounded bg-gray-200 font-montserrat font-light text-sm"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label htmlFor="">CPF</label>
-                <input
-                  type="text"
-                  placeholder="999.999.999-99"
-                  className="border rounded bg-gray-200 font-montserrat font-light text-sm"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label htmlFor="">Senha atual</label>
-                <input
-                  type="text"
-                  className="border rounded bg-gray-200 font-montserrat font-light text-sm"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label htmlFor="">Nova senha</label>
-                <input
-                  type="text"
-                  className="border rounded bg-gray-200 font-montserrat font-light text-sm"
-                />
-              </div>
-
-              <div className="mt-4 flex flex-row items-center justify-center">
-                <button
-                  className="w-[10rem] h-[3.125rem] flex flex-row items-center gap-2 justify-center rounded bg-indigo-400 font-inter text-2xl text-white uppercase hover:brightness-90 transition-colors"
-                >
-                  <FiSave />
-                  Salvar
-                </button>
-              </div>
-
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

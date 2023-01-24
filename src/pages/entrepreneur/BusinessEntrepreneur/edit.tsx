@@ -236,14 +236,17 @@ export const BusinessEdit: React.FC = () => {
                         key={company?.id}
                         ref={formRef}
                         onSubmit={handleSubmit}
-                        className="w-full md:max-w-4xl">
+                        className="w-full md:max-w-4xl"
+                        initialData={{
+                            name: company?.name
+                        }}
+                    >
                         <div className="flex flex-wrap -mx-3 mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Input
                                     name="company"
                                     label="Nome da empresa"
                                     placeholder="Nome da empresa"
-                                    value={company.name}
 
                                 />
                             </div>
@@ -252,7 +255,6 @@ export const BusinessEdit: React.FC = () => {
                                     name="cnpj"
                                     label="CNPJ"
                                     placeholder="XX. XXX. XXX/0001-XX"
-                                    value={company.cnpj}
                                 />
                             </div>
                         </div>
@@ -270,7 +272,6 @@ export const BusinessEdit: React.FC = () => {
                                         { value: 'informática', label: 'Informática' },
                                     ]}
                                     placeholder="Selecione uma opção"
-                                    value={company.category}
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -278,7 +279,6 @@ export const BusinessEdit: React.FC = () => {
                                     name="services"
                                     label="Serviços"
                                     placeholder="Serviços oferecidos"
-                                    value={company.services}
                                 />
                             </div>
                         </div>
@@ -289,7 +289,6 @@ export const BusinessEdit: React.FC = () => {
                                     name="description"
                                     label="Descrição"
                                     placeholder="Descrição da empresa"
-                                    value={company.description}
                                 />
                             </div>
                         </div>
@@ -300,7 +299,6 @@ export const BusinessEdit: React.FC = () => {
                                     name="telephone"
                                     label="Telefone"
                                     placeholder="(XX) XXXXX-XXXX"
-                                    value={company.contact?.telephone}
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -308,7 +306,6 @@ export const BusinessEdit: React.FC = () => {
                                     name="whatsapp"
                                     label="Whatsapp"
                                     placeholder="(XX) XXXXX-XXXX"
-                                    value={company.contact?.whatsapp}
                                 />
                             </div>
                         </div>
@@ -319,7 +316,6 @@ export const BusinessEdit: React.FC = () => {
                                     name="email"
                                     label="E-mail"
                                     placeholder="example@example.com"
-                                    value={company.contact?.email}
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -327,7 +323,6 @@ export const BusinessEdit: React.FC = () => {
                                     name="website"
                                     label="Website"
                                     placeholder="https://www.website.com"
-                                    value={company.contact?.website}
                                 />
                             </div>
                         </div>
@@ -378,7 +373,6 @@ export const BusinessEdit: React.FC = () => {
                                             type="time"
                                             label="Abre às"
                                             placeholder="XX:XX"
-                                            value={scheduleItem.opening_time}
                                             onChange={(e) => { setScheduleItemValue(index, 'opening_time', e.target.value) }}
 
                                         />
@@ -389,7 +383,6 @@ export const BusinessEdit: React.FC = () => {
                                             type="time"
                                             label="Fecha às"
                                             placeholder="XX:XX"
-                                            value={scheduleItem.closing_time}
                                             onChange={(e) => { setScheduleItemValue(index, 'closing_time', e.target.value) }}
                                         />
                                     </div>

@@ -6,6 +6,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     label: string;
     type?: string;
     placeholder?: string;
+    value?: string | string[];
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -13,6 +14,7 @@ export const Input: React.FC<InputProps> = ({
     label,
     type = "text",
     placeholder,
+    value,
     ...rest
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -61,6 +63,7 @@ export const Input: React.FC<InputProps> = ({
                 name={name}
                 type={type}
                 placeholder={placeholder}
+                value={value}
                 ref={inputRef}
                 {...rest}
             />
