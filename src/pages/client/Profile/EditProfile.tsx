@@ -17,6 +17,7 @@ interface ProfileFormData {
     email: string;
     old_password: string;
     password: string;
+    password_confirmation: string;
     avatar?: string;
 }
 
@@ -38,30 +39,31 @@ export const EditProfile: React.FC = () => {
                         .email("Digite um e-mail válido")
                         .required("E-mail obrigatório"),
                     old_password: Yup.string(),
-                    password: Yup.string().when("old_password", {
-                        is: (val: string) => !!val.length,
-                        then: Yup.string()
-                            .min(8, "A senha deve ter no mínimo 8 digitos")
-                            .required("Informe a sua nova senha"),
-                        otherwise: Yup.string()
-                    })
+                    password: Yup.string()
                 });
 
                 await schema.validate(data, {
                     abortEarly: false,
                 });
 
-                const { name, email, old_password, password, avatar } = data;
+                const { name, email, old_password, password, password_confirmation } = data;
 
                 const formData = {
                     name,
                     email,
-                    ...(old_password ? {
-                        password
-                    } : {}),
+                    password: old_password && !password ? old_password : password,
                 };
 
+                if (!old_password) {
+                    toast.error("Erro, por favor informe a senha!");
+                    return;
+                }
+
                 const response = await api.put("/users", formData);
+
+                updateUser(response.data);
+
+                console.log(response);
 
                 navigate('/admin/business')
             } catch (err) {
@@ -76,7 +78,7 @@ export const EditProfile: React.FC = () => {
                 toast.error("Error ao editar usuário, tente novamente!");
 
             }
-        }, []);
+        }, [toast, history]);
     return (
         <div>
             <ToastContainer />
@@ -89,12 +91,12 @@ export const EditProfile: React.FC = () => {
                     <h1 className="font-montserrat font-bold text-center text-2xl">Editar perfil</h1>
 
                     <Form
-                        className="flex flex-col items-center mt-8 mobile:mt-12"
+                        className="flex flex-col items-center mt-16 mobile:mt-12"
                         ref={formRef}
                         onSubmit={handleSubmit}
                         initialData={{
                             name: user.name,
-                            email: user.email,
+                            email: user.email
                         }}
                     >
 
@@ -110,46 +112,58 @@ export const EditProfile: React.FC = () => {
                             <input id="dropzone-file" type="file" className="hidden" accept="image/*" />
                         </label>
 
-                        <div className="flex flex-wrap -mx-3 mb-6 mt-4">
-                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="name"
-                                    label="Nome"
-                                    placeholder="Digite o seu nome"
-                                />
+                        <div className="flex flex-col w-full md:max-w-4xl mt-8 mobile:mt-12">
+                            <div className="flex flex-wrap -mx-3 mb-6 mt-4">
+                                <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                    <Input
+                                        name="name"
+                                        label="Nome"
+                                        placeholder="Digite o seu nome"
+                                    />
+                                </div>
+
+                                <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                    <Input
+                                        name="email"
+                                        label="E-mail"
+                                        placeholder="Digite o seu e-mail"
+                                    />
+                                </div>
                             </div>
 
-                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="email"
-                                    label="E-mail"
-                                    placeholder="Digite o seu e-mail"
-                                />
+                            <div className="flex flex-wrap -mx-3 mb-6">
+                                <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                                    <Input
+                                        name="old_password"
+                                        label="Senha atual"
+                                        type="password"
+                                        placeholder="Digite sua senha atual"
+                                    />
+                                </div>
+
+                                <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                                    <Input
+                                        name="password"
+                                        label="Nova senha"
+                                        type="password"
+                                        placeholder="Digite a sua nova senha"
+                                    />
+                                </div>
+                                <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                                    <Input
+                                        name="confirm_password"
+                                        label="Confirmar senha"
+                                        type="password"
+                                        placeholder="Confirme a sua nova senha"
+                                    />
+                                </div>
+
                             </div>
                         </div>
-                        <div className="flex flex-wrap -mx-3 mb-6">
-                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="old_password"
-                                    label="Senha atual"
-                                    type="password"
-                                    placeholder="Digite sua senha atual"
-                                />
-                            </div>
-
-                            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="password"
-                                    label="Nova senha"
-                                    type="password"
-                                    placeholder="Digite a sua nova senha"
-                                />
-                            </div>
-                        </div>
-
                         <button type="submit" className=" text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                             Salvar alterações
                         </button>
+
                     </Form>
 
 
