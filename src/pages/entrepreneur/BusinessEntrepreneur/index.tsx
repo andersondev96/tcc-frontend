@@ -15,6 +15,8 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import api from "../../../services/api";
+import getCEP from "../../../utils/getCEP";
+import axios from "axios";
 
 interface CompanyData {
     id: string,

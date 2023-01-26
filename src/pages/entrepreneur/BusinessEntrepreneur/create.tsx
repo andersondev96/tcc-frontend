@@ -11,6 +11,7 @@ import getValidationErrors from "../../../utils/getValidateErrors";
 import { Input } from "../../../components/Form/Input";
 import { Select } from "../../../components/Form/Select";
 import { TextArea } from "../../../components/Form/TextArea";
+import axios from "axios";
 
 interface IScheduleItem {
     weekday: string;
@@ -39,6 +40,13 @@ interface CreateBusinessEntrepreneurFormData {
 
 }
 
+interface IAddress {
+    logadouro: string;
+    bairro: string;
+    localidade: string;
+    uf: string;
+}
+
 export const BusinessCreate: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
@@ -57,6 +65,7 @@ export const BusinessCreate: React.FC = () => {
             lunch_time: '00:00',
         }
     ]);
+    const [address, setAddress] = useState<IAddress>();
 
     function setPhysicalLocation() {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -113,12 +122,16 @@ export const BusinessCreate: React.FC = () => {
         setPreviewImages(selectedImagesPreview);
     }
 
+    function getCEP(cep: string) {
+        axios
+            .get(`https://viacep.com.br/ws/${cep}/json/`)
+            .then((response) => setAddress(response.data));
+    }
+
     const handleSubmit = useCallback(
         async (data: CreateBusinessEntrepreneurFormData) => {
             try {
                 formRef.current?.setErrors({});
-
-                console.log(data);
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
@@ -134,7 +147,7 @@ export const BusinessCreate: React.FC = () => {
                     abortEarly: false,
                 });
 
-                await api.post('/companies', {
+                const response = await api.post('/companies', {
                     name: data.name,
                     cnpj: data.cnpj,
                     category: data.category,
@@ -154,6 +167,8 @@ export const BusinessCreate: React.FC = () => {
                         city: data.city
                     }
                 });
+
+                console.log(response);
 
                 navigate('/admin/business');
 
@@ -380,6 +395,7 @@ export const BusinessCreate: React.FC = () => {
                                             name="cep"
                                             label="CEP"
                                             placeholder="XXXXX-XXX"
+                                            onChange={(e) => getCEP(e.target.value)}
                                         />
                                     </div>
                                     <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
