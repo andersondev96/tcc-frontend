@@ -1,15 +1,15 @@
 import { ReactNode } from "react";
 
 interface Props {
-  children: ReactNode;
+    children: ReactNode;
 }
 
 export const TableHead: React.FC<Props> = ({
-  children
+    children
 }) => {
-  return (
-    <thead className="font-semibold  bg-gray-300 dark:bg-gray-700 dark:text-gray-400">
-      {children}
-    </thead>
-  )
+    return (
+        <thead className="font-semibold text-gray-700  bg-gray-200">
+            {children}
+        </thead>
+    )
 }

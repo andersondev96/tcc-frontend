@@ -1,15 +1,15 @@
 import { ReactNode } from "react";
 
 interface Props {
-  children: ReactNode;
+    children: ReactNode;
 }
 
 export const TableRowHead: React.FC<Props> = ({
-  children
+    children
 }) => {
-  return (
-    <tr className="bg-black bg-opacity-5 rounded cursor-pointer">
-      {children}
-    </tr>
-  );
+    return (
+        <tr className="bg-opacity-5 rounded cursor-pointer">
+            {children}
+        </tr>
+    );
 }
