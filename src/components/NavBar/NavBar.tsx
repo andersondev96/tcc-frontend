@@ -18,8 +18,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
         { name: 'Home', href: '/', current: pageCurrent === 'home' },
         { name: 'Negócio', href: '/business', current: pageCurrent === 'negocio' },
         { name: 'Serviços', href: '/service', current: pageCurrent === 'servicos' },
-        { name: 'Orçamentos', href: '/budget', current: pageCurrent === 'orcamentos' },
-        { name: 'Chat', href: '#', current: pageCurrent === 'chat' }
+        { name: 'Orçamentos', href: '/budget', current: pageCurrent === 'orcamentos' }
     ]
 
     function classNames(...classes: any) {
@@ -98,16 +97,14 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                             leaveTo="transform opacity-0 scale-95"
                                         >
                                             <Menu.Items className="absolute right-0 z-40 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                <Menu.Item>
-                                                    {({ active }) => (
-                                                        <a
-                                                            href="#"
-                                                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                                                        >
-                                                            Perfil
-                                                        </a>
-                                                    )}
-                                                </Menu.Item>
+                                                <div className="border-b border-gray-400 border-opacity-40">
+                                                    <span
+                                                        className='block px-4 py-2 font-medium text-sm text-gray-700'
+                                                    >
+                                                        {user.name}
+                                                    </span>
+
+                                                </div>
 
                                                 <Menu.Item>
                                                     {({ active }) => (
@@ -115,7 +112,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                             href="#"
                                                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                                                         >
-                                                            Configurações
+                                                            Perfil
                                                         </a>
                                                     )}
                                                 </Menu.Item>
