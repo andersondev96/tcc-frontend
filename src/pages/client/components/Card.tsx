@@ -64,7 +64,7 @@ export const Card: React.FC<CardProps> = ({ image, product, stars, price }) => {
                 <ModalService
                     service="Café simples"
                     description="Café com açúcar saboroso preparado pela casa.
-          Quantidade: 200 ml"
+                    Quantidade: 200 ml"
                     stars={3}
                     image={Coffee1}
                     price="R$ 2,00"

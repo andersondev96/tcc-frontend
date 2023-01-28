@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ModalContainer } from "../../../components/ModalContainer";
+import { ModalChat } from "../../../components/ModalChat";
 
 interface MessageProps {
     img: string;
@@ -18,52 +20,69 @@ export const Message: React.FC<MessageProps> = ({
     cont_messages_not_read,
     isActive = true,
 }) => {
-    const navigate = useNavigate();
+    const [modalChatIsOpen, setModalChatIsOpen] = useState(false);
+
+    function classNames(...classes: any) {
+        return classes.filter(Boolean).join(' ')
+    }
+
+    function openModal() {
+        isActive && setModalChatIsOpen(true);
+    }
+
+    function closeModal() {
+        setModalChatIsOpen(false);
+    }
 
     return (
-        <div
-            className={`flex flex-row justify-between p-4 w-[58.313rem] h-[5.625rem] mobile:w-[18.25rem]  border-2 rounded ${isActive
-                    ? "border-indigo-300  hover:bg-gray-100 hover:bg-opacity-5 cursor-pointer"
-                    : "border-gray-500 cursor-not-allowed"
-                }`}
-            onClick={() => (isActive ? navigate("/admin/chat/message") : "")}
-        >
-            <div className="flex flex-row items-center gap-16 mobile:gap-8">
-                <img
-                    src={img}
-                    alt={img}
-                    className={`w-14 h-14 mobile:w-12 mobile:h-9 rounded-full object-fill ${!isActive ? "grayscale" : ""
-                        }`}
-                />
+        <div>
+            <div
+                className={classNames(
+                    isActive ? 'border-indigo-300  hover:bg-gray-100 hover:bg-opacity-5 cursor-pointer' : 'border-gray-500 cursor-not-allowed',
+                    'flex flex-row justify-between p-4 w-[18.25rem] sm:w-[58.313rem] h-[5.625rem] border-2 rounded'
+                )}
+                onClick={openModal}
+            >
+                <div className="flex flex-row items-center gap-8 sm:gap-16">
+                    <img
+                        src={img}
+                        alt={img}
+                        className={classNames(!isActive ? 'grayscale' : '', 'w-12 sm:w-14 h-9 sm:h-14 rounded-full object-fill')}
+                    />
 
-                <div className="flex flex-col">
-                    <span
-                        className={`font-montserrat font-semibold text-base mobile:text-sm ${isActive ? " text-indigo-400" : "text-gray-400"
-                            }`}
-                    >
-                        {name}
-                    </span>
+                    <div className="flex flex-col">
+                        <span
+                            className={classNames(isActive ? 'text-indigo-400' : 'text-gray-400', 'font-semibold text-sm sm:text-base')}
+                        >
+                            {name}
+                        </span>
+                        <p
+                            className={classNames(!isActive ? 'text-gray-400' : '', 'font-light text-xs sm:text-sm mobile:leading-4')}
+                        >
+                            {last_message}
+                        </p>
+                    </div>
+                </div>
+                <div className="flex flex-col items-center gap-2">
                     <p
-                        className={`font-montserrat font-light text-sm mobile:text-[0.625rem] mobile:leading-4 ${!isActive ? "text-gray-400" : ""
-                            }`}
+                        className={classNames(!isActive ? 'text-gray-400' : '', 'leading-3 text-[0.625rem] sm:text-xs text-center')}
                     >
-                        {last_message}
+                        {dateTime_of_last_message}
                     </p>
+                    {isActive && (
+                        <span className="bg-blue-400 w-4 sm:w-6 h-4 sm:h-6 font-semibold sm:text-smtext-xs text-white text-center rounded-full">
+                            {cont_messages_not_read}
+                        </span>
+                    )}
                 </div>
             </div>
-            <div className="flex flex-col items-center gap-2 mobile:items-center">
-                <p
-                    className={`font-montserrat text-xs mobile:text-[0.5rem] mobile:leading-3 mobile:text-center ${!isActive ? "text-gray-400" : ""
-                        }`}
-                >
-                    {dateTime_of_last_message}
-                </p>
-                {isActive && (
-                    <span className="bg-blue-800 w-6 h-6 mobile:w-4 mobile:h-4 font-montserrat font-semibold text-white text-center rounded-full mobile:text-xs">
-                        {cont_messages_not_read}
-                    </span>
-                )}
-            </div>
+            <ModalContainer
+                title="Júlia Duarte"
+                isOpen={modalChatIsOpen}
+                onRequestClose={closeModal}
+            >
+                <ModalChat />
+            </ModalContainer>
         </div>
     );
 };

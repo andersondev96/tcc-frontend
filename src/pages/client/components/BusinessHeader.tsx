@@ -8,7 +8,7 @@ import { AssessmentsStars } from './AssessmentsStars';
 
 import { ModalContainer } from "../../../components/ModalContainer";
 import { ModalCalculate } from './ModalCalculate';
-import { ModalChat } from './ModalChat';
+import { ModalChat } from '../../../components/ModalChat';
 
 export const BusinessHeader: React.FC = () => {
     const [modalCalculeIsOpen, setModalCalculateIsOpen] = useState(false);

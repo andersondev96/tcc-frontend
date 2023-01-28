@@ -4,7 +4,7 @@ import { AssessmentsStars } from "../../client/components/AssessmentsStars";
 export const Settings: React.FC = () => {
     return (
         <div className="flex flex-row">
-            <SideBar />
+            <SideBar pageActive="configuracoes" />
             <div className="flex flex-col w-full sm:ml-64">
                 <div className="flex flex-col py-7 sm:py-12 items-center">
                     <h1 className=" font-medium text-center text-2xl">
