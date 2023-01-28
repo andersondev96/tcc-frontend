@@ -63,9 +63,7 @@ export const EditProfile: React.FC = () => {
 
                 updateUser(response.data);
 
-                console.log(response);
-
-                navigate('/admin/business')
+                navigate('/')
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
                     const errors = getValidationErrors(err);
@@ -84,14 +82,14 @@ export const EditProfile: React.FC = () => {
             <ToastContainer />
             <NavBar />
 
-            <div className="flex flex-col p-12">
+            <div className="flex flex-col p-10">
                 <PreviousPageButton />
 
-                <div className="flex flex-col py-[2.15rem] mobile:py-[1.75rem]">
+                <div className="flex flex-col">
                     <h1 className="font-montserrat font-bold text-center text-2xl">Editar perfil</h1>
 
                     <Form
-                        className="flex flex-col items-center mt-16 mobile:mt-12"
+                        className="flex flex-col items-center mt-12 sm:mt-16"
                         ref={formRef}
                         onSubmit={handleSubmit}
                         initialData={{
@@ -105,14 +103,14 @@ export const EditProfile: React.FC = () => {
                         </span>
                         <label
                             htmlFor="dropzone-file"
-                            className="flex flex-col justify-center items-center w-36 h-36 bg-gray-200 rounded-full border-2 mobile:w-36 mobile:h-36 border-gray-400 cursor-pointer hover:bg-gray-400 transition-colors duration-300">
+                            className="flex flex-col justify-center items-center w-36 h-36 bg-gray-200 rounded-full border-2 border-gray-400 cursor-pointer hover:bg-gray-400 transition-colors duration-300">
                             <div className="flex flex-col justify-center items-center pt-5 pb-6">
                                 <AiOutlineCamera size={24} className="text-gray-600" />
                             </div>
                             <input id="dropzone-file" type="file" className="hidden" accept="image/*" />
                         </label>
 
-                        <div className="flex flex-col w-full md:max-w-4xl mt-8 mobile:mt-12">
+                        <div className="flex flex-col w-full md:max-w-4xl mt-12 sm:mt-8">
                             <div className="flex flex-wrap -mx-3 mb-6 mt-4">
                                 <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                     <Input
