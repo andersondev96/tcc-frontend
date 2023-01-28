@@ -118,12 +118,12 @@ export const NavBar: React.FC = () => {
 
                                                 <Menu.Item>
                                                     {({ active }) => (
-                                                        <a
-                                                            href="/"
-                                                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                        <span
+                                                            onClick={signOut}
+                                                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700 cursor-pointer')}
                                                         >
                                                             Sair
-                                                        </a>
+                                                        </span>
                                                     )}
                                                 </Menu.Item>
                                             </Menu.Items>

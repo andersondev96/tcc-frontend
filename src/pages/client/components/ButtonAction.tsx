@@ -13,14 +13,14 @@ export const ButtonAction: React.FC<ButtonActionProps> = ({ type, onClick }) => 
         <div className="flex items-center mobile:justify-center mobile:mt-4" onClick={onClick}>
             <button
                 onClick={type === 'favorite' ? () => setLike(!like) : () => { }}
-                className={`flex flex-row items-center justify-center gap-4 ${type === 'favorite' ? 'w-[9.375rem]' : 'w-[12.5rem]'} h-[2.5rem] rounded hover:opacity-80 transition-opacity
-              ${like ? 'bg-red-500 border-none' : 'bg-transparent border  border-gray-400'}`}
+                className={`flex flex-row items-center justify-center gap-4 ${type === 'favorite' ? 'w-36' : 'w-52'} h-10 rounded hover:opacity-80 transition-opacity
+              ${like ? 'bg-red-500 border-none' : 'bg-gray-300 border'}`}
             >
                 {type === 'favorite' ? (
                     <AiFillHeart size={24} color={`${like ? '#FFFFFF' : '#EB1B2E'}`} />
                 ) : (<AiOutlineCalculator size={24} color="#28267C" />)}
 
-                <span className={`font-inter font-light ${like ? 'text-white' : ''}`}>
+                <span className={`font-inter font-semibold ${like ? 'text-white' : 'text-gray-800'}`}>
                     {type === 'favorite' ? 'Favoritar' : 'Fazer orçamento'}
                 </span>
             </button>
