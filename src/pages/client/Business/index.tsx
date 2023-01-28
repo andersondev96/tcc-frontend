@@ -25,8 +25,8 @@ export const Business: React.FC = () => {
         <div className="flex flex-col">
             <NavBar />
             <BusinessHeader />
-            <div className="px-[6.25rem] py-[2.625rem] mobile:px-[1.125rem] mobile:py-[1.75rem]">
-                <div className="flex flex-col gap-8 mobile:gap-4">
+            <div className="px-24 py-12">
+                <div className="flex flex-col gap-4 mobile:gap-4">
                     <Paragraph
                         title="Sobre o negócio"
                         text="Estamos a começar a temporada com a nossa mistura de Solstício de Verão. Uma celebração de longos dias, tempo quente e um pouco de R&amp;R extra. É suculento, doce e delicioso quente ou gelado.
@@ -43,22 +43,22 @@ export const Business: React.FC = () => {
                         text="Mission District 3014 20th Street, SF, CA, 94110"
                     />
 
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col">
                         <span className="font-inter font-semibold text-gray-700">
                             Horários de funcionamento
                         </span>
                         <div>
-                            <div className="flex flex-row gap-[0.313rem]">
-                                <span className="font-inter uppercase">Seg à Sex:</span>
-                                <p className="font-inter font-medium text-blue-200">07:00 - 17:00</p>
+                            <div className="flex flex-row gap-4">
+                                <span className="font-medium">Segunda à Sexta:</span>
+                                <p className="font-inter font-medium text-blue-800">07:00 - 17:00</p>
                             </div>
-                            <div className="flex flex-row gap-[0.313rem]">
-                                <span className="font-inter uppercase">Sáb:</span>
-                                <p className="font-inter font-medium text-blue-200">07:00 - 19:00</p>
+                            <div className="flex flex-row gap-4">
+                                <span className="font-medium">Sábado:</span>
+                                <p className="font-inter font-medium text-blue-800">07:00 - 19:00</p>
                             </div>
-                            <div className="flex flex-row gap-[0.313rem]">
-                                <span className="font-inter uppercase">Dom:</span>
-                                <p className="font-inter font-medium text-blue-200">07:00 - 21:00</p>
+                            <div className="flex flex-row gap-4">
+                                <span className="font-medium">Domingo:</span>
+                                <p className="font-inter font-medium text-blue-800">07:00 - 21:00</p>
                             </div>
                         </div>
                     </div>
