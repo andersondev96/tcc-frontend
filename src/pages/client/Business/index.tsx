@@ -23,7 +23,7 @@ export const Business: React.FC = () => {
 
     return (
         <div className="flex flex-col">
-            <NavBar />
+            <NavBar pageCurrent="negocio" />
             <BusinessHeader />
             <div className="px-24 py-12">
                 <div className="flex flex-col gap-4 mobile:gap-4">

@@ -3,19 +3,23 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { ChatIcon, XIcon, MenuIcon } from '@heroicons/react/solid';
 import Avatar from '../../assets/avatar.jpg';
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
-export const NavBar: React.FC = () => {
+interface NavBarProps {
+    pageCurrent?: string;
+}
+
+export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
     const { user, signOut } = useAuth();
 
     const navigate = useNavigate();
 
     const navigation = [
-        { name: 'Home', href: '/', current: true },
-        { name: 'Negócio', href: '/business', current: false },
-        { name: 'Serviços', href: '/service', current: false },
-        { name: 'Orçamentos', href: '/budget', current: false },
-        { name: 'Chat', href: '#', current: false }
+        { name: 'Home', href: '/', current: pageCurrent === 'home' },
+        { name: 'Negócio', href: '/business', current: pageCurrent === 'negocio' },
+        { name: 'Serviços', href: '/service', current: pageCurrent === 'servicos' },
+        { name: 'Orçamentos', href: '/budget', current: pageCurrent === 'orcamentos' },
+        { name: 'Chat', href: '#', current: pageCurrent === 'chat' }
     ]
 
     function classNames(...classes: any) {
@@ -49,16 +53,16 @@ export const NavBar: React.FC = () => {
                                 <div className="hidden sm:ml-6 sm:block">
                                     <div className="flex space-x-4">
                                         {navigation.map((item) => (
-                                            <a
+                                            <Link
                                                 key={item.name}
-                                                href={item.href}
+                                                to={item.href}
                                                 className={classNames(
                                                     item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                                                     'px-3 py-2 rounded-md text-sm font-medium'
                                                 )}
                                             >
                                                 {item.name}
-                                            </a>
+                                            </Link>
                                         ))}
                                     </div>
                                 </div>

@@ -108,7 +108,7 @@ export const Home: React.FC = () => {
     return (
 
         <div>
-            <NavBar />
+            <NavBar pageCurrent="home" />
 
             <div className="flex flex-col w-screen h-screen">
                 <div className="flex items-center justify-center py-2 bg-gray-600 bg-opacity-60">
