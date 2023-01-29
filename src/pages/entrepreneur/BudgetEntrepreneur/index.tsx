@@ -17,9 +17,9 @@ import { TableRowHead } from "../../../components/Table/TableHead/TableRowHead";
 export const BudgetEntrepreneur: React.FC = () => {
     return (
         <div className="flex flex-row">
-            <SideBar />
+            <SideBar pageActive="orcamentos" />
             <div className="flex flex-col w-full sm:ml-64">
-                <div className="flex flex-col items-center py-[1.5rem] mobile:py-[1.75rem]">
+                <div className="flex flex-col items-center py-6 sm:py-12">
                     <h1 className="font-montserrat font-medium text-2xl">Orçamentos</h1>
                 </div>
                 <div className="flex flex-col px-12">
@@ -48,7 +48,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                                             <Link to="/admin/budget/details">
                                                 <AiOutlineEye size={24} color="#547DE5" />
                                             </Link>
-                                            <Link to="/admin/budget/create">
+                                            <Link to="/admin/budget/create-proposal">
                                                 <IoDocumentTextOutline size={24} color="#1EBF1B" />
                                             </Link>
                                             <TbSend size={24} color="#EEB522" />
@@ -67,7 +67,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                                             <Link to="/admin/budget/details">
                                                 <AiOutlineEye size={24} color="#547DE5" />
                                             </Link>
-                                            <Link to="/admin/budget/create">
+                                            <Link to="/admin/budget/create-proposal">
                                                 <IoDocumentTextOutline size={24} color="#1EBF1B" />
                                             </Link>
                                             <TbSend size={24} color="#EEB522" />
@@ -86,7 +86,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                                             <Link to="/admin/budget/details">
                                                 <AiOutlineEye size={24} color="#547DE5" />
                                             </Link>
-                                            <Link to="/admin/budget/create">
+                                            <Link to="/admin/budget/create-proposal">
                                                 <IoDocumentTextOutline size={24} color="#1EBF1B" />
                                             </Link>
                                             <TbSend size={24} color="#EEB522" />
@@ -105,7 +105,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                                             <Link to="/admin/budget/details">
                                                 <AiOutlineEye size={24} color="#547DE5" />
                                             </Link>
-                                            <Link to="/admin/budget/create">
+                                            <Link to="/admin/budget/create-proposal">
                                                 <IoDocumentTextOutline size={24} color="#1EBF1B" />
                                             </Link>
                                             <TbSend size={24} color="#EEB522" />
