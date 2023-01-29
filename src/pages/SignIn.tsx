@@ -37,13 +37,14 @@ export const SignIn: React.FC = () => {
 
     const redirectAdmin = useCallback(async () => {
         try {
-            const response = await api.get('/companies/me');
-            setCompanies(response.data);
+            api
+                .get('/companies/me')
+                .then(response => setCompanies(response.data));
 
-            if (companies) {
+            if (companies.length > 0) {
                 navigate("/admin/business");
             } else {
-                navigate("/admin");
+                navigate("/admin/business/create");
             }
         } catch (error) {
             navigate('/');
