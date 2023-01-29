@@ -8,7 +8,7 @@ import { Form } from "@unform/web";
 import { TextArea } from "../../../components/Form/TextArea";
 import { Select } from "../../../components/Form/Select";
 
-export const CreateServicesEntrepreneur: React.FC = () => {
+export const EditServicesEntrepreneur: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
 
     function handleSubmit() {
