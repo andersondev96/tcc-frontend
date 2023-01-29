@@ -22,8 +22,8 @@ export const ServiceCard: React.FC = () => {
 
     const currentStyles = {
         content: {
-            width: "500px",
-            height: "500px",
+            width: "400px",
+            height: "300px",
             margin: "auto",
             marginLeft: "450px",
             borderRadius: "4px",
@@ -33,9 +33,9 @@ export const ServiceCard: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col w-[12.5rem]">
+        <div className="flex flex-col w-48">
             <div
-                className="h-[12.5rem] border-4 border-gray-600 rounded"
+                className="h-48"
                 onClick={() => navigate("/admin/services/show")}
                 onMouseEnter={() => setMouseEnter(true)}
                 onMouseLeave={() => setMouseEnter(false)}
@@ -43,10 +43,10 @@ export const ServiceCard: React.FC = () => {
                 <img
                     src={CoffeeImg1}
                     alt="Coffee Image"
-                    className="absolute w-[12rem] h-[12rem]"
+                    className="absolute w-48 h-48 border-4 border-gray-600 rounded"
                 />
                 {mouseEnter && (
-                    <div className="flex flex-col justify-center gap-2 p-2 absolute w-[12rem] h-16 mt-[8rem] bg-gray-300 bg-opacity-60">
+                    <div className="flex flex-col justify-center gap-2 p-2 absolute w-48 h-16 mt-32 bg-gray-300 bg-opacity-60 transition ease-in-out delay-150 hover:-translate-y-1">
                         <div className="flex flex-col justify-between">
                             <span className="font-montserrat font-semibold text-sm">
                                 Cappuccino
@@ -55,7 +55,7 @@ export const ServiceCard: React.FC = () => {
                                 Cafés e bebidas quentes
                             </p>
                         </div>
-                        <span className="font-inter font-semibold text-sm text-amber-900">
+                        <span className="font-inter font-semibold text-sm text-red-800">
                             R$ 5,00
                         </span>
                     </div>
