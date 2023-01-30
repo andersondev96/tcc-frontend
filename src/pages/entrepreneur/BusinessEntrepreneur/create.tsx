@@ -40,15 +40,10 @@ interface CreateBusinessEntrepreneurFormData {
 
 }
 
-interface IAddress {
-    logadouro: string;
-    bairro: string;
-    localidade: string;
-    uf: string;
-}
-
 export const BusinessCreate: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
+    const checkboxRef = useRef(null);
+
     const navigate = useNavigate();
 
     const [hasPhysicalLocation, setHasPhysicalLocation] = useState<boolean>(false);
@@ -59,13 +54,12 @@ export const BusinessCreate: React.FC = () => {
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [scheduleItems, setScheduleItems] = useState([
         {
-            weekday: '',
-            opening_time: '',
-            closing_time: '',
+            weekday: 'Segunda-feira',
+            opening_time: '00:00',
+            closing_time: '23:59',
             lunch_time: '00:00',
         }
     ]);
-    const [address, setAddress] = useState<IAddress>();
 
     function setPhysicalLocation() {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -75,7 +69,7 @@ export const BusinessCreate: React.FC = () => {
         setScheduleItems([
             ...scheduleItems,
             {
-                weekday: '',
+                weekday: 'Segunda-feira',
                 opening_time: '',
                 closing_time: '',
                 lunch_time: '',
@@ -101,6 +95,8 @@ export const BusinessCreate: React.FC = () => {
         });
 
         setScheduleItems(updateScheduleItems);
+
+        console.log(scheduleItems);
     }
 
     function handleSelectedImages(event: ChangeEvent<HTMLInputElement>) {
@@ -122,12 +118,6 @@ export const BusinessCreate: React.FC = () => {
         setPreviewImages(selectedImagesPreview);
     }
 
-    function getCEP(cep: string) {
-        axios
-            .get(`https://viacep.com.br/ws/${cep}/json/`)
-            .then((response) => setAddress(response.data));
-    }
-
     const handleSubmit = useCallback(
         async (data: CreateBusinessEntrepreneurFormData) => {
             try {
@@ -140,24 +130,25 @@ export const BusinessCreate: React.FC = () => {
                     telephone: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Telefone obrigatório'),
                     whatsapp: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Whatsapp obrigatório'),
                     email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
-                    website: Yup.string().required('O campo website é obrigatório'),
+                    website: Yup.string().required('O campo website é obrigatório')
                 });
 
                 await schema.validate(data, {
                     abortEarly: false,
                 });
 
-                const response = await api.post('/companies', {
+                const companies = {
                     name: data.name,
                     cnpj: data.cnpj,
                     category: data.category,
                     description: data.description,
-                    services: [data.services],
+                    services: data.services,
                     physical_localization: hasPhysicalLocation,
                     telephone: data.telephone,
                     whatsapp: data.whatsapp,
                     email: data.email,
                     website: data.website,
+                    schedules: scheduleItems,
                     address: {
                         cep: data.cep,
                         street: data.street,
@@ -166,7 +157,12 @@ export const BusinessCreate: React.FC = () => {
                         state: data.state,
                         city: data.city
                     }
-                });
+                }
+
+                console.log(companies);
+                console.log(scheduleItems);
+
+                const response = await api.post('/companies', companies);
 
                 console.log(response);
 
@@ -188,7 +184,7 @@ export const BusinessCreate: React.FC = () => {
     return (
         <div className="flex flex-row">
             <ToastContainer />
-            <SideBar />
+            <SideBar pageActive="empresa" />
             <div className="flex flex-col w-full items-center px-24 md:ml-64 mt-6 md:mt-16">
                 <div className="flex flex-col md:w-full">
                     <span className="font-bold text-xl md:text-2xl mb-8 mb:mb-12">Cadatrar empresa</span>
@@ -302,7 +298,6 @@ export const BusinessCreate: React.FC = () => {
 
                         {scheduleItems.map((scheduleItem, index) => {
                             return (
-
                                 <div key={index} className="flex flex-wrap -mx-3 md:mb-4">
                                     <div className="w-full md:w-1/4 px-3 mb-3 md:mb-0">
                                         <Select
@@ -351,9 +346,11 @@ export const BusinessCreate: React.FC = () => {
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full items-center md:w-1/4 px-3 mb-6 md:mb-0">
                                 <input
+                                    name="physical_localization"
                                     className="h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
                                     type="checkbox"
                                     onChange={setPhysicalLocation}
+                                    ref={checkboxRef}
                                 />
                                 <label
                                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-1"
@@ -395,7 +392,6 @@ export const BusinessCreate: React.FC = () => {
                                             name="cep"
                                             label="CEP"
                                             placeholder="XXXXX-XXX"
-                                            onChange={(e) => getCEP(e.target.value)}
                                         />
                                     </div>
                                     <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">

@@ -11,6 +11,7 @@ import getValidationErrors from "../../../utils/getValidateErrors";
 import { Input } from "../../../components/Form/Input";
 import { Select } from "../../../components/Form/Select";
 import { TextArea } from "../../../components/Form/TextArea";
+import { PreviousPageButton } from "../../client/components/PreviousPageButton";
 
 interface IScheduleItem {
     weekday: string;
@@ -228,10 +229,11 @@ export const BusinessEdit: React.FC = () => {
     return (
         <div className="flex flex-row">
             <ToastContainer />
-            <SideBar />
+            <SideBar pageActive="empresa" />
             <div className="flex flex-col w-full items-center px-24 md:ml-64 mt-6 md:mt-16">
                 <div className="flex flex-col md:w-full">
-                    <span className="font-bold text-xl md:text-2xl mb-8 mb:mb-12">Editar empresa</span>
+                    <PreviousPageButton />
+                    <span className="font-bold text-xl mt-8 md:text-2xl mb-8 mb:mb-12">Editar empresa</span>
                     <Form
                         key={company?.id}
                         ref={formRef}

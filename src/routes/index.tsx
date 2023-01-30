@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 
 
 import { Business } from "../pages/client/Business";
@@ -27,7 +27,6 @@ import { Settings } from "../pages/entrepreneur/Settings";
 import { BusinessEdit } from '../pages/entrepreneur/BusinessEntrepreneur/edit';
 
 export const Router: React.FC = () => {
-
     return (
         <Routes>
             <Route path="/" element={<Home />} />

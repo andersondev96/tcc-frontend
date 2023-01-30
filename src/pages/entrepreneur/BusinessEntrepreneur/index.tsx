@@ -81,22 +81,22 @@ export const BusinessEntrepreneur: React.FC = () => {
 
     return (
         <div className="flex flex-row">
-            <SideBar />
+            <SideBar pageActive="empresa" />
             <div className="flex flex-col w-full sm:ml-64">
-                <div className="flex flex-row items-center gap-12 mobile:gap-6 px-[6.25rem] py-12 mobile:py-6">
+                <div className="flex flex-row items-center gap-6 sm:gap-12 px-24 py-6 sm:py-12">
                     <img
                         src={Coffee}
                         alt=""
-                        className="h-16 w-16 mobile:w-12 mobile:min-h-12 object-fill rounded-full"
+                        className="w-12 sm:w-16 min-h-12 sm:h-16 object-fill rounded-full"
                     />
-                    <span className="font-inter font-bold text-2xl text-gray-800 mobile:text-lg">
+                    <span className="font-inter font-bold text-lg sm:text-2xl text-gray-800">
                         {company?.name}
                     </span>
                 </div>
-                <div className="flex flex-col gap-6 mobile:gap-4 py-2 mobile:py-8 px-[6.25rem]">
+                <div className="flex flex-col gap-4 sm:gap-4 py-8 sm:py-2 px-24">
                     <div className="flex flex-col gap-1">
 
-                        <span className="font-inter font-medium text-base mobile:text-sm">
+                        <span className="font-inter font-medium">
                             Sobre o negócio
                         </span>
                         <p className="font-inter text-sm text-justify">
@@ -105,14 +105,14 @@ export const BusinessEntrepreneur: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col gap-1">
-                        <span className="font-inter font-medium text-base mobile:text-sm">
+                        <span className="font-inter font-medium">
                             CNPJ
                         </span>
                         <p className="font-inter text-sm text-justify">{company?.cnpj}</p>
                     </div>
 
                     <div className="flex flex-col gap-1">
-                        <span className="font-inter font-medium text-base mobile:text-sm">
+                        <span className="font-inter font-medium">
                             Categoria
                         </span>
                         <p className="font-inter text-sm text-justify">{company?.category}</p>
@@ -120,7 +120,7 @@ export const BusinessEntrepreneur: React.FC = () => {
 
                     {company?.services.length !== 0 && (
                         <div className="flex flex-col gap-1">
-                            <span className="font-inter font-medium text-base mobile:text-sm">
+                            <span className="font-inter font-medium">
                                 Serviços
                             </span>
                             <p className="font-inter text-sm text-justify">
@@ -130,7 +130,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                     )}
 
                     <div className="flex flex-col gap-1">
-                        <span className="font-inter font-medium text-base mobile:text-sm">
+                        <span className="font-inter font-medium">
                             Telefone
                         </span>
                         <p className="font-inter text-sm text-justify">{company?.contact.telephone}</p>
@@ -147,14 +147,14 @@ export const BusinessEntrepreneur: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col gap-1">
-                        <span className="font-inter font-medium text-base mobile:text-sm">
+                        <span className="font-inter font-medium">
                             E-mail
                         </span>
                         <p className="font-inter text-sm text-justify">{company?.contact.email}</p>
                     </div>
 
                     <div className="flex flex-col gap-1">
-                        <span className="font-inter font-medium text-base mobile:text-sm">
+                        <span className="font-inter font-medium">
                             Website
                         </span>
                         <a
@@ -169,7 +169,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                     {
                         company?.Schedule?.length === 1 && (
                             <div className="flex flex-col gap-1">
-                                <span className="font-inter font-medium text-base mobile:text-sm">
+                                <span className="font-inter font-medium">
                                     Horários de funcionamento
                                 </span>
                                 {
@@ -187,7 +187,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                     {
                         company?.Address && (
                             <div className="flex flex-col gap-1">
-                                <span className="font-inter font-medium text-base mobile:text-sm">
+                                <span className="font-inter font-medium">
                                     Endereço
                                 </span>
                                 <p className="font-inter text-sm text-justify">
@@ -200,10 +200,10 @@ export const BusinessEntrepreneur: React.FC = () => {
                         )
                     }
 
-                    <span className="py-3 border-b border-black font-inter font-medium text-base mobile:text-sm">
+                    <span className="py-3 border-b border-black font-inter font-medium">
                         Imagens
                     </span>
-                    <div className="flex flex-row mobile:grid mobile:grid-cols-2 gap-[1.25rem]">
+                    <div className="grid grid-cols-2 sm:flex sm:flex-row gap-5">
                         {company?.ImageCompany?.map((img) => (
                             <Pictures
                                 key={img.id}
@@ -213,11 +213,11 @@ export const BusinessEntrepreneur: React.FC = () => {
                         ))}
                     </div>
 
-                    <div className="flex flex-col mt-14 mobile:mt-8 gap-1">
-                        <span className="font-inter font-medium text-xl mobile:text-sm">
+                    <div className="flex flex-col mt-14 sm:mt-10 gap-1">
+                        <span className="font-inter font-medium text-sm">
                             Avaliações
                         </span>
-                        <p className="font-inter font-light text-base">
+                        <p className="font-inter font-light text-sm">
                             16 avaliações recebidas
                         </p>
                         <div className="flex flex-row items-center gap-3">
@@ -234,13 +234,13 @@ export const BusinessEntrepreneur: React.FC = () => {
                         <Assessments text="Gostei muito do atendimento" stars={5} />
                     </div>
 
-                    <span className="mt-4 font-inter font-light text-xs text-blue-400">
+                    <span className="mt-4 font-inter font-medium text-sm text-blue-600">
                         Veja todos os comentários
                     </span>
 
                     <Link to={`/admin/business/edit/${company?.id}`}>
-                        <button className="mt-12 mobile:mt-4 flex flex-row items-center justify-center gap-4 w-40 mobile:w-28 h-12 mobile:h-10 rounded bg-green-500 font-montserrat font-medium mobile:text-sm text-white cursor-pointer hover:brightness-90 duration-300">
-                            <FiEdit2 />
+                        <button className="mt-6 mb-4 w-36 h-12 p-4 flex flex-row items-center justify-center gap-2 sm:gap-4 rounded bg-green-500 font-montserrat font-medium sm:text-base text-xs text-white cursor-pointer hover:brightness-90 duration-300">
+                            <FiEdit2 size={16} />
                             <span>Editar</span>
                         </button>
                     </Link>
