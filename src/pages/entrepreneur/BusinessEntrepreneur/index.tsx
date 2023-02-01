@@ -75,9 +75,9 @@ export const BusinessEntrepreneur: React.FC = () => {
             .get('/companies/me')
             .then(response => setCompany(response.data)
             )
-
-        console.log(company);
     }, []);
+
+    console.log(company);
 
     return (
         <div className="flex flex-row">

@@ -159,12 +159,7 @@ export const BusinessCreate: React.FC = () => {
                     }
                 }
 
-                console.log(companies);
-                console.log(scheduleItems);
-
-                const response = await api.post('/companies', companies);
-
-                console.log(response);
+                await api.post('/companies', companies);
 
                 navigate('/admin/business');
 
@@ -179,7 +174,7 @@ export const BusinessCreate: React.FC = () => {
 
                 toast.error("Erro ao cadastrar empresa");
             }
-        }, [toast]);
+        }, [toast, navigate]);
 
     return (
         <div className="flex flex-row">
