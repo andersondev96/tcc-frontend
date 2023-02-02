@@ -27,14 +27,9 @@ export const ServicesEntrepreneur: React.FC = () => {
         api.get('/companies/me')
             .then(response => setCompany(response.data));
 
-        loadServices();
-    }, [loadServices]);
-
-    function loadServices() {
         api.get(`/services/${company.id}`)
             .then(response => setServices(response.data));
-    }
-
+    }, []);
 
     return (
         <div className="flex flex-row">
