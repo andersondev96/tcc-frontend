@@ -100,7 +100,6 @@ export const BusinessCreate: React.FC = () => {
     }
 
     function handleSelectedImages(event: ChangeEvent<HTMLInputElement>) {
-        console.log("Entra");
         if (!event.target.files) {
             return;
         }
@@ -112,8 +111,6 @@ export const BusinessCreate: React.FC = () => {
         const selectedImagesPreview = selectedImages.map(image => {
             return URL.createObjectURL(image);
         });
-
-        console.log(selectedImagesPreview);
 
         setPreviewImages(selectedImagesPreview);
     }
@@ -449,16 +446,14 @@ export const BusinessCreate: React.FC = () => {
                                 </label>
 
                                 <div className="flex flex-row gap-6 py-3">
-                                    <div className="flex w-16 h-16 rounded border border-1 border-gray-400">
-                                        {previewImages.map(image => {
-                                            return (
-                                                <img key={image} src={image} alt="" />
-                                            )
-                                        })}
-                                    </div>
+                                    {previewImages.map(image => {
+                                        return (
+                                            <img key={image} src={image} alt="" className="flex w-16 h-16 rounded border border-1 border-gray-400" />
+                                        )
+                                    })}
 
                                     <div className="w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300 relative">
-                                        <input type="file" multiple id="image[]" className="cursor-pointer relative block opacity-0 w-full h-full p-20 z-20" onChange={handleSelectedImages} />
+                                        <input type="file" multiple id="image[]" accept="image/*" className="cursor-pointer relative block opacity-0 w-full h-full p-20 z-20" onChange={handleSelectedImages} />
                                         <div className="text-center absolute p-5 top-0 right-0 left-0 m-auto">
                                             <AiOutlineCamera size={24} />
                                         </div>

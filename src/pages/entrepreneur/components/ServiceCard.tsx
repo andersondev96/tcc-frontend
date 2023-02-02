@@ -7,7 +7,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { DeleteModal } from "./DeleteModal";
 import Modal from "react-modal";
 
-export const ServiceCard: React.FC = () => {
+interface ServiceProps {
+    name: string;
+    description?: string;
+    price: number;
+    category?: string;
+}
+
+
+export const ServiceCard: React.FC<ServiceProps> = ({
+    name,
+    description,
+    price,
+    category
+}) => {
     const navigate = useNavigate();
     const [mouseEnter, setMouseEnter] = useState(false);
     const [isOpenModal, setIsOpenModal] = useState(false);
@@ -49,14 +62,14 @@ export const ServiceCard: React.FC = () => {
                     <div className="flex flex-col justify-center gap-2 p-2 absolute w-48 h-16 mt-32 bg-gray-300 bg-opacity-60 transition ease-in-out delay-150 hover:-translate-y-1">
                         <div className="flex flex-col justify-between">
                             <span className="font-montserrat font-semibold text-sm">
-                                Cappuccino
+                                {name}
                             </span>
                             <p className="font-inter font-light text-xs">
-                                Cafés e bebidas quentes
+                                {category}
                             </p>
                         </div>
                         <span className="font-inter font-semibold text-sm text-red-800">
-                            R$ 5,00
+                            {price}
                         </span>
                     </div>
                 )}

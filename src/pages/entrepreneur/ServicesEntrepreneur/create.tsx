@@ -5,7 +5,7 @@ import { AiOutlineCamera } from "react-icons/ai";
 import { SideBar } from "../../../components/Sidebar";
 import { PreviousPageButton } from "../../client/components/PreviousPageButton";
 import { Input } from "../../../components/Form/Input";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
 import { TextArea } from "../../../components/Form/TextArea";
@@ -32,6 +32,8 @@ interface Company {
 export const CreateServicesEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
     const [highlight, setHighlight] = useState<boolean>(false);
+    const [selectedImage, setSelectedImage] = useState<File[]>([]);
+    const [selectImagePreview, setSelectImagePreview] = useState<string[]>([]);
     const formRef = useRef<FormHandles>(null);
 
     const navigate = useNavigate();
@@ -43,6 +45,24 @@ export const CreateServicesEntrepreneur: React.FC = () => {
 
     function handleSetHighlight() {
         setHighlight(!highlight);
+    }
+
+    function handleSelectedImage(event: ChangeEvent<HTMLInputElement>) {
+        if (!event.target.files) {
+            return;
+        }
+
+        const selectedImage = Array.from(event.target.files);
+
+        setSelectedImage(selectedImage);
+
+        console.log(selectedImage);
+
+        const selectedImagePreview = selectedImage.map(image => {
+            return URL.createObjectURL(image);
+        });
+
+        setSelectImagePreview(selectedImagePreview);
     }
 
     const handleSubmit = useCallback(
@@ -70,7 +90,13 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                     highlight_service: highlight,
                 };
 
-                await api.post(`/services/${company.id}`, service);
+                const response = await api.post(`/services/${company.id}`, service);
+
+                const image = await api.patch(`services/image/${response.data.id}`, {
+                    service: selectedImage
+                });
+
+                console.log(image);
 
                 navigate('/admin/services');
 
@@ -163,7 +189,7 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                                     <div className="flex flex-col justify-center items-center ">
                                         <AiOutlineCamera size={24} />
                                     </div>
-                                    <input id="dropzone-file" name="image_url" type="file" className="hidden" />
+                                    <input id="dropzone-file" name="image_url" type="file" className="hidden" onChange={handleSelectedImage} />
                                 </label>
                             </div>
 

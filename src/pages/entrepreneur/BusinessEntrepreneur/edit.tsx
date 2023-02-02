@@ -28,7 +28,7 @@ interface CompanyData {
     description: string,
     services: string[],
     physical_localization: boolean,
-    contact?: {
+    contact: {
         telephone: string,
         whatsapp: string,
         email: string,
@@ -45,7 +45,7 @@ interface CompanyData {
     Schedule?: [
         {
             id: string,
-            day_of_week: string,
+            weekday: string,
             opening_time: string,
             closing_time: string,
             lunch_time: string,
@@ -62,7 +62,7 @@ interface CompanyData {
     user_id: string
 }
 
-interface CreateBusinessEntrepreneurFormData {
+interface UpdateBusinessEntrepreneurFormData {
     id: string;
     name: string;
     cnpj: string;
@@ -84,6 +84,10 @@ interface CreateBusinessEntrepreneurFormData {
 
 }
 
+interface RouteParams {
+    id: string;
+}
+
 export const BusinessEdit: React.FC = () => {
     const params = useParams();
     const [company, setCompany] = useState({} as CompanyData);
@@ -91,9 +95,7 @@ export const BusinessEdit: React.FC = () => {
     const navigate = useNavigate();
 
     const [hasPhysicalLocation, setHasPhysicalLocation] = useState<boolean>(false);
-    const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedState, setSelectedState] = useState('');
-    const [description, setDescription] = useState('');
     const [images, setImages] = useState<File[]>([]);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [scheduleItems, setScheduleItems] = useState([
@@ -106,13 +108,12 @@ export const BusinessEdit: React.FC = () => {
     ]);
 
     useEffect(() => {
-        api.get(`companies/${params.id}`)
+        api.get<CompanyData>(`companies/${params.id}`)
             .then(response => {
                 setCompany(response.data);
             });
 
-        console.log(company);
-    }, [setCompany])
+    }, [params.id])
 
     function setPhysicalLocation() {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -170,7 +171,7 @@ export const BusinessEdit: React.FC = () => {
     }
 
     const handleSubmit = useCallback(
-        async (data: CreateBusinessEntrepreneurFormData) => {
+        async (data: UpdateBusinessEntrepreneurFormData) => {
             try {
                 formRef.current?.setErrors({});
 
@@ -235,18 +236,15 @@ export const BusinessEdit: React.FC = () => {
                     <PreviousPageButton />
                     <span className="font-bold text-xl mt-8 md:text-2xl mb-8 mb:mb-12">Editar empresa</span>
                     <Form
-                        key={company?.id}
                         ref={formRef}
                         onSubmit={handleSubmit}
                         className="w-full md:max-w-4xl"
-                        initialData={{
-                            name: company?.name
-                        }}
+                        initialData={company}
                     >
                         <div className="flex flex-wrap -mx-3 mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Input
-                                    name="company"
+                                    name="name"
                                     label="Nome da empresa"
                                     placeholder="Nome da empresa"
 
@@ -298,14 +296,14 @@ export const BusinessEdit: React.FC = () => {
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Input
-                                    name="telephone"
+                                    name="contact.telephone"
                                     label="Telefone"
                                     placeholder="(XX) XXXXX-XXXX"
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Input
-                                    name="whatsapp"
+                                    name="contact.whatsapp"
                                     label="Whatsapp"
                                     placeholder="(XX) XXXXX-XXXX"
                                 />
@@ -315,14 +313,14 @@ export const BusinessEdit: React.FC = () => {
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Input
-                                    name="email"
+                                    name="contact.email"
                                     label="E-mail"
                                     placeholder="example@example.com"
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Input
-                                    name="website"
+                                    name="contact.website"
                                     label="Website"
                                     placeholder="https://www.website.com"
                                 />
@@ -353,7 +351,7 @@ export const BusinessEdit: React.FC = () => {
                                 <div key={index} className="flex flex-wrap -mx-3 md:mb-4">
                                     <div className="w-full md:w-1/4 px-3 mb-3 md:mb-0">
                                         <Select
-                                            name="weekday"
+                                            name="Schedule?.weekday"
                                             label="Dia da semana"
                                             value={scheduleItem.weekday}
                                             onChange={(e) => { setScheduleItemValue(index, 'weekday', e.target.value) }}
@@ -371,7 +369,7 @@ export const BusinessEdit: React.FC = () => {
                                     </div>
                                     <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="opening_time"
+                                            name="Schedule?.opening_time"
                                             type="time"
                                             label="Abre às"
                                             placeholder="XX:XX"
@@ -381,7 +379,7 @@ export const BusinessEdit: React.FC = () => {
                                     </div>
                                     <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="closing_time"
+                                            name="Schedule?.closing_time"
                                             type="time"
                                             label="Fecha às"
                                             placeholder="XX:XX"
@@ -413,21 +411,21 @@ export const BusinessEdit: React.FC = () => {
                                 <div className="flex flex-wrap -mx-3 md:mb-6">
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="street"
+                                            name="Address?.street"
                                             label="Endereço"
                                             placeholder="Rua XXX"
                                         />
                                     </div>
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="district"
+                                            name="Address?.district"
                                             label="Bairro"
                                             placeholder="Bairro XXX"
                                         />
                                     </div>
                                     <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="number"
+                                            name="Address?.number"
                                             label="Número"
                                             placeholder="00"
                                         />
@@ -437,7 +435,7 @@ export const BusinessEdit: React.FC = () => {
                                 <div className="flex flex-wrap -mx-3 md:mb-6">
                                     <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="cep"
+                                            name="Address?.cep"
                                             label="CEP"
                                             placeholder="XXXXX-XXX"
                                         />
@@ -445,7 +443,7 @@ export const BusinessEdit: React.FC = () => {
                                     <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                                         <div className="relative">
                                             <Select
-                                                name="state"
+                                                name="Address?.state"
                                                 label="Estado"
                                                 value={selectedState}
                                                 onChange={(e) => setSelectedState(e.target.value)}
@@ -485,7 +483,7 @@ export const BusinessEdit: React.FC = () => {
                                     </div>
                                     <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="city"
+                                            name="Address?.city"
                                             label="Cidade"
                                         />
                                     </div>
@@ -502,16 +500,14 @@ export const BusinessEdit: React.FC = () => {
                                 </label>
 
                                 <div className="flex flex-row gap-6 py-3">
-                                    <div className="flex w-16 h-16 rounded border border-1 border-gray-400">
-                                        {previewImages.map(image => {
-                                            return (
-                                                <img key={image} src={image} alt="" />
-                                            )
-                                        })}
-                                    </div>
+                                    {previewImages.map(image => {
+                                        return (
+                                            <img key={image} src={image} alt="" className="flex w-16 h-16 rounded border border-1 border-gray-400" />
+                                        )
+                                    })}
 
                                     <div className="w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300 relative">
-                                        <input type="file" multiple id="image[]" className="cursor-pointer relative block opacity-0 w-full h-full p-20 z-20" onChange={handleSelectedImages} />
+                                        <input type="file" multiple id="image[]" accept="image/*" className="cursor-pointer relative block opacity-0 w-full h-full p-20 z-20" onChange={handleSelectedImages} />
                                         <div className="text-center absolute p-5 top-0 right-0 left-0 m-auto">
                                             <AiOutlineCamera size={24} />
                                         </div>

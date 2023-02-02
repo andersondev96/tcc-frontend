@@ -1,11 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
 import { ServiceCard } from "../components/ServiceCard";
+import api from "../../../services/api";
+
+interface Company {
+    id: string;
+}
+
+interface Service {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    category: string;
+
+}
 
 export const ServicesEntrepreneur: React.FC = () => {
+    const [company, setCompany] = useState<Company>({} as Company);
+    const [services, setServices] = useState<Service[]>([]);
+
+    useEffect(() => {
+        api.get('/companies/me')
+            .then(response => setCompany(response.data));
+
+        loadServices();
+    }, [loadServices]);
+
+    function loadServices() {
+        api.get(`/services/${company.id}`)
+            .then(response => setServices(response.data));
+    }
+
+
     return (
         <div className="flex flex-row">
             <SideBar pageActive="servicos" />
@@ -25,16 +55,12 @@ export const ServicesEntrepreneur: React.FC = () => {
                         <Search />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-5 gap-12 mt-12">
-                        <ServiceCard />
-                        <ServiceCard />
-                        <ServiceCard />
-                        <ServiceCard />
-                        <ServiceCard />
-                        <ServiceCard />
-                        <ServiceCard />
-                        <ServiceCard />
-                        <ServiceCard />
-                        <ServiceCard />
+                        {
+                            services.map(service => (
+                                <ServiceCard key={service.id} name={service.name} price={service.price} category={service.category} />
+                            ))
+                        }
+
                     </div>
                     <PaginationTable />
                 </div>
