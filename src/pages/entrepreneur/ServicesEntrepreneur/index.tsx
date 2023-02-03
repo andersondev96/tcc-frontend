@@ -6,10 +6,6 @@ import { SideBar } from "../../../components/Sidebar";
 import { ServiceCard } from "../components/ServiceCard";
 import api from "../../../services/api";
 
-interface Company {
-    id: string;
-}
-
 interface Service {
     id: string;
     name: string;
@@ -19,17 +15,24 @@ interface Service {
 
 }
 
+interface Company {
+    id: string;
+    name: string;
+}
+
 export const ServicesEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
     const [services, setServices] = useState<Service[]>([]);
 
     useEffect(() => {
         api.get('/companies/me')
-            .then(response => setCompany(response.data));
+            .then(response => setCompany(response.data))
+    }, []);
 
+    useEffect(() => {
         api.get(`/services/${company.id}`)
             .then(response => setServices(response.data));
-    }, []);
+    }, [company.id]);
 
     return (
         <div className="flex flex-row">
