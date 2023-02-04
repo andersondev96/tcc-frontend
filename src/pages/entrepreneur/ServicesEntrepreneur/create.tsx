@@ -90,7 +90,7 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                     highlight_service: highlight,
                 };
 
-                const response = await api.post(`/services/${company.id}`, service);
+                await api.post(`/services/${company.id}`, service);
 
                 /* const image = await api.patch(`services/image/${response.data.id}`, {
                     service: selectedImage
