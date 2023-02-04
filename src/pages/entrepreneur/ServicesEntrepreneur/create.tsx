@@ -92,11 +92,11 @@ export const CreateServicesEntrepreneur: React.FC = () => {
 
                 const response = await api.post(`/services/${company.id}`, service);
 
-                const image = await api.patch(`services/image/${response.data.id}`, {
+                /* const image = await api.patch(`services/image/${response.data.id}`, {
                     service: selectedImage
                 });
 
-                console.log(image);
+                console.log(image); */
 
                 navigate('/admin/services');
 
@@ -184,16 +184,27 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                                 </label>
                                 <label
                                     htmlFor="dropzone-file"
-                                    className="flex flex-col justify-center items-center w-64 h-44 bg-gray-200 rounded-lg border-2 border-gray-400 cursor-pointer hover:opacity-80 duration-300 transition-opacity"
+                                    className="flex flex-col justify-center items-center mt-4 w-64 h-44 bg-gray-200 rounded-lg border-2 border-gray-400 cursor-pointer hover:opacity-80 duration-300 transition-opacity"
                                 >
-                                    <div className="flex flex-col justify-center items-center ">
-                                        <AiOutlineCamera size={24} />
+                                    <div className="flex flex-col justify-center items-center">
+                                        {
+                                            selectedImage.length === 0 && (
+                                                <AiOutlineCamera size={24} />
+                                            )
+                                        }
+                                        <>
+                                            {selectImagePreview.map(image => {
+                                                return (
+                                                    <img key={image} src={image} className="w-60 h-40 object-cover rounded-lg border-2 border-gray-400" />
+                                                )
+                                            })}
+                                        </>
                                     </div>
-                                    <input id="dropzone-file" name="image_url" type="file" className="hidden" onChange={handleSelectedImage} />
+                                    <input id="dropzone-file" name="image_url" type="file" accept="image/*" className="hidden" onChange={handleSelectedImage} />
                                 </label>
                             </div>
-
                         </div>
+
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full px-3 mb-6 md:mb-0">
                                 <input

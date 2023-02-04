@@ -12,7 +12,7 @@ import { Pictures } from "../../client/components/Pictures";
 import { AssessmentsStars } from "../../client/components/AssessmentsStars";
 import { Assessments } from "../../client/components/Assessments";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import api from "../../../services/api";
 import getCEP from "../../../utils/getCEP";
@@ -76,8 +76,6 @@ export const BusinessEntrepreneur: React.FC = () => {
             .then(response => setCompany(response.data)
             )
     }, []);
-
-    console.log(company);
 
     return (
         <div className="flex flex-row">

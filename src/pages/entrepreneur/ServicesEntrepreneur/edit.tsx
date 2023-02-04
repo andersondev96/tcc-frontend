@@ -2,14 +2,30 @@ import { AiOutlineCamera } from "react-icons/ai";
 import { SideBar } from "../../../components/Sidebar";
 import { PreviousPageButton } from "../../client/components/PreviousPageButton";
 import { Input } from "../../../components/Form/Input";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
 import { TextArea } from "../../../components/Form/TextArea";
 import { Select } from "../../../components/Form/Select";
+import { useParams } from "react-router-dom";
+import api from "../../../services/api";
+
+interface Service {
+    id: string;
+    description: string;
+    category: string;
+    price: number;
+}
 
 export const EditServicesEntrepreneur: React.FC = () => {
+    const params = useParams();
+    const [service, setService] = useState({} as Service);
+
     const formRef = useRef<FormHandles>(null);
+
+    useEffect(() => {
+        api.get<Service>(``)
+    }, []);
 
     function handleSubmit() {
 

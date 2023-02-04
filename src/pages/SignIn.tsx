@@ -41,7 +41,7 @@ export const SignIn: React.FC = () => {
                 .get('/companies/me')
                 .then(response => setCompanies(response.data));
 
-            if (companies.length > 0) {
+            if (companies) {
                 navigate("/admin/business");
             } else {
                 navigate("/admin/business/create");

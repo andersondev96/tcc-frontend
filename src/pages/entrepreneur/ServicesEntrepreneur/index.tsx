@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
@@ -21,6 +21,8 @@ interface Company {
 }
 
 export const ServicesEntrepreneur: React.FC = () => {
+    const navigate = useNavigate();
+
     const [company, setCompany] = useState<Company>({} as Company);
     const [services, setServices] = useState<Service[]>([]);
 
@@ -55,7 +57,13 @@ export const ServicesEntrepreneur: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-5 gap-12 mt-12">
                         {
                             services.map(service => (
-                                <ServiceCard key={service.id} name={service.name} price={service.price} category={service.category} />
+                                <ServiceCard
+                                    key={service.id}
+                                    id={service.id}
+                                    name={service.name}
+                                    price={service.price}
+                                    category={service.category}
+                                />
                             ))
                         }
 

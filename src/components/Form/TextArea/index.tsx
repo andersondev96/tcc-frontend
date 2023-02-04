@@ -54,7 +54,7 @@ export const TextArea: React.FC<TextAreaProps> = ({
                 onFocus={handleTextAreaFocus}
                 onBlur={handleTextAreaBlur}
                 className={
-                    `appearance-none block w-full resize-none bg-gray-200 text-gray-700 border border-gray-200 rounded py-6 mb:py-3 mb-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500
+                    `appearance-none block w-full resize-none bg-gray-200 text-gray-700 border rounded py-6 mb:py-3 mb-2 px-4 leading-tight focus:outline-none focus:bg-white
                     ${isFocused ? 'focus:border-blue-500' : ''}
                     ${isFilled ? 'focus:border-green-500' : ''}
                     ${error ? 'border-red-500' : ''}`}

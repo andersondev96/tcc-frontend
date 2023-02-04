@@ -8,16 +8,16 @@ import { DeleteModal } from "./DeleteModal";
 import Modal from "react-modal";
 
 interface ServiceProps {
+    id: string;
     name: string;
-    description?: string;
     price: number;
     category?: string;
 }
 
 
 export const ServiceCard: React.FC<ServiceProps> = ({
+    id,
     name,
-    description,
     price,
     category
 }) => {
@@ -77,7 +77,7 @@ export const ServiceCard: React.FC<ServiceProps> = ({
             <div className="flex flex-row justify-between px-2 mt-2">
                 <button className="flex flex-row items-center gap-2 text-green-500 font-montserrat font-medium text-sm hover:text-green-600  transition-colors duration-300">
                     <FiEdit2 />
-                    <Link to="/admin/create">
+                    <Link to={`/admin/services/edit/${id}`}>
                         <span>Editar</span>
                     </Link>
                 </button>

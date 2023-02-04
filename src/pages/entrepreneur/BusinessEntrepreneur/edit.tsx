@@ -32,34 +32,8 @@ interface CompanyData {
         telephone: string,
         whatsapp: string,
         email: string,
-        website: string,
+        website: string
     },
-    Address?: {
-        cep: string,
-        street: string,
-        district: string,
-        number: number,
-        state: string,
-        city: string
-    },
-    Schedule?: [
-        {
-            id: string,
-            weekday: string,
-            opening_time: string,
-            closing_time: string,
-            lunch_time: string,
-        }
-    ],
-    ImageCompany?: [
-        {
-            id: string,
-            title: string,
-            image_name: string,
-            image_url: string,
-        }
-    ]
-    user_id: string
 }
 
 interface UpdateBusinessEntrepreneurFormData {
@@ -113,7 +87,7 @@ export const BusinessEdit: React.FC = () => {
                 setCompany(response.data);
             });
 
-    }, [params.id])
+    }, [params.id]);
 
     function setPhysicalLocation() {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -129,8 +103,6 @@ export const BusinessEdit: React.FC = () => {
                 lunch_time: '',
             }
         ])
-
-        console.log(scheduleItems);
     }
 
     function removeScheduleItem() {
@@ -165,8 +137,6 @@ export const BusinessEdit: React.FC = () => {
             return URL.createObjectURL(image);
         });
 
-        console.log(selectedImagesPreview);
-
         setPreviewImages(selectedImagesPreview);
     }
 
@@ -175,42 +145,36 @@ export const BusinessEdit: React.FC = () => {
             try {
                 formRef.current?.setErrors({});
 
-                console.log(data);
-
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
                     cnpj: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('CNPJ obrigatório'),
                     category: Yup.string().required('Categoria obrigatório'),
-                    telephone: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Telefone obrigatório'),
-                    whatsapp: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Whatsapp obrigatório'),
-                    email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
-                    website: Yup.string().required('O campo website é obrigatório'),
+                    /* contact: Yup.array()
+                        .of(
+                            Yup.object().shape({
+                                telephone: Yup.string().required('Telefone é obrigatório'),
+                            })
+                        ) */
                 });
 
                 await schema.validate(data, {
                     abortEarly: false,
                 });
 
-                await api.post('/companies', {
+                const response = await api.put(`/companies/${params.id}`, {
                     name: data.name,
                     cnpj: data.cnpj,
                     category: data.category,
                     description: data.description,
-                    services: [data.services],
+                    services: data.services,
                     physical_localization: hasPhysicalLocation,
                     telephone: data.telephone,
                     whatsapp: data.whatsapp,
                     email: data.email,
-                    website: data.website,
-                    address: {
-                        cep: data.cep,
-                        street: data.street,
-                        district: data.district,
-                        number: data.number,
-                        state: data.state,
-                        city: data.city
-                    }
+                    website: data.website
                 });
+
+                console.log(response);
 
                 navigate('/admin/business');
 

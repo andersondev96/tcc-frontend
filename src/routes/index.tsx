@@ -17,6 +17,7 @@ import { BusinessCreate } from "../pages/entrepreneur/BusinessEntrepreneur/creat
 import { ServicesEntrepreneur } from "../pages/entrepreneur/ServicesEntrepreneur";
 import { CreateServicesEntrepreneur } from "../pages/entrepreneur/ServicesEntrepreneur/create";
 import { ShowServicesEntrepreneur } from "../pages/entrepreneur/ServicesEntrepreneur/show";
+import { EditServicesEntrepreneur } from '../pages/entrepreneur/ServicesEntrepreneur/edit';
 import { ClientsEntrepreneur } from "../pages/entrepreneur/ClientsEntrepreneur";
 import { BudgetEntrepreneur } from "../pages/entrepreneur/BudgetEntrepreneur";
 import { DetailsBudgetEntrepreneur } from "../pages/entrepreneur/BudgetEntrepreneur/DetailsBudgetEntrepreneur";
@@ -46,6 +47,7 @@ export const Router: React.FC = () => {
             <Route path="/admin/services" element={<ServicesEntrepreneur />} />
             <Route path="/admin/create" element={<CreateServicesEntrepreneur />} />
             <Route path="/admin/services/show" element={<ShowServicesEntrepreneur />} />
+            <Route path="/admin/services/edit/:id" element={<EditServicesEntrepreneur />} />
             <Route path="/admin/clients" element={<ClientsEntrepreneur />} />
             <Route path="/admin/budget" element={<BudgetEntrepreneur />} />
             <Route path="/admin/budget/details" element={<DetailsBudgetEntrepreneur />} />
