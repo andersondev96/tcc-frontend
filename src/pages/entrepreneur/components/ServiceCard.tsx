@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import CoffeeImg1 from "../../../assets/coffee-img1.jpg";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -6,6 +6,8 @@ import { FiEdit2 } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { DeleteModal } from "./DeleteModal";
 import Modal from "react-modal";
+import api from "../../../services/api";
+import { ToastContainer, toast } from "react-toastify";
 
 interface ServiceProps {
     id: string;
@@ -33,6 +35,14 @@ export const ServiceCard: React.FC<ServiceProps> = ({
         setIsOpenModal(false);
     }
 
+    const handleDeleteProduct = useCallback(() => {
+        api.delete(`/services/${id}`);
+
+        closeModal();
+        toast.info("Serviço removido com sucesso!");
+        window.location.reload(); // melhorar isso aqui
+    }, [toast, closeModal]);
+
     const currentStyles = {
         content: {
             width: "400px",
@@ -47,6 +57,7 @@ export const ServiceCard: React.FC<ServiceProps> = ({
 
     return (
         <div className="flex flex-col w-48">
+            <ToastContainer />
             <div
                 className="h-48"
                 onClick={() => navigate("/admin/services/show")}
@@ -95,7 +106,7 @@ export const ServiceCard: React.FC<ServiceProps> = ({
                 onRequestClose={closeModal}
                 style={currentStyles}
             >
-                <DeleteModal />
+                <DeleteModal name={name} removeProduct={handleDeleteProduct} onCancel={closeModal} />
             </Modal>
         </div>
     );
