@@ -19,10 +19,18 @@ interface SignInFormData {
     password: string;
 }
 
+interface CompanyData {
+    id: string;
+    name: string;
+    cnpj: string;
+    category: string;
+    description: string;
+}
+
 export const SignIn: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
-    const [companies, setCompanies] = useState([]);
+    const [company, setCompany] = useState<CompanyData>({} as CompanyData);
 
     const { user, signInWithGoogle } = useAuthWithGoogle();
     const { signIn } = useAuth();
@@ -35,21 +43,22 @@ export const SignIn: React.FC = () => {
         navigate("/home");
     }
 
-    const redirectAdmin = useCallback(async () => {
+    const redirectAdmin = useCallback(() => {
         try {
             api
                 .get('/companies/me')
-                .then(response => setCompanies(response.data));
+                .then(response => setCompany(response.data)
+                );
 
-            if (companies) {
+            if (company) {
                 navigate("/admin/business");
             } else {
-                navigate("/admin/business/create");
+                navigate("/");
             }
         } catch (error) {
-            navigate('/');
+            //
         }
-    }, [companies]);
+    }, [company, navigate]);
 
     const handleSubmit = useCallback(
         async (data: SignInFormData) => {
@@ -69,7 +78,7 @@ export const SignIn: React.FC = () => {
                     abortEarly: false,
                 });
 
-                const response = await signIn({
+                await signIn({
                     email: data.email,
                     password: data.password
                 });
@@ -87,7 +96,7 @@ export const SignIn: React.FC = () => {
 
                 toast.error("Error ao autenticar, tente novamente!");
             }
-        }, [signIn, toast]);
+        }, [signIn, toast, redirectAdmin]);
 
     return (
         <div className="bg-gray-100">
