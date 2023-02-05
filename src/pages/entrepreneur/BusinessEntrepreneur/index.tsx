@@ -1,9 +1,9 @@
-import { SideBar } from "../../../components/Sidebar";
-import Coffee from "../../../assets/coffee-img1.jpg";
-
+import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { GoLinkExternal } from "react-icons/go";
 import { FiEdit2 } from "react-icons/fi";
-
+import { SideBar } from "../../../components/Sidebar";
+import Coffee from "../../../assets/coffee-img1.jpg";
 import Coffee1 from "../../../assets/coffee-img1.jpg";
 import Coffee2 from "../../../assets/coffee-img2.jpg";
 import Coffee3 from "../../../assets/coffee-img3.jpg";
@@ -11,12 +11,11 @@ import Coffee4 from "../../../assets/coffee-img4.jpg";
 import { Pictures } from "../../client/components/Pictures";
 import { AssessmentsStars } from "../../client/components/AssessmentsStars";
 import { Assessments } from "../../client/components/Assessments";
-import { Link } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import formatCPFandCNPJ from "../../../utils/formatCPFandCNPJ";
+import formatTelephone from "../../../utils/formatTelephone";
+import formatCEP from "../../../utils/formatCEP";
 
 import api from "../../../services/api";
-import getCEP from "../../../utils/getCEP";
-import axios from "axios";
 
 interface CompanyData {
     id: string,
@@ -43,7 +42,7 @@ interface CompanyData {
     Schedule?: [
         {
             id: string,
-            day_of_week: string,
+            weekday: string,
             opening_time: string,
             closing_time: string,
             lunch_time: string,
@@ -94,13 +93,16 @@ export const BusinessEntrepreneur: React.FC = () => {
                 ) : (
                     <div>
                         <div className="flex flex-row items-center gap-6 sm:gap-12 px-24 py-6 sm:py-12">
-                            <img
-                                src={Coffee}
-                                alt=""
-                                className="w-12 sm:w-16 min-h-12 sm:h-16 object-fill rounded-full"
-                            />
+                            {
+                                company.ImageCompany && company.ImageCompany.length > 0 &&
+                                <img
+                                    src={company.ImageCompany ? company.ImageCompany[0].image_url : ''}
+                                    alt=""
+                                    className="w-12 sm:w-16 min-h-12 sm:h-16 object-fill rounded-full"
+                                />
+                            }
                             <span className="font-inter font-bold text-lg sm:text-2xl text-gray-800">
-                                {company?.name}
+                                {company.name}
                             </span>
                         </div>
                         <div className="flex flex-col gap-4 sm:gap-4 py-8 sm:py-2 px-24">
@@ -110,7 +112,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                                     Sobre o negócio
                                 </span>
                                 <p className="font-inter text-sm text-justify">
-                                    {company?.description}
+                                    {company.description}
                                 </p>
                             </div>
 
@@ -118,14 +120,14 @@ export const BusinessEntrepreneur: React.FC = () => {
                                 <span className="font-inter font-medium">
                                     CNPJ
                                 </span>
-                                <p className="font-inter text-sm text-justify">{company?.cnpj}</p>
+                                <p className="font-inter text-sm text-justify">{formatCPFandCNPJ(company.cnpj)}</p>
                             </div>
 
                             <div className="flex flex-col gap-1">
                                 <span className="font-inter font-medium">
                                     Categoria
                                 </span>
-                                <p className="font-inter text-sm text-justify">{company?.category}</p>
+                                <p className="font-inter text-sm text-justify">{company.category}</p>
                             </div>
 
                             {company?.services.length !== 0 && (
@@ -143,16 +145,16 @@ export const BusinessEntrepreneur: React.FC = () => {
                                 <span className="font-inter font-medium">
                                     Telefone
                                 </span>
-                                <p className="font-inter text-sm text-justify">{company?.contact.telephone}</p>
+                                <p className="font-inter text-sm text-justify">{formatTelephone(company.contact.telephone)}</p>
                             </div>
 
                             <div className="flex flex-col gap-1">
                                 <span className="font-inter font-medium text-base">Whatsapp</span>
                                 <a
-                                    href={`https://api.whatsapp.com/send/?phone=${company?.contact.whatsapp}`}
+                                    href={`https://api.whatsapp.com/send/?phone=${company.contact.whatsapp}`}
                                     target="_blank"
                                     className="font-inter text-sm text-justify cursor-pointer hover:underline hover:text-blue-600">
-                                    {company?.contact.whatsapp}
+                                    {formatTelephone(company?.contact.whatsapp)}
                                 </a>
                             </div>
 
@@ -160,7 +162,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                                 <span className="font-inter font-medium">
                                     E-mail
                                 </span>
-                                <p className="font-inter text-sm text-justify">{company?.contact.email}</p>
+                                <p className="font-inter text-sm text-justify">{company.contact.email}</p>
                             </div>
 
                             <div className="flex flex-col gap-1">
@@ -168,43 +170,47 @@ export const BusinessEntrepreneur: React.FC = () => {
                                     Website
                                 </span>
                                 <a
-                                    href={company?.contact.website}
+                                    href={company.contact.website}
                                     target="_blank"
                                     className="flex flex-row items-center gap-1 font-inter text-sm text-justify cursor-pointer hover:underline hover:text-blue-600">
-                                    {company?.contact.website}
+                                    {company.contact.website}
                                     <GoLinkExternal />
                                 </a>
                             </div>
 
                             {
-                                company?.Schedule?.length === 1 && (
-                                    <div className="flex flex-col gap-1">
-                                        <span className="font-inter font-medium">
-                                            Horários de funcionamento
-                                        </span>
-                                        {
-                                            company?.Schedule?.map(schedule => (
-                                                <div key={schedule.id} className="flex flex-row items-center gap-4 font-inter text-sm">
-                                                    <span className="font-bold">{schedule.day_of_week}: </span>
-                                                    <p className="font-normal">{schedule.opening_time} - {schedule.closing_time}</p>
-                                                </div>
-                                            ))
-                                        }
-                                    </div>
-                                )
+                                <div className="flex flex-col gap-1">
+                                    {
+                                        company.Schedule && (
+                                            <span className="font-inter font-medium">
+                                                Horários de funcionamento
+                                            </span>
+                                        )
+                                    }
+                                    {
+                                        company.Schedule &&
+                                        company.Schedule.map(schedule => (
+                                            <div key={schedule.id} className="flex flex-row items-center gap-4 font-inter text-sm">
+                                                <span className="font-bold">{schedule.weekday}: </span>
+                                                <p className="font-normal">{schedule.opening_time} - {schedule.closing_time}</p>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+
                             }
 
                             {
-                                company?.Address && (
+                                company.Address && (
                                     <div className="flex flex-col gap-1">
                                         <span className="font-inter font-medium">
                                             Endereço
                                         </span>
                                         <p className="font-inter text-sm text-justify">
-                                            {company?.Address.street}, {" "}
-                                            {company?.Address.number} - {company?.Address.district}, {" "}
-                                            {company?.Address.city} - {company?.Address.state}, {" "}
-                                            {company?.Address.cep}
+                                            {company.Address.street}, {" "}
+                                            {company.Address.number} - {company.Address.district}, {" "}
+                                            {company.Address.city} - {company.Address.state}, {" "}
+                                            {formatCEP(company.Address.cep)}
                                         </p>
                                     </div>
                                 )
@@ -214,13 +220,15 @@ export const BusinessEntrepreneur: React.FC = () => {
                                 Imagens
                             </span>
                             <div className="grid grid-cols-2 sm:flex sm:flex-row gap-5">
-                                {company?.ImageCompany?.map((img) => (
-                                    <Pictures
-                                        key={img.id}
-                                        image={img.image_url}
-                                        description={img.title}
-                                    />
-                                ))}
+                                {
+                                    company.ImageCompany &&
+                                    company.ImageCompany.map((img) => (
+                                        <Pictures
+                                            key={img.id}
+                                            image={img.image_url}
+                                            description={img.title}
+                                        />
+                                    ))}
                             </div>
 
                             <div className="flex flex-col mt-14 sm:mt-10 gap-1">

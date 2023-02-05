@@ -47,17 +47,15 @@ export const BusinessCreate: React.FC = () => {
     const navigate = useNavigate();
 
     const [hasPhysicalLocation, setHasPhysicalLocation] = useState<boolean>(false);
-    const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedState, setSelectedState] = useState('');
-    const [description, setDescription] = useState('');
     const [images, setImages] = useState<File[]>([]);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [scheduleItems, setScheduleItems] = useState([
         {
             weekday: 'Segunda-feira',
-            opening_time: '00:00',
-            closing_time: '23:59',
-            lunch_time: '00:00',
+            opening_time: '',
+            closing_time: '',
+            lunch_time: '-',
         }
     ]);
 
@@ -72,17 +70,10 @@ export const BusinessCreate: React.FC = () => {
                 weekday: 'Segunda-feira',
                 opening_time: '',
                 closing_time: '',
-                lunch_time: '',
+                lunch_time: '-',
             }
         ])
-
-        console.log(scheduleItems);
     }
-
-    function removeScheduleItem() {
-        console.log('Removing schedule item');
-    }
-
 
 
     function setScheduleItemValue(position: number, field: string, value: string) {
@@ -95,8 +86,6 @@ export const BusinessCreate: React.FC = () => {
         });
 
         setScheduleItems(updateScheduleItems);
-
-        console.log(scheduleItems);
     }
 
     function handleSelectedImages(event: ChangeEvent<HTMLInputElement>) {
@@ -139,22 +128,22 @@ export const BusinessCreate: React.FC = () => {
                     cnpj: data.cnpj,
                     category: data.category,
                     description: data.description,
-                    services: data.services,
+                    services: [data.services],
                     physical_localization: hasPhysicalLocation,
+                    cep: data.cep,
+                    street: data.street,
+                    district: data.district,
+                    number: data.number,
+                    state: data.state,
+                    city: data.city,
                     telephone: data.telephone,
                     whatsapp: data.whatsapp,
                     email: data.email,
                     website: data.website,
                     schedules: scheduleItems,
-                    address: {
-                        cep: data.cep,
-                        street: data.street,
-                        district: data.district,
-                        number: data.number,
-                        state: data.state,
-                        city: data.city
-                    }
                 }
+
+                console.log(companies);
 
                 await api.post('/companies', companies);
 
@@ -171,7 +160,7 @@ export const BusinessCreate: React.FC = () => {
 
                 toast.error("Erro ao cadastrar empresa");
             }
-        }, [toast, navigate]);
+        }, [toast, navigate, hasPhysicalLocation, scheduleItems]);
 
     return (
         <div className="flex flex-row">
