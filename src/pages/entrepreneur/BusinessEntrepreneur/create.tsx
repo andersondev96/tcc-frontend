@@ -37,7 +37,6 @@ interface CreateBusinessEntrepreneurFormData {
     number: number;
     state: string;
     city: string;
-
 }
 
 export const BusinessCreate: React.FC = () => {
@@ -143,9 +142,13 @@ export const BusinessCreate: React.FC = () => {
                     schedules: scheduleItems,
                 }
 
-                console.log(companies);
+                const response = await api.post('/companies', companies);
 
-                await api.post('/companies', companies);
+                const files = images.forEach(async (image) => {
+                    await api.post(`/companies/images/${response.data.id}`,
+                        image
+                    );
+                });
 
                 navigate('/admin/business');
 
@@ -160,7 +163,7 @@ export const BusinessCreate: React.FC = () => {
 
                 toast.error("Erro ao cadastrar empresa");
             }
-        }, [toast, navigate, hasPhysicalLocation, scheduleItems]);
+        }, [toast, navigate, hasPhysicalLocation, scheduleItems, images]);
 
     return (
         <div className="flex flex-row">

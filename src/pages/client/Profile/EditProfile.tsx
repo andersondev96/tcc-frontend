@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { Form } from "@unform/web";
 import { FormHandles } from "@unform/core";
 import * as Yup from "yup";
@@ -18,11 +18,11 @@ interface ProfileFormData {
     old_password: string;
     password: string;
     password_confirmation: string;
-    avatar?: string;
 }
 
 export const EditProfile: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
+    const [avatar, setAvatar] = useState(new FormData());
 
     const navigate = useNavigate();
 
@@ -61,7 +61,12 @@ export const EditProfile: React.FC = () => {
 
                 const response = await api.put("/users", formData);
 
+                const updateAvatar = await api.patch("/users/avatar", avatar);
+
                 updateUser(response.data);
+
+                toast.success("Usuário atualizado com sucesso!")
+
 
                 navigate('/')
             } catch (err) {
@@ -77,6 +82,14 @@ export const EditProfile: React.FC = () => {
 
             }
         }, [toast, history]);
+
+    const handleAvatarChange = useCallback(
+        (e: ChangeEvent<HTMLInputElement>) => {
+            if (e.target.files) {
+
+                avatar.append('avatar', e.target.files[0]);
+            }
+        }, []);
     return (
         <div>
             <ToastContainer />
@@ -102,12 +115,17 @@ export const EditProfile: React.FC = () => {
                             Foto de perfil
                         </span>
                         <label
-                            htmlFor="dropzone-file"
+                            htmlFor="avatar"
                             className="flex flex-col justify-center items-center w-36 h-36 bg-gray-200 rounded-full border-2 border-gray-400 cursor-pointer hover:bg-gray-400 transition-colors duration-300">
                             <div className="flex flex-col justify-center items-center pt-5 pb-6">
-                                <AiOutlineCamera size={24} className="text-gray-600" />
+                                <AiOutlineCamera size={24} className="text-gray-900 absolute" />
+                                <img
+                                    src={`http://localhost:3333/avatar/${user.avatar}`}
+                                    alt={user.name}
+                                    className="w-36 h-36 rounded-full object-cover opacity-80"
+                                />
                             </div>
-                            <input id="dropzone-file" type="file" className="hidden" accept="image/*" />
+                            <input id="avatar" type="file" className="hidden" accept="image/*" onChange={handleAvatarChange} />
                         </label>
 
                         <div className="flex flex-col w-full md:max-w-4xl mt-12 sm:mt-8">
@@ -167,6 +185,6 @@ export const EditProfile: React.FC = () => {
 
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
