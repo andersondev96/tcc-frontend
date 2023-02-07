@@ -41,7 +41,7 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
                         <Link to="/profile">
                             <div className="flex items-center">
                                 <div className="shrink-0">
-                                    <img src={user.avatar || Avatar} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
+                                    <img src={`http://localhost:3333/avatar/${user.avatar}`} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
                                 </div>
                                 <div className="hidden sm:block glow ml-3">
                                     <p className="text-sm font-semibold text-white">{user.name}</p>

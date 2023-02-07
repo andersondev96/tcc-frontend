@@ -28,6 +28,7 @@ interface CompanyData {
     description: string,
     services: string[],
     physical_localization: boolean,
+    Schedule: IScheduleItem[],
     contact: {
         telephone: string,
         whatsapp: string,
@@ -88,6 +89,10 @@ export const BusinessEdit: React.FC = () => {
             });
 
     }, [params.id]);
+
+    useEffect(() => {
+        company.physical_localization ? setHasPhysicalLocation(true) : setHasPhysicalLocation(false);
+    }, [company.physical_localization, setHasPhysicalLocation])
 
     function setPhysicalLocation() {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -309,7 +314,9 @@ export const BusinessEdit: React.FC = () => {
 
                         </div>
 
-                        {scheduleItems.map((scheduleItem, index) => {
+
+                        {company.Schedule && company.Schedule.map((scheduleItem, index) => {
+
                             return (
 
                                 <div key={index} className="flex flex-wrap -mx-3 md:mb-4">
@@ -338,6 +345,7 @@ export const BusinessEdit: React.FC = () => {
                                             label="Abre às"
                                             placeholder="XX:XX"
                                             onChange={(e) => { setScheduleItemValue(index, 'opening_time', e.target.value) }}
+                                            value={scheduleItem.opening_time}
 
                                         />
                                     </div>
@@ -348,18 +356,19 @@ export const BusinessEdit: React.FC = () => {
                                             label="Fecha às"
                                             placeholder="XX:XX"
                                             onChange={(e) => { setScheduleItemValue(index, 'closing_time', e.target.value) }}
+                                            value={scheduleItem.closing_time}
                                         />
                                     </div>
                                 </div>
                             )
                         })}
 
-
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full items-center md:w-1/4 px-3 mb-6 md:mb-0">
                                 <input
                                     className="h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
                                     type="checkbox"
+                                    defaultChecked={company.physical_localization}
                                     onChange={setPhysicalLocation}
                                 />
                                 <label
@@ -375,21 +384,21 @@ export const BusinessEdit: React.FC = () => {
                                 <div className="flex flex-wrap -mx-3 md:mb-6">
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="Address?.street"
+                                            name="Address.street"
                                             label="Endereço"
                                             placeholder="Rua XXX"
                                         />
                                     </div>
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="Address?.district"
+                                            name="Address.district"
                                             label="Bairro"
                                             placeholder="Bairro XXX"
                                         />
                                     </div>
                                     <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="Address?.number"
+                                            name="Address.number"
                                             label="Número"
                                             placeholder="00"
                                         />
@@ -399,7 +408,7 @@ export const BusinessEdit: React.FC = () => {
                                 <div className="flex flex-wrap -mx-3 md:mb-6">
                                     <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="Address?.cep"
+                                            name="Address.cep"
                                             label="CEP"
                                             placeholder="XXXXX-XXX"
                                         />
@@ -407,7 +416,7 @@ export const BusinessEdit: React.FC = () => {
                                     <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                                         <div className="relative">
                                             <Select
-                                                name="Address?.state"
+                                                name="Address.state"
                                                 label="Estado"
                                                 value={selectedState}
                                                 onChange={(e) => setSelectedState(e.target.value)}
@@ -447,7 +456,7 @@ export const BusinessEdit: React.FC = () => {
                                     </div>
                                     <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="Address?.city"
+                                            name="Address.city"
                                             label="Cidade"
                                         />
                                     </div>

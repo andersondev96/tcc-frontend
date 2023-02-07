@@ -59,9 +59,9 @@ export const EditProfile: React.FC = () => {
                     return;
                 }
 
-                const response = await api.put("/users", formData);
+                await api.patch("/users/avatar", avatar);
 
-                const updateAvatar = await api.patch("/users/avatar", avatar);
+                const response = await api.put("/users", formData);
 
                 updateUser(response.data);
 

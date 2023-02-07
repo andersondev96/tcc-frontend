@@ -108,7 +108,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                     <span className="sr-only">Abrir menu do usuário</span>
                                                     <img
                                                         className="h-8 w-8 rounded-full"
-                                                        src={user.avatar || Avatar}
+                                                        src={`http://localhost:3333/avatar/${user.avatar}`}
                                                         alt="Avatar"
                                                     />
                                                 </Menu.Button>
