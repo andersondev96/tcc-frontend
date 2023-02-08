@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
@@ -6,7 +6,7 @@ import { SideBar } from "../../../components/Sidebar";
 import { ServiceCard } from "../components/ServiceCard";
 import api from "../../../services/api";
 
-interface Service {
+interface ServiceData {
     id: string;
     name: string;
     description: string;
@@ -15,26 +15,84 @@ interface Service {
 
 }
 
-interface Company {
-    id: string;
-    name: string;
+interface CompanyData {
+    id: string,
+    name: string,
+    cnpj: string,
+    category: string,
+    description: string,
+    services: string[],
+    physical_localization: boolean,
+    contact: {
+        telephone: string,
+        whatsapp: string,
+        email: string,
+        website: string,
+    },
+    Address?: {
+        cep: string,
+        street: string,
+        district: string,
+        number: number,
+        state: string,
+        city: string
+    },
+    Schedule?: [
+        {
+            id: string,
+            weekday: string,
+            opening_time: string,
+            closing_time: string,
+            lunch_time: string,
+        }
+    ],
+    ImageCompany?: [
+        {
+            id: string,
+            title: string,
+            image_name: string,
+            image_url: string,
+        }
+    ]
+    user_id: string
 }
 
 export const ServicesEntrepreneur: React.FC = () => {
     const navigate = useNavigate();
 
-    const [company, setCompany] = useState<Company>({} as Company);
-    const [services, setServices] = useState<Service[]>([]);
+    const [company, setCompany] = useState<CompanyData>({} as CompanyData);
+    const [services, setServices] = useState<ServiceData[]>([]);
 
     useEffect(() => {
-        api.get('/companies/me')
-            .then(response => setCompany(response.data))
+        api
+            .get('/companies/me')
+            .then(response => setCompany(response.data)
+            )
     }, []);
 
     useEffect(() => {
-        api.get(`/services/${company.id}`)
-            .then(response => setServices(response.data));
-    }, [company.id]);
+        api
+            .get<ServiceData[]>(`/services/company/${company?.id}`)
+            .then(response => setServices(response.data))
+    }, [company?.id]);
+
+    const searchService = useCallback(
+        async (event: ChangeEvent<HTMLInputElement>) => {
+            const name = event.target.value;
+
+            if (!name) {
+                api.get<ServiceData[]>(`/services/company/${company?.id}`)
+                    .then(response => setServices(response.data));
+            } else {
+                api.get<ServiceData[]>(`/services/name/${company?.id}`, {
+                    params: {
+                        name
+                    }
+                })
+                    .then(response => setServices(response.data));
+            }
+        }, [company?.id]);
+
 
     return (
         <div className="flex flex-row">
@@ -52,7 +110,7 @@ export const ServicesEntrepreneur: React.FC = () => {
                                 Adicionar serviço
                             </button>
                         </Link>
-                        <Search />
+                        <Search onChange={searchService} />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-5 gap-12 mt-12">
                         {
