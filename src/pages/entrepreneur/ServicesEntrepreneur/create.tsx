@@ -32,9 +32,9 @@ interface Company {
 export const CreateServicesEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
     const [highlight, setHighlight] = useState<boolean>(false);
-    const [selectedImage, setSelectedImage] = useState<File[]>([]);
-    const [selectImagePreview, setSelectImagePreview] = useState<string[]>([]);
+    const [selectImagePreview, setSelectImagePreview] = useState("");
     const formRef = useRef<FormHandles>(null);
+    const [imageService, setImageService] = useState(new FormData());
 
     const navigate = useNavigate();
 
@@ -47,23 +47,19 @@ export const CreateServicesEntrepreneur: React.FC = () => {
         setHighlight(!highlight);
     }
 
-    function handleSelectedImage(event: ChangeEvent<HTMLInputElement>) {
-        if (!event.target.files) {
-            return;
-        }
+    const handleSelectedImage = useCallback(
+        (e: ChangeEvent<HTMLInputElement>) => {
+            // const formData = new FormData();
 
-        const selectedImage = Array.from(event.target.files);
+            if (e.target.files) {
+                const selectedImage = e.target.files[0];
+                imageService.append("service", selectedImage);
 
-        setSelectedImage(selectedImage);
+                const selectedImagePreview = URL.createObjectURL(selectedImage);
 
-        console.log(selectedImage);
-
-        const selectedImagePreview = selectedImage.map(image => {
-            return URL.createObjectURL(image);
-        });
-
-        setSelectImagePreview(selectedImagePreview);
-    }
+                setSelectImagePreview(selectedImagePreview);
+            }
+        }, []);
 
     const handleSubmit = useCallback(
         async (data: ServiceData) => {
@@ -90,13 +86,13 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                     highlight_service: highlight,
                 };
 
-                await api.post(`/services/${company.id}`, service);
+                const response = await api.post(`/services/${company.id}`, service);
 
-                /* const image = await api.patch(`services/image/${response.data.id}`, {
-                    service: selectedImage
-                });
+                const image = await api.patch(`services/service/${response.data.id}`, imageService);
 
-                console.log(image); */
+                console.log(image);
+
+                toast.success("Serviço adicionado com sucesso!")
 
                 navigate('/admin/services');
 
@@ -178,29 +174,28 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                             <div className="w-full px-3 mb-6 md:mb-0">
                                 <label
                                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-1"
-                                    htmlFor="product"
+                                    htmlFor="service"
                                 >
                                     Adicionar imagem
                                 </label>
                                 <label
-                                    htmlFor="dropzone-file"
+                                    htmlFor="service"
                                     className="flex flex-col justify-center items-center mt-4 w-64 h-44 bg-gray-200 rounded-lg border-2 border-gray-400 cursor-pointer hover:opacity-80 duration-300 transition-opacity"
                                 >
                                     <div className="flex flex-col justify-center items-center">
                                         {
-                                            selectedImage.length === 0 && (
+                                            !selectImagePreview && (
                                                 <AiOutlineCamera size={24} />
                                             )
                                         }
-                                        <>
-                                            {selectImagePreview.map(image => {
-                                                return (
-                                                    <img key={image} src={image} className="w-60 h-40 object-cover rounded-lg border-2 border-gray-400" />
-                                                )
-                                            })}
-                                        </>
+                                        {
+                                            selectImagePreview &&
+                                            <img src={selectImagePreview} className="w-60 h-40 object-cover rounded-lg border-2 border-gray-400" />
+
+                                        }
+
                                     </div>
-                                    <input id="dropzone-file" name="image_url" type="file" accept="image/*" className="hidden" onChange={handleSelectedImage} />
+                                    <input id="service" name="image_url" type="file" accept="image/*" className="hidden" onChange={handleSelectedImage} />
                                 </label>
                             </div>
                         </div>

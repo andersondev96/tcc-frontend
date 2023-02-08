@@ -12,6 +12,7 @@ interface ServiceData {
     description: string;
     price: number;
     category: string;
+    image_url: string;
 
 }
 
@@ -121,6 +122,7 @@ export const ServicesEntrepreneur: React.FC = () => {
                                     name={service.name}
                                     price={service.price}
                                     category={service.category}
+                                    image={service.image_url}
                                 />
                             ))
                         }
