@@ -1,12 +1,8 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import { useAuth } from "../../contexts/AuthContext";
-import { useAuthWithGoogle } from "../../hooks/useAuthWithGoogle";
-import { FaUserCircle } from "react-icons/fa";
+import { getCoordinatesFromCEP } from "../../utils/getCoordinatesFromCEP";
 
 import { Map } from "../../components/Map";
-import { Select } from "../../components/Form/Select";
-import { useNavigate } from "react-router-dom";
 import { NavBar } from "../../components/NavBar/NavBar";
 interface IBGEUFResponse {
     id: string;
@@ -43,11 +39,15 @@ export const Home: React.FC = () => {
     const [selectedCity, setSelectedCity] = useState("0");
     const [coords, setCoords] = useState([0, 0]);
 
-    /* function handleSignOutWithGoogle() {
-        signOutWithGoogle();
-
-        navigate("/login");
-    } */
+    useEffect(() => {
+        getCoordinatesFromCEP("35930021")
+            .then(coords => {
+                setCoords([coords.lat, coords.lng])
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    }, [getCoordinatesFromCEP]);
 
     function classNames(...classes: any) {
         return classes.filter(Boolean).join(' ')

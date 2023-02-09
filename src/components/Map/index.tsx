@@ -77,7 +77,7 @@ export const Map: React.FC<IMapProps> = ({ lat, lng }) => {
                     />
                 </Marker>
 
-                <Marker position={[-19.6020179, -43.2177258]}>
+                <Marker position={[latitude, longitude]}>
                     <Popup
                         image={CoffeeImg}
                         name="Singhtglass Coffee"
