@@ -49,6 +49,7 @@ export const BusinessCreate: React.FC = () => {
     const [selectedState, setSelectedState] = useState('');
     const [images, setImages] = useState<File[]>([]);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
+    const [imagesService, setImageService] = useState(new FormData());
     const [scheduleItems, setScheduleItems] = useState([
         {
             weekday: 'Segunda-feira',
@@ -87,21 +88,23 @@ export const BusinessCreate: React.FC = () => {
         setScheduleItems(updateScheduleItems);
     }
 
-    function handleSelectedImages(event: ChangeEvent<HTMLInputElement>) {
-        if (!event.target.files) {
-            return;
-        }
+    const handleSelectedImages = useCallback(
+        (e: ChangeEvent<HTMLInputElement>) => {
 
-        const selectedImages = Array.from(event.target.files);
+            if (e.target.files) {
+                const selectedImages = Array.from(e.target.files);
 
-        setImages(selectedImages);
+                selectedImages.map(
+                    image => imagesService.append("service", image)
+                );
 
-        const selectedImagesPreview = selectedImages.map(image => {
-            return URL.createObjectURL(image);
-        });
+                const selectedPreviewImages = selectedImages.map(image => {
+                    return URL.createObjectURL(image);
+                });
 
-        setPreviewImages(selectedImagesPreview);
-    }
+                setPreviewImages(selectedPreviewImages);
+            }
+        }, [imagesService, setPreviewImages]);
 
     const handleSubmit = useCallback(
         async (data: CreateBusinessEntrepreneurFormData) => {
@@ -145,9 +148,7 @@ export const BusinessCreate: React.FC = () => {
                 const response = await api.post('/companies', companies);
 
                 const files = images.forEach(async (image) => {
-                    await api.post(`/companies/images/${response.data.id}`,
-                        image
-                    );
+                    await api.post(`/companies/images/${response.data.id}`, imagesService);
                 });
 
                 navigate('/admin/business');

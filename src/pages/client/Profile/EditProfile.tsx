@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Form } from "@unform/web";
 import { FormHandles } from "@unform/core";
 import * as Yup from "yup";
@@ -23,10 +23,21 @@ interface ProfileFormData {
 export const EditProfile: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const [avatar, setAvatar] = useState(new FormData());
+    const [previewAvatar, setPreviewAvatar] = useState<string>();
 
     const navigate = useNavigate();
 
     const { user, updateUser } = useAuth();
+
+    useEffect(() => {
+        handleSetInitialAvatar();
+    }, [])
+
+    const handleSetInitialAvatar = useCallback(() => {
+        if (user.avatar) {
+            setPreviewAvatar(`http://localhost:3333/avatar/${user.avatar}`);
+        }
+    }, [setPreviewAvatar]);
 
     const handleSubmit = useCallback(
         async (data: ProfileFormData) => {
@@ -86,8 +97,12 @@ export const EditProfile: React.FC = () => {
     const handleAvatarChange = useCallback(
         (e: ChangeEvent<HTMLInputElement>) => {
             if (e.target.files) {
+                const selectedAvatar = e.target.files[0];
+                avatar.append('avatar', selectedAvatar);
 
-                avatar.append('avatar', e.target.files[0]);
+                const selectedAvatarPreview = URL.createObjectURL(selectedAvatar);
+
+                setPreviewAvatar(selectedAvatarPreview);
             }
         }, []);
     return (
@@ -120,7 +135,7 @@ export const EditProfile: React.FC = () => {
                             <div className="flex flex-col justify-center items-center pt-5 pb-6">
                                 <AiOutlineCamera size={24} className="text-gray-900 absolute" />
                                 <img
-                                    src={`http://localhost:3333/avatar/${user.avatar}`}
+                                    src={previewAvatar}
                                     alt={user.name}
                                     className="w-36 h-36 rounded-full object-cover opacity-80"
                                 />
