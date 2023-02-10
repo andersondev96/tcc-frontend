@@ -20,6 +20,13 @@ interface IScheduleItem {
     lunch_time: string;
 }
 
+interface Address {
+    logradouro?: string;
+    bairro?: string;
+    localidade?: string;
+    uf?: string;
+}
+
 interface CompanyData {
     id: string,
     name: string,
@@ -56,11 +63,6 @@ interface UpdateBusinessEntrepreneurFormData {
     number: number;
     state: string;
     city: string;
-
-}
-
-interface RouteParams {
-    id: string;
 }
 
 export const BusinessEdit: React.FC = () => {
@@ -72,6 +74,8 @@ export const BusinessEdit: React.FC = () => {
     const [hasPhysicalLocation, setHasPhysicalLocation] = useState<boolean>(false);
     const [selectedState, setSelectedState] = useState('');
     const [images, setImages] = useState<File[]>([]);
+    const [cep, setCEP] = useState('');
+    const [address, setAddress] = useState<Address>({});
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [scheduleItems, setScheduleItems] = useState([
         {
@@ -91,12 +95,21 @@ export const BusinessEdit: React.FC = () => {
     }, [params.id]);
 
     useEffect(() => {
+        if (cep.length === 8) {
+            fetch(`https://viacep.com.br/ws/${cep}/json`)
+                .then(response => response.json())
+                .then(data => setAddress(data as Address))
+                .catch(error => console.error(error))
+        }
+    }, [cep]);
+
+    useEffect(() => {
         company.physical_localization ? setHasPhysicalLocation(true) : setHasPhysicalLocation(false);
     }, [company.physical_localization, setHasPhysicalLocation])
 
-    function setPhysicalLocation() {
+    const setPhysicalLocation = useCallback(() => {
         setHasPhysicalLocation(!hasPhysicalLocation);
-    }
+    }, [setHasPhysicalLocation]);
 
     function addNewScheduleItem() {
         setScheduleItems([
@@ -387,6 +400,7 @@ export const BusinessEdit: React.FC = () => {
                                             name="Address.street"
                                             label="Endereço"
                                             placeholder="Rua XXX"
+                                            value={address.logradouro || ''}
                                         />
                                     </div>
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
@@ -394,6 +408,7 @@ export const BusinessEdit: React.FC = () => {
                                             name="Address.district"
                                             label="Bairro"
                                             placeholder="Bairro XXX"
+                                            value={address.bairro || ''}
                                         />
                                     </div>
                                     <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
@@ -411,6 +426,7 @@ export const BusinessEdit: React.FC = () => {
                                             name="Address.cep"
                                             label="CEP"
                                             placeholder="XXXXX-XXX"
+                                            onChange={(e) => setCEP(e.target.value)}
                                         />
                                     </div>
                                     <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
@@ -418,36 +434,36 @@ export const BusinessEdit: React.FC = () => {
                                             <Select
                                                 name="Address.state"
                                                 label="Estado"
-                                                value={selectedState}
+                                                value={address.uf || selectedState}
                                                 onChange={(e) => setSelectedState(e.target.value)}
                                                 options={[
-                                                    { value: 'AL', label: 'Acre' },
-                                                    { value: 'AP', label: 'Alagoas' },
-                                                    { value: 'AM', label: 'Amapá' },
-                                                    { value: 'BA', label: 'Amazonas' },
-                                                    { value: 'CE', label: 'Bahia' },
-                                                    { value: 'DF', label: 'Ceará' },
-                                                    { value: 'ES', label: 'Distrito Federal' },
-                                                    { value: 'GO', label: 'Espírito Santo' },
-                                                    { value: 'MA', label: 'Goiás' },
-                                                    { value: 'MT', label: 'Maranhão' },
-                                                    { value: 'MS', label: 'Mato Grosso' },
-                                                    { value: 'MG', label: 'Mato Grosso do Sul' },
-                                                    { value: 'PA', label: 'Minas Gerais' },
-                                                    { value: 'PB', label: 'Pará' },
-                                                    { value: 'PR', label: 'Paraíba' },
-                                                    { value: 'PE', label: 'Paraná' },
-                                                    { value: 'PI', label: 'Pernambuco' },
-                                                    { value: 'RJ', label: 'Piauí' },
-                                                    { value: 'RN', label: 'Rio de Janeiro' },
-                                                    { value: 'RS', label: 'Rio Grande do Norte' },
-                                                    { value: 'RO', label: 'Rio Grande do Sul' },
-                                                    { value: 'RR', label: 'Rondônia' },
-                                                    { value: 'SC', label: 'Roraima' },
-                                                    { value: 'SP', label: 'Santa Catarina' },
-                                                    { value: 'SE', label: 'São Paulo' },
-                                                    { value: 'TO', label: 'Sergipe' },
-                                                    { value: '  ', label: 'Tocantins' },
+                                                    { value: 'AC', label: 'Acre' },
+                                                    { value: 'AL', label: 'Alagoas' },
+                                                    { value: 'AP', label: 'Amapá' },
+                                                    { value: 'AM', label: 'Amazonas' },
+                                                    { value: 'BA', label: 'Bahia' },
+                                                    { value: 'CE', label: 'Ceará' },
+                                                    { value: 'DF', label: 'Distrito Federal' },
+                                                    { value: 'ES', label: 'Espírito Santo' },
+                                                    { value: 'GO', label: 'Goisás' },
+                                                    { value: 'MA', label: 'Maranhão' },
+                                                    { value: 'MT', label: 'Mato Grosso' },
+                                                    { value: 'MS', label: 'Mato Grosso do Sul' },
+                                                    { value: 'MG', label: 'Minas Gerais' },
+                                                    { value: 'PA', label: 'Pará' },
+                                                    { value: 'PB', label: 'Paraíba' },
+                                                    { value: 'PR', label: 'Paraná' },
+                                                    { value: 'PE', label: 'Pernambuco' },
+                                                    { value: 'PI', label: 'Piauí' },
+                                                    { value: 'RJ', label: 'Rio de Janeiro' },
+                                                    { value: 'RN', label: 'Rio Grande do Norte' },
+                                                    { value: 'RS', label: 'Rio Grande do Sul' },
+                                                    { value: 'RO', label: 'Rondônia' },
+                                                    { value: 'RR', label: 'Roraima' },
+                                                    { value: 'SC', label: 'Santa Catarina' },
+                                                    { value: 'SP', label: 'São Paulo' },
+                                                    { value: 'SE', label: 'Sergipe' },
+                                                    { value: 'TO', label: 'Tocantins' },
 
                                                 ]}
                                                 placeholder="Selecione uma opção"
@@ -458,6 +474,7 @@ export const BusinessEdit: React.FC = () => {
                                         <Input
                                             name="Address.city"
                                             label="Cidade"
+                                            value={address.localidade || selectedState}
                                         />
                                     </div>
                                 </div>

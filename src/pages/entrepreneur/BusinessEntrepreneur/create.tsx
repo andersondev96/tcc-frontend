@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, Fragment, useCallback, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
 import * as Yup from "yup";
@@ -11,7 +11,7 @@ import getValidationErrors from "../../../utils/getValidateErrors";
 import { Input } from "../../../components/Form/Input";
 import { Select } from "../../../components/Form/Select";
 import { TextArea } from "../../../components/Form/TextArea";
-import axios from "axios";
+import getCEP from "../../../utils/getCEP";
 
 interface IScheduleItem {
     weekday: string;
@@ -39,6 +39,13 @@ interface CreateBusinessEntrepreneurFormData {
     city: string;
 }
 
+interface Address {
+    logradouro?: string;
+    bairro?: string;
+    localidade?: string;
+    uf?: string;
+}
+
 export const BusinessCreate: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const checkboxRef = useRef(null);
@@ -50,6 +57,8 @@ export const BusinessCreate: React.FC = () => {
     const [images, setImages] = useState<File[]>([]);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [imagesService, setImageService] = useState(new FormData());
+    const [cep, setCEP] = useState('');
+    const [address, setAddress] = useState<Address>({});
     const [scheduleItems, setScheduleItems] = useState([
         {
             weekday: 'Segunda-feira',
@@ -58,6 +67,15 @@ export const BusinessCreate: React.FC = () => {
             lunch_time: '-',
         }
     ]);
+
+    useEffect(() => {
+        if (cep.length === 8) {
+            fetch(`https://viacep.com.br/ws/${cep}/json`)
+                .then(response => response.json())
+                .then(data => setAddress(data as Address))
+                .catch(error => console.error(error))
+        }
+    }, [cep]);
 
     function setPhysicalLocation() {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -74,7 +92,6 @@ export const BusinessCreate: React.FC = () => {
             }
         ])
     }
-
 
     function setScheduleItemValue(position: number, field: string, value: string) {
         const updateScheduleItems = scheduleItems.map((scheduleItem, index) => {
@@ -352,6 +369,7 @@ export const BusinessCreate: React.FC = () => {
                                         <Input
                                             name="street"
                                             label="Endereço"
+                                            defaultValue={address.logradouro || ''}
                                             placeholder="Rua XXX"
                                         />
                                     </div>
@@ -359,6 +377,7 @@ export const BusinessCreate: React.FC = () => {
                                         <Input
                                             name="district"
                                             label="Bairro"
+                                            defaultValue={address.bairro || ''}
                                             placeholder="Bairro XXX"
                                         />
                                     </div>
@@ -377,6 +396,7 @@ export const BusinessCreate: React.FC = () => {
                                             name="cep"
                                             label="CEP"
                                             placeholder="XXXXX-XXX"
+                                            onChange={e => setCEP(e.target.value)}
                                         />
                                     </div>
                                     <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
@@ -384,36 +404,36 @@ export const BusinessCreate: React.FC = () => {
                                             <Select
                                                 name="state"
                                                 label="Estado"
-                                                value={selectedState}
+                                                value={address.uf || selectedState}
                                                 onChange={(e) => setSelectedState(e.target.value)}
                                                 options={[
-                                                    { value: 'AL', label: 'Acre' },
-                                                    { value: 'AP', label: 'Alagoas' },
-                                                    { value: 'AM', label: 'Amapá' },
-                                                    { value: 'BA', label: 'Amazonas' },
-                                                    { value: 'CE', label: 'Bahia' },
-                                                    { value: 'DF', label: 'Ceará' },
-                                                    { value: 'ES', label: 'Distrito Federal' },
-                                                    { value: 'GO', label: 'Espírito Santo' },
-                                                    { value: 'MA', label: 'Goiás' },
-                                                    { value: 'MT', label: 'Maranhão' },
-                                                    { value: 'MS', label: 'Mato Grosso' },
-                                                    { value: 'MG', label: 'Mato Grosso do Sul' },
-                                                    { value: 'PA', label: 'Minas Gerais' },
-                                                    { value: 'PB', label: 'Pará' },
-                                                    { value: 'PR', label: 'Paraíba' },
-                                                    { value: 'PE', label: 'Paraná' },
-                                                    { value: 'PI', label: 'Pernambuco' },
-                                                    { value: 'RJ', label: 'Piauí' },
-                                                    { value: 'RN', label: 'Rio de Janeiro' },
-                                                    { value: 'RS', label: 'Rio Grande do Norte' },
-                                                    { value: 'RO', label: 'Rio Grande do Sul' },
-                                                    { value: 'RR', label: 'Rondônia' },
-                                                    { value: 'SC', label: 'Roraima' },
-                                                    { value: 'SP', label: 'Santa Catarina' },
-                                                    { value: 'SE', label: 'São Paulo' },
-                                                    { value: 'TO', label: 'Sergipe' },
-                                                    { value: '  ', label: 'Tocantins' },
+                                                    { value: 'AC', label: 'Acre' },
+                                                    { value: 'AL', label: 'Alagoas' },
+                                                    { value: 'AP', label: 'Amapá' },
+                                                    { value: 'AM', label: 'Amazonas' },
+                                                    { value: 'BA', label: 'Bahia' },
+                                                    { value: 'CE', label: 'Ceará' },
+                                                    { value: 'DF', label: 'Distrito Federal' },
+                                                    { value: 'ES', label: 'Espírito Santo' },
+                                                    { value: 'GO', label: 'Goisás' },
+                                                    { value: 'MA', label: 'Maranhão' },
+                                                    { value: 'MT', label: 'Mato Grosso' },
+                                                    { value: 'MS', label: 'Mato Grosso do Sul' },
+                                                    { value: 'MG', label: 'Minas Gerais' },
+                                                    { value: 'PA', label: 'Pará' },
+                                                    { value: 'PB', label: 'Paraíba' },
+                                                    { value: 'PR', label: 'Paraná' },
+                                                    { value: 'PE', label: 'Pernambuco' },
+                                                    { value: 'PI', label: 'Piauí' },
+                                                    { value: 'RJ', label: 'Rio de Janeiro' },
+                                                    { value: 'RN', label: 'Rio Grande do Norte' },
+                                                    { value: 'RS', label: 'Rio Grande do Sul' },
+                                                    { value: 'RO', label: 'Rondônia' },
+                                                    { value: 'RR', label: 'Roraima' },
+                                                    { value: 'SC', label: 'Santa Catarina' },
+                                                    { value: 'SP', label: 'São Paulo' },
+                                                    { value: 'SE', label: 'Sergipe' },
+                                                    { value: 'TO', label: 'Tocantins' },
 
                                                 ]}
                                                 placeholder="Selecione uma opção"
@@ -424,6 +444,7 @@ export const BusinessCreate: React.FC = () => {
                                         <Input
                                             name="city"
                                             label="Cidade"
+                                            defaultValue={address.localidade || ''}
                                         />
                                     </div>
                                 </div>
