@@ -134,11 +134,15 @@ export const EditProfile: React.FC = () => {
                             className="flex flex-col justify-center items-center w-36 h-36 bg-gray-200 rounded-full border-2 border-gray-400 cursor-pointer hover:bg-gray-400 transition-colors duration-300">
                             <div className="flex flex-col justify-center items-center pt-5 pb-6">
                                 <AiOutlineCamera size={24} className="text-gray-900 absolute" />
-                                <img
-                                    src={previewAvatar}
-                                    alt={user.name}
-                                    className="w-36 h-36 rounded-full object-cover opacity-80"
-                                />
+                                {
+                                    previewAvatar && (
+                                        <img
+                                            src={previewAvatar}
+                                            alt={user.name}
+                                            className="w-36 h-36 rounded-full object-cover opacity-80"
+                                        />
+                                    )
+                                }
                             </div>
                             <input id="avatar" type="file" className="hidden" accept="image/*" onChange={handleAvatarChange} />
                         </label>

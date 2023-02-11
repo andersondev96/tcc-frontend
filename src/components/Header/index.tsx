@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useAuthWithGoogle } from "../../hooks/useAuthWithGoogle";
 
 import { AiOutlineHome } from "react-icons/ai";
