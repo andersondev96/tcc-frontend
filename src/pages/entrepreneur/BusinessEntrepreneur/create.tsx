@@ -56,7 +56,7 @@ export const BusinessCreate: React.FC = () => {
     const [selectedState, setSelectedState] = useState('');
     const [images, setImages] = useState<File[]>([]);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
-    const [imagesService, setImageService] = useState(new FormData());
+    const [imagesCompany, setImagesCompany] = useState(new FormData());
     const [cep, setCEP] = useState('');
     const [address, setAddress] = useState<Address>({});
     const [scheduleItems, setScheduleItems] = useState([
@@ -112,7 +112,7 @@ export const BusinessCreate: React.FC = () => {
                 const selectedImages = Array.from(e.target.files);
 
                 selectedImages.map(
-                    image => imagesService.append("service", image)
+                    image => imagesCompany.append("company", image)
                 );
 
                 const selectedPreviewImages = selectedImages.map(image => {
@@ -121,7 +121,7 @@ export const BusinessCreate: React.FC = () => {
 
                 setPreviewImages(selectedPreviewImages);
             }
-        }, [imagesService, setPreviewImages]);
+        }, [imagesCompany, setPreviewImages]);
 
     const handleSubmit = useCallback(
         async (data: CreateBusinessEntrepreneurFormData) => {
@@ -130,7 +130,7 @@ export const BusinessCreate: React.FC = () => {
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
-                    cnpj: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('CNPJ obrigatório'),
+                    cnpj: Yup.string().min(14, 'O campo deve possuir 14 caracteres').required('CNPJ obrigatório'),
                     category: Yup.string().required('Categoria obrigatório'),
                     telephone: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Telefone obrigatório'),
                     whatsapp: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Whatsapp obrigatório'),
@@ -162,13 +162,13 @@ export const BusinessCreate: React.FC = () => {
                     schedules: scheduleItems,
                 }
 
-                const response = await api.post('/companies', companies);
+                // const response = await api.post('/companies', companies);
 
-                const files = images.forEach(async (image) => {
-                    await api.post(`/companies/images/${response.data.id}`, imagesService);
-                });
+                console.log(imagesCompany);
+                const images = await api.post(`/companies/images/4ddf2333-a36a-482b-8a93-6cdb7a1f0e11`, imagesCompany);
 
-                navigate('/admin/business');
+
+                // navigate('/admin/business');
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
