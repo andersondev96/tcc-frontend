@@ -4,6 +4,7 @@ import { getCoordinatesFromCEP } from "../../utils/getCoordinatesFromCEP";
 
 import { Map } from "../../components/Map";
 import { NavBar } from "../../components/NavBar/NavBar";
+import api from "../../services/api";
 interface IBGEUFResponse {
     id: string;
     sigla: string;
@@ -38,16 +39,6 @@ export const Home: React.FC = () => {
     const [selectedUf, setSelectedUf] = useState("0");
     const [selectedCity, setSelectedCity] = useState("0");
     const [coords, setCoords] = useState([0, 0]);
-
-    useEffect(() => {
-        getCoordinatesFromCEP("35930021")
-            .then(coords => {
-                setCoords([coords.lat, coords.lng])
-            })
-            .catch(err => {
-                console.error(err);
-            });
-    }, [getCoordinatesFromCEP]);
 
     function classNames(...classes: any) {
         return classes.filter(Boolean).join(' ')

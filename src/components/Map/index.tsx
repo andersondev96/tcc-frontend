@@ -8,20 +8,50 @@ import {
 } from "react-leaflet";
 import { Popup } from "./Popup";
 import CoffeeImg from "../../assets/coffee.png";
+import api from "../../services/api";
+import { getCoordinatesFromCEP } from "../../utils/getCoordinatesFromCEP";
 
 interface IMapProps {
     lat: number;
     lng: number;
 }
 
+interface IImage {
+    id: string;
+    image_name: string;
+    image_url: string;
+}
+interface ICompanies {
+    id: string;
+    name: string;
+    category: string;
+    telephone: string;
+    whatsapp: string;
+    email: String;
+    website: string;
+    imageCompany: IImage;
+}
+
 export const Map: React.FC<IMapProps> = ({ lat, lng }) => {
     const animateRef = useRef(false);
+    const [companies, setCompanies] = useState<ICompanies[]>([]);
     const [latitude, setLatitude] = useState(0);
     const [longitude, setLongitude] = useState(0);
-    let coords = {
-        lat: 0,
-        lng: 0,
-    };
+    const [coords, setCoords] = useState([0, 0]);
+
+    useEffect(() => {
+        api.get(`/companies`).then((response) => setCompanies(response.data));
+    }, []);
+
+    useEffect(() => {
+        getCoordinatesFromCEP("35930021")
+            .then(coords => {
+                setCoords([coords.lat, coords.lng])
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    }, [getCoordinatesFromCEP]);
 
     function setLocalization() {
         if (lat === 0 && lng === 0) {
