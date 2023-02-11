@@ -2,34 +2,76 @@ import { AiOutlineCamera } from "react-icons/ai";
 import { SideBar } from "../../../components/Sidebar";
 import { PreviousPageButton } from "../../client/components/PreviousPageButton";
 import { Input } from "../../../components/Form/Input";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
 import { TextArea } from "../../../components/Form/TextArea";
 import { Select } from "../../../components/Form/Select";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../services/api";
+import * as Yup from "yup";
 
 interface Service {
     id: string;
+    name: string;
     description: string;
     category: string;
     price: number;
+    image_url: string;
+    highlight_service: boolean;
 }
 
 export const EditServicesEntrepreneur: React.FC = () => {
     const params = useParams();
     const [service, setService] = useState({} as Service);
+    const [highlight, setHighlight] = useState<boolean>(false);
 
     const formRef = useRef<FormHandles>(null);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
-        api.get<Service>(``)
-    }, []);
+        api.get<Service>(`/services/${params.id}`).then((response) => {
+            setService(response.data);
+        })
+    }, [params.id]);
 
-    function handleSubmit() {
-
+    function handleSetHighlight() {
+        setHighlight(!highlight);
     }
+
+    const handleSubmit = useCallback(
+        async (data: Service) => {
+            try {
+                formRef.current?.setErrors({});
+                const schema = Yup.object().shape({
+                    name: Yup.string().required("Campo obrigatório"),
+                    description: Yup.string().required("Campo obrigatório"),
+                    price: Yup.number().typeError("Campo deve possuir um valor número").required("Campo obrigatório"),
+                    category: Yup.string().required("Campo obrigatório")
+                });
+
+                await schema.validate(data, {
+                    abortEarly: false,
+                });
+
+                const service = {
+                    name: data.name,
+                    description: data.description,
+                    price: data.price,
+                    category: data.category,
+                    image_url: data.image_url,
+                    highlight_service: highlight,
+                };
+
+                const response = await api.put(`/services/${params.id}`, service);
+
+                navigate('/admin/services');
+
+            } catch (error) {
+
+            }
+        }, []);
 
     return (
         <div className="flex flex-row">
@@ -46,6 +88,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
                         ref={formRef}
                         onSubmit={handleSubmit}
                         className="w-full md:max-w-4xl"
+                        initialData={service}
                     >
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full px-3 mb-6 md:mb-0">
@@ -115,7 +158,8 @@ export const EditServicesEntrepreneur: React.FC = () => {
                             <div className="w-full px-3 mb-6 md:mb-0">
                                 <input
                                     className="h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-                                    type="checkbox"
+                                    type="checkbox" defaultChecked={service.highlight_service}
+                                    onChange={handleSetHighlight}
                                 />
                                 <label
                                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-1"
