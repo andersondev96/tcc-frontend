@@ -162,13 +162,11 @@ export const BusinessCreate: React.FC = () => {
                     schedules: scheduleItems,
                 }
 
-                // const response = await api.post('/companies', companies);
+                const response = await api.post('/companies', companies);
 
-                console.log(imagesCompany);
-                const images = await api.post(`/companies/images/4ddf2333-a36a-482b-8a93-6cdb7a1f0e11`, imagesCompany);
+                await api.post(`/companies/images/${response.data.id}`, imagesCompany);
 
-
-                // navigate('/admin/business');
+                navigate('/admin/business');
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {

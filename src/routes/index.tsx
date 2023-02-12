@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 
 import { Business } from "../pages/client/Business";
@@ -33,7 +33,7 @@ export const Router: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<SignIn />} />
             <Route path="/register" element={<SignUp />} />
-            <Route path="/business" element={<Business />} />
+            <Route path="/business/:id" element={<Business />} />
             <Route path="/service" element={<Service />} />
             <Route path="/profile" element={<EditProfile />} />
             <Route path="/favorites" element={<Favorites />} />
