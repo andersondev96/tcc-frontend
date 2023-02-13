@@ -24,7 +24,6 @@ interface CompanyData {
 
 export const Service: React.FC = () => {
     const { company_id } = useParams();
-    console.log(company_id);
     const [services, setServices] = useState<ServiceData[]>([]);
 
     useEffect(() => {
@@ -60,9 +59,9 @@ export const Service: React.FC = () => {
                 <div className="mt-11 flex flex-col font-montserrat font-semibold text-xl">
                     <span>Em destaque</span>
                     <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <Card image={Coffee1} product="Café simples" stars={5} price="R$ 2,00" />
-                        <Card image={Coffee1} product="Café simples" stars={3} price="R$ 2,00" />
-                        <Card image={Coffee1} product="Café simples" stars={2} price="R$ 2,00" />
+                        <Card service_id="1" image={Coffee1} product="Café simples" description="" stars={5} price="R$ 2,00" />
+                        <Card service_id="2" image={Coffee1} product="Café simples" description="" stars={3} price="R$ 2,00" />
+                        <Card service_id="3" image={Coffee1} product="Café simples" description="" stars={2} price="R$ 2,00" />
                     </div>
                 </div>
 
@@ -73,9 +72,11 @@ export const Service: React.FC = () => {
                                 <span>{service.category}</span>
                                 <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <Card
+                                        service_id={service.id}
                                         image={service.image_url ||
                                             "https://images.unsplash.com/photo-1600456899121-68eda5705257?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1557&q=80"}
                                         product={service.name}
+                                        description={service.description}
                                         stars={service.stars}
                                         price={`R$ ${service.price}`}
                                     />

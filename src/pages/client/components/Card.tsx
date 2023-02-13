@@ -7,13 +7,15 @@ import { AiFillHeart } from "react-icons/ai";
 import { ModalService } from "./ModalService";
 
 interface CardProps {
+    service_id: string;
     image: string;
     product: string;
+    description: string;
     stars: number;
     price: string;
 }
 
-export const Card: React.FC<CardProps> = ({ image, product, stars, price }) => {
+export const Card: React.FC<CardProps> = ({ service_id, image, product, description, stars, price }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
     function openModal() {
@@ -62,12 +64,12 @@ export const Card: React.FC<CardProps> = ({ image, product, stars, price }) => {
             >
 
                 <ModalService
-                    service="Café simples"
-                    description="Café com açúcar saboroso preparado pela casa.
-                    Quantidade: 200 ml"
-                    stars={3}
-                    image={Coffee1}
-                    price="R$ 2,00"
+                    service_id={service_id}
+                    service={product}
+                    description={description}
+                    stars={stars}
+                    image={image}
+                    price={price}
                 />
 
             </ModalContainer>

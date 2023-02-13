@@ -4,28 +4,28 @@ import { FormEvent, useCallback, useState } from "react";
 import api from "../../../services/api";
 
 interface AssessmentFormProps {
-    company_id: string;
+    table_id: string;
 }
 
-export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ company_id }) => {
+export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id }) => {
     const [comment, setComment] = useState("");
     const [stars, setStars] = useState(0);
 
     const handleSubmit = useCallback(async (event: FormEvent) => {
         event.preventDefault();
 
-        await api.post(`/assessments/company/${company_id}`, {
+        await api.post(`/assessments/company/${table_id}`, {
             comment,
             stars
         });
 
-    }, [comment, company_id]);
+    }, [comment, table_id]);
 
     const updateAssessment = useCallback(async () => {
-        const company = await api.get(`/assessments/company/${company_id}`);
+        const company = await api.get(`/assessments/company/${table_id}`);
 
         return company;
-    }, [company_id]);
+    }, [table_id]);
 
 
     return (
