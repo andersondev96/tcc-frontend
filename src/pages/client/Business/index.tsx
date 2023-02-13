@@ -53,15 +53,28 @@ interface Company {
     Schedule: ISchedules[];
 }
 
+interface Assessment {
+    id: string;
+    user_id: string;
+    comment: string;
+    stars: string;
+}
+
 export const Business: React.FC = () => {
     const params = useParams();
     const [company, setCompany] = useState<Company>({} as Company);
+    const [assessments, setAssessments] = useState<Assessment[]>([]);
 
     useEffect(() => {
         api.get<Company>(`companies/${params.id}`)
             .then(response => {
                 setCompany(response.data);
             });
+
+        api.get<Assessment[]>(`/assessments/company/${params.id}`)
+            .then(response => {
+                setAssessments(response.data);
+            })
     }, [params.id]);
 
     return (
@@ -143,18 +156,27 @@ export const Business: React.FC = () => {
                     }
                     <ButtonAction type="favorite" />
 
-                    <div className="flex flex-col mt-[2.25rem]">
-                        <div className="flex flex-col gap-[0.375rem]">
-                            <span className="font-inter font-semibold">Avaliações</span>
-                            <p className="font-inter font-light text-xs">4 comentários</p>
+                    {assessments && assessments.length > 0 ? (
+                        <div className="flex flex-col mt-[2.25rem]">
+                            <div className="flex flex-col gap-[0.375rem]">
+                                <span className="font-inter font-semibold">Avaliações</span>
+                                <p className="font-inter font-light text-xs">{assessments.length} comentário(s)</p>
+                            </div>
+                            {assessments.map(assessment => (
+                                <Assessments key={assessment.id} text={assessment.comment} stars={Number(assessment.stars)} />
+                            ))}
                         </div>
-                        <Assessments text="O melhor café da cidade" stars={3} />
-                        <Assessments text="Atendimento de qualidade, estão de parabéns" stars={4} />
-                        <Assessments text="Gostei muito do atendimento" stars={5} />
-                    </div>
+                    ) : (
+                        <div className="flex flex-col mt-[2.25rem]">
+                            <div className="flex flex-col gap-[0.375rem]">
+                                <span className="font-inter font-semibold">Avaliações</span>
+                                <p className="font-inter font-light text-xs">Sem comentários</p>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="flex flex-row mt-8">
-                        <AssessmentsForm />
+                        <AssessmentsForm company_id={company.id} />
                     </div>
 
                 </div>
