@@ -29,7 +29,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
     const navigation = [
         { name: 'Home', href: '/', current: pageCurrent === 'home' },
         { name: 'Negócio', href: `/business/${company_id}`, current: pageCurrent === 'negocio' },
-        { name: 'Serviços', href: '/service', current: pageCurrent === 'servicos' },
+        { name: 'Serviços', href: `/services/${company_id}`, current: pageCurrent === 'servicos' },
         { name: 'Orçamentos', href: '/budget', current: pageCurrent === 'orcamentos' }
     ]
 
