@@ -66,9 +66,11 @@ export const Business: React.FC = () => {
     const [assessments, setAssessments] = useState<Assessment[]>([]);
 
     useEffect(() => {
+
         api.get<Company>(`companies/${params.id}`)
             .then(response => {
                 setCompany(response.data);
+                localStorage.setItem('@web:company_id', response.data.id);
             });
 
         api.get<Assessment[]>(`/assessments/company/${params.id}`)

@@ -14,6 +14,7 @@ interface NavBarProps {
 export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
     const { user, signOut } = useAuth();
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const company_id = localStorage.getItem('@web:company_id');
 
     function openModal() {
         setModalIsOpen(true);
@@ -27,7 +28,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
 
     const navigation = [
         { name: 'Home', href: '/', current: pageCurrent === 'home' },
-        { name: 'Negócio', href: '/business', current: pageCurrent === 'negocio' },
+        { name: 'Negócio', href: `/business/${company_id}`, current: pageCurrent === 'negocio' },
         { name: 'Serviços', href: '/service', current: pageCurrent === 'servicos' },
         { name: 'Orçamentos', href: '/budget', current: pageCurrent === 'orcamentos' }
     ]
