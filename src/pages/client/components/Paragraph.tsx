@@ -1,7 +1,7 @@
 
 interface ParagraphProps {
     title: string;
-    text: string;
+    text: string | string[];
 }
 
 export const Paragraph: React.FC<ParagraphProps> = ({ title, text }) => {

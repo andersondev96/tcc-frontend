@@ -1,81 +1,146 @@
-import { Header } from "../../../components/Header";
 import { BusinessHeader } from '../components/BusinessHeader';
 import { Paragraph } from "../components/Paragraph";
 
-import Coffee1 from '../../../assets/coffee-img1.jpg';
-import Coffee2 from '../../../assets/coffee-img2.jpg';
-import Coffee3 from '../../../assets/coffee-img3.jpg';
-import Coffee4 from '../../../assets/coffee-img4.jpg';
+import ImgCompany from "../../../assets/img-company.jpg";
 import { Pictures } from "../components/Pictures";
 import { Assessments } from "../components/Assessments";
 import { AssessmentsForm } from "../components/AssessmentsForm";
 import { ButtonAction } from "../components/ButtonAction";
 import { NavBar } from "../../../components/NavBar/NavBar";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import api from "../../../services/api";
+
+interface IContact {
+    telephone: string;
+    whatsapp?: string;
+    email: string;
+    website?: string;
+}
+interface IAddress {
+    street: string;
+    district: string;
+    number: string;
+    state: string;
+    city: string;
+    cep: string;
+    lat: number;
+    lng: number;
+}
+
+interface ISchedules {
+    id: string;
+    weekday: string;
+    opening_time: string;
+    closing_time: string;
+}
+
+interface ImageCompany {
+    id: string;
+    image_url: string;
+}
+
+interface Company {
+    id: string;
+    name: string;
+    description: string;
+    category: string;
+    services: string[];
+    stars: number;
+    contact: IContact;
+    ImageCompany: ImageCompany[];
+    Address: IAddress;
+    Schedule: ISchedules[];
+}
 
 export const Business: React.FC = () => {
+    const params = useParams();
+    const [company, setCompany] = useState<Company>({} as Company);
 
-    const images = [
-        { id: 1, image: Coffee1, description: "Image1" },
-        { id: 2, image: Coffee2, description: "Image2" },
-        { id: 3, image: Coffee3, description: "Image3" },
-        { id: 4, image: Coffee4, description: "Image4" },
-    ]
+    useEffect(() => {
+        api.get<Company>(`companies/${params.id}`)
+            .then(response => {
+                setCompany(response.data);
+            });
+    }, [params.id]);
 
     return (
         <div className="flex flex-col">
             <NavBar pageCurrent="negocio" />
-            <BusinessHeader />
+            <BusinessHeader
+                name={company.name}
+                category={company.category}
+                stars={company.stars}
+                schedules={company.Schedule}
+                contact={company.contact}
+                image={company.ImageCompany && company.ImageCompany.length > 0 ? company.ImageCompany[0].image_url : ImgCompany}
+                Address={company.Address && company.Address}
+            />
             <div className="px-24 py-12">
                 <div className="flex flex-col gap-4 mobile:gap-4">
                     <Paragraph
                         title="Sobre o negócio"
-                        text="Estamos a começar a temporada com a nossa mistura de Solstício de Verão. Uma celebração de longos dias, tempo quente e um pouco de R&amp;R extra. É suculento, doce e delicioso quente ou gelado.
-            Obtemos e assados este blend para produzir um espectro de sabores que entrega uma experiência animada e refinada no copo."
+                        text={company.description}
                     />
 
                     <Paragraph
                         title="Serviços oferecidos"
-                        text="Café"
+                        text={company.services}
                     />
 
-                    <Paragraph
-                        title="Endereço"
-                        text="Mission District 3014 20th Street, SF, CA, 94110"
-                    />
+                    {
+                        company.Address && (
+                            <Paragraph
+                                title="Endereço"
+                                text={`
+                                    ${company.Address.street} , 
+                                    ${company.Address.district}, 
+                                    ${company.Address.number},
+                                    ${company.Address.cep},
+                                    ${company.Address.city} - 
+                                    ${company.Address.state}`
+                                }
+                            />
+                        )
+                    }
 
-                    <div className="flex flex-col">
-                        <span className="font-inter font-semibold text-gray-700">
-                            Horários de funcionamento
-                        </span>
-                        <div>
-                            <div className="flex flex-row gap-4">
-                                <span className="font-medium">Segunda à Sexta:</span>
-                                <p className="font-inter font-medium text-blue-800">07:00 - 17:00</p>
-                            </div>
-                            <div className="flex flex-row gap-4">
-                                <span className="font-medium">Sábado:</span>
-                                <p className="font-inter font-medium text-blue-800">07:00 - 19:00</p>
-                            </div>
-                            <div className="flex flex-row gap-4">
-                                <span className="font-medium">Domingo:</span>
-                                <p className="font-inter font-medium text-blue-800">07:00 - 21:00</p>
+                    {company.Schedule && (
+                        <div className="flex flex-col">
+                            <span className="font-inter font-semibold text-gray-700">
+                                Horários de funcionamento
+                            </span>
+                            <div>
+                                {company.Schedule.map(schedule => (
+                                    <div className="flex flex-row gap-4" key={schedule.id}>
+                                        <span className="font-medium">{schedule.weekday}</span>
+                                        <p className="font-inter font-medium text-blue-800">{schedule.opening_time} - {schedule.closing_time}</p>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    </div>
+                    )}
 
-                    <Paragraph
-                        title="Telefone"
-                        text="+1 415-861-1313"
-                    />
+                    {
+                        company.contact && (
+                            <Paragraph
+                                title="Telefone"
+                                text={company.contact.telephone}
+                            />
+                        )
+                    }
 
-                    <div className="flex flex-col gap-2">
-                        <span className="font-inter font-semibold text-gray-700">Fotos</span>
-                        <div className="flex flex-row mobile:grid mobile:grid-cols-2 gap-[1.25rem]">
-                            {images.map(img => (
-                                <Pictures key={img.id} image={img.image} description={img.description} />
-                            ))}
-                        </div>
-                    </div>
+                    {
+                        company.ImageCompany && company.ImageCompany.length > 0 && (
+                            <div className="flex flex-col gap-2">
+                                <span className="font-inter font-semibold text-gray-700">Fotos</span>
+                                <div className="flex flex-row mobile:grid mobile:grid-cols-2 gap-[1.25rem]">
+                                    {company.ImageCompany.map(img => (
+                                        <Pictures key={img.id} image={img.image_url} description={company.name} />
+                                    ))}
+                                </div>
+                            </div>
+                        )
+                    }
                     <ButtonAction type="favorite" />
 
                     <div className="flex flex-col mt-[2.25rem]">
