@@ -1,18 +1,17 @@
 import { useCallback, useRef, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import * as Yup from "yup";
 
-import { useAuthWithGoogle } from "../hooks/useAuthWithGoogle";
 import { useAuth } from "../contexts/AuthContext";
+import { useAuthWithGoogle } from "../hooks/useAuthWithGoogle";
 
 
+import { FormHandles } from "@unform/core";
+import { Form } from "@unform/web";
 import { FcGoogle } from "react-icons/fc";
 import { Input } from "../components/Form/Input";
-import { Form } from "@unform/web";
-import { FormHandles } from "@unform/core";
 import getValidationErrors from "../utils/getValidateErrors";
-import api from "../services/api";
 
 interface SignInFormData {
     email: string;
@@ -43,23 +42,6 @@ export const SignIn: React.FC = () => {
         navigate("/home");
     }
 
-    const redirectAdmin = useCallback(() => {
-        try {
-            api
-                .get('/companies/me')
-                .then(response => setCompany(response.data)
-                );
-
-            if (company) {
-                navigate("/admin/business");
-            } else {
-                navigate("/");
-            }
-        } catch (error) {
-            //
-        }
-    }, [company, navigate]);
-
     const handleSubmit = useCallback(
         async (data: SignInFormData) => {
             try {
@@ -83,7 +65,7 @@ export const SignIn: React.FC = () => {
                     password: data.password
                 });
 
-                redirectAdmin();
+                navigate('/');
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
@@ -96,7 +78,7 @@ export const SignIn: React.FC = () => {
 
                 toast.error("Error ao autenticar, tente novamente!");
             }
-        }, [signIn, toast, redirectAdmin]);
+        }, [signIn, toast, navigate]);
 
     return (
         <div className="bg-gray-100">
