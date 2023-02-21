@@ -1,15 +1,15 @@
 import { BusinessHeader } from '../components/BusinessHeader';
 import { Paragraph } from "../components/Paragraph";
 
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import ImgCompany from "../../../assets/img-company.jpg";
-import { Pictures } from "../components/Pictures";
+import { NavBar } from "../../../components/NavBar/NavBar";
+import api from "../../../services/api";
 import { Assessments } from "../components/Assessments";
 import { AssessmentsForm } from "../components/AssessmentsForm";
 import { ButtonAction } from "../components/ButtonAction";
-import { NavBar } from "../../../components/NavBar/NavBar";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import api from "../../../services/api";
+import { Pictures } from "../components/Pictures";
 
 interface IContact {
     telephone: string;
@@ -44,7 +44,7 @@ interface Company {
     id: string;
     name: string;
     description: string;
-    category: string;
+    category_id: string;
     services: string[];
     stars: number;
     contact: IContact;
@@ -84,7 +84,7 @@ export const Business: React.FC = () => {
             <NavBar pageCurrent="negocio" />
             <BusinessHeader
                 name={company.name}
-                category={company.category}
+                category={company.category_id}
                 stars={company.stars}
                 schedules={company.Schedule}
                 contact={company.contact}
@@ -178,7 +178,7 @@ export const Business: React.FC = () => {
                     )}
 
                     <div className="flex flex-row mt-8">
-                        <AssessmentsForm company_id={company.id} />
+                        <AssessmentsForm table_id={company.id} />
                     </div>
 
                 </div>

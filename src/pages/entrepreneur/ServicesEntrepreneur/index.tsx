@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
-import { ServiceCard } from "../components/ServiceCard";
 import api from "../../../services/api";
+import { ServiceCard } from "../components/ServiceCard";
 
 interface ServiceData {
     id: string;
@@ -63,6 +63,7 @@ export const ServicesEntrepreneur: React.FC = () => {
 
     const [company, setCompany] = useState<CompanyData>({} as CompanyData);
     const [services, setServices] = useState<ServiceData[]>([]);
+    const [name, setName] = useState("");
 
     useEffect(() => {
         api
@@ -73,7 +74,7 @@ export const ServicesEntrepreneur: React.FC = () => {
 
     useEffect(() => {
         api
-            .get<ServiceData[]>(`/services/company/${company?.id}`)
+            .get<ServiceData[]>(`/services/company/${company.id}`)
             .then(response => setServices(response.data))
     }, [company?.id]);
 
@@ -81,18 +82,20 @@ export const ServicesEntrepreneur: React.FC = () => {
         async (event: ChangeEvent<HTMLInputElement>) => {
             const name = event.target.value;
 
+            setName(name);
+
             if (!name) {
-                api.get<ServiceData[]>(`/services/company/${company?.id}`)
+                await api.get<ServiceData[]>(`/services/company/${company.id}`)
                     .then(response => setServices(response.data));
             } else {
-                api.get<ServiceData[]>(`/services/name/${company?.id}`, {
+                await api.get<ServiceData[]>(`/services/company/${company.id}`, {
                     params: {
                         name
                     }
                 })
                     .then(response => setServices(response.data));
             }
-        }, [company?.id]);
+        }, [company?.id, setServices]);
 
 
     return (
@@ -113,21 +116,30 @@ export const ServicesEntrepreneur: React.FC = () => {
                         </Link>
                         <Search onChange={searchService} />
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-12 mt-12">
-                        {
-                            services.map(service => (
-                                <ServiceCard
-                                    key={service.id}
-                                    id={service.id}
-                                    name={service.name}
-                                    price={service.price}
-                                    category={service.category}
-                                    image={service.image_url}
-                                />
-                            ))
-                        }
 
-                    </div>
+
+                    {
+                        services.length > 0 && services ? (
+                            <>
+                                <p className="font-mono text-sm mt-4">Exibindo {services.length} resultados {name && `para a busca "${name}"`}</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-5 gap-12 mt-8">
+                                    {
+                                        services.map(service => (
+                                            <ServiceCard
+                                                key={service.id}
+                                                id={service.id}
+                                                name={service.name}
+                                                price={service.price}
+                                                category={service.category}
+                                                image={service.image_url}
+                                            />
+                                        ))
+                                    }
+
+                                </div>
+                            </>
+                        ) : <p className="font-mono text-sm mt-12">Nenhum resultado exibido para a busca "{name}"</p>
+                    }
                     <PaginationTable />
                 </div>
             </div>
