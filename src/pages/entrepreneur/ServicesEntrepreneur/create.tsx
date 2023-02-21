@@ -1,18 +1,18 @@
 import { ToastContainer, toast } from "react-toastify";
 import * as Yup from "yup";
 
-import { AiOutlineCamera } from "react-icons/ai";
-import { SideBar } from "../../../components/Sidebar";
-import { PreviousPageButton } from "../../client/components/PreviousPageButton";
-import { Input } from "../../../components/Form/Input";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
-import { TextArea } from "../../../components/Form/TextArea";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { AiOutlineCamera } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+import { Input } from "../../../components/Form/Input";
 import { Select } from "../../../components/Form/Select";
+import { TextArea } from "../../../components/Form/TextArea";
+import { SideBar } from "../../../components/Sidebar";
 import api from "../../../services/api";
 import getValidationErrors from "../../../utils/getValidateErrors";
-import { useNavigate } from "react-router-dom";
+import { PreviousPageButton } from "../../client/components/PreviousPageButton";
 
 interface ServiceData {
     name: string;
@@ -27,10 +27,12 @@ interface ServiceData {
 interface Company {
     id: string;
     name: string;
+    category_id: string;
 }
 
 export const CreateServicesEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
+    const [subcategories, setSubcategories] = useState([]);
     const [highlight, setHighlight] = useState<boolean>(false);
     const [selectImagePreview, setSelectImagePreview] = useState("");
     const formRef = useRef<FormHandles>(null);
@@ -41,7 +43,11 @@ export const CreateServicesEntrepreneur: React.FC = () => {
     useEffect(() => {
         api.get('/companies/me')
             .then(response => setCompany(response.data))
-    }, []);
+
+        api.get(`/categories/list-subcategories/${company.category_id}`).then(response => {
+            setSubcategories(response.data);
+        });
+    }, [company.category_id]);
 
     function handleSetHighlight() {
         setHighlight(!highlight);
@@ -152,13 +158,10 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                                 <Select
                                     name="category"
                                     label="Categoria do produto/serviço"
-                                    options={[
-                                        { value: "alimentação", label: "Alimentação" },
-                                        { value: "beleza e higiene pessoal", label: "Beleza e higiene pessoal" },
-                                        { value: "bem estar e saúde", label: "Bem estar e saúde" },
-                                        { value: "diversão e lazer", label: "Diversão e lazer" },
-
-                                    ]}
+                                    options={subcategories.map(subcategory => ({
+                                        value: subcategory, label: subcategory
+                                    }))
+                                    }
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
