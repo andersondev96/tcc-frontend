@@ -96,8 +96,6 @@ export const CreateServicesEntrepreneur: React.FC = () => {
 
                 const image = await api.patch(`services/service/${response.data.id}`, imageService);
 
-                console.log(image);
-
                 toast.success("Serviço adicionado com sucesso!")
 
                 navigate('/admin/services');

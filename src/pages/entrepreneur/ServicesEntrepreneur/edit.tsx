@@ -1,15 +1,17 @@
-import { AiOutlineCamera } from "react-icons/ai";
-import { SideBar } from "../../../components/Sidebar";
-import { PreviousPageButton } from "../../client/components/PreviousPageButton";
-import { Input } from "../../../components/Form/Input";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
-import { TextArea } from "../../../components/Form/TextArea";
-import { Select } from "../../../components/Form/Select";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { AiOutlineCamera } from "react-icons/ai";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../../../services/api";
+import { toast } from "react-toastify";
 import * as Yup from "yup";
+import { Input } from "../../../components/Form/Input";
+import { Select } from "../../../components/Form/Select";
+import { TextArea } from "../../../components/Form/TextArea";
+import { SideBar } from "../../../components/Sidebar";
+import api from "../../../services/api";
+import getValidationErrors from "../../../utils/getValidateErrors";
+import { PreviousPageButton } from "../../client/components/PreviousPageButton";
 
 interface Service {
     id: string;
@@ -21,24 +23,54 @@ interface Service {
     highlight_service: boolean;
 }
 
+interface Company {
+    id: string;
+    name: string;
+    category_id: string;
+}
+
 export const EditServicesEntrepreneur: React.FC = () => {
+    const [company, setCompany] = useState<Company>({} as Company);
+    const [subcategories, setSubcategories] = useState([]);
     const params = useParams();
     const [service, setService] = useState({} as Service);
     const [highlight, setHighlight] = useState<boolean>(false);
+    const [selectImagePreview, setSelectImagePreview] = useState("");
+    const [imageService, setImageService] = useState(new FormData());
 
     const formRef = useRef<FormHandles>(null);
 
     const navigate = useNavigate();
 
     useEffect(() => {
+        api.get('/companies/me')
+            .then(response => setCompany(response.data))
+
+        api.get(`/categories/list-subcategories/${company.category_id}`).then(response => {
+            setSubcategories(response.data);
+        });
+
         api.get<Service>(`/services/${params.id}`).then((response) => {
             setService(response.data);
         })
-    }, [params.id]);
+    }, [params.id, company.category_id]);
 
     function handleSetHighlight() {
         setHighlight(!highlight);
     }
+
+    const handleSelectedImage = useCallback(
+        (e: ChangeEvent<HTMLInputElement>) => {
+
+            if (e.target.files) {
+                const selectedImage = e.target.files[0];
+                imageService.append("service", selectedImage);
+
+                const selectedImagePreview = URL.createObjectURL(selectedImage);
+
+                setSelectImagePreview(selectedImagePreview);
+            }
+        }, []);
 
     const handleSubmit = useCallback(
         async (data: Service) => {
@@ -60,18 +92,31 @@ export const EditServicesEntrepreneur: React.FC = () => {
                     description: data.description,
                     price: data.price,
                     category: data.category,
-                    image_url: data.image_url,
                     highlight_service: highlight,
                 };
 
-                const response = await api.put(`/services/${params.id}`, service);
+                await api.put(`/services/${params.id}`, service);
+
+                if (imageService) {
+                    await api.put(`services/service/${params.id}`, imageService);
+                }
 
                 navigate('/admin/services');
 
-            } catch (error) {
+                toast.success("Serviço atualizado com sucesso!")
 
+            } catch (err) {
+                if (err instanceof Yup.ValidationError) {
+                    const errors = getValidationErrors(err);
+
+                    formRef.current?.setErrors(errors);
+
+                    return;
+                }
+
+                toast.error("Erro ao cadastrar o serviço")
             }
-        }, []);
+        }, [params.id, highlight, imageService, navigate, toast]);
 
     return (
         <div className="flex flex-row">
@@ -116,13 +161,11 @@ export const EditServicesEntrepreneur: React.FC = () => {
                                 <Select
                                     name="category"
                                     label="Categoria do produto/serviço"
-                                    options={[
-                                        { value: "alimentação", label: "Alimentação" },
-                                        { value: "beleza e higiene pessoal", label: "Beleza e higiene pessoal" },
-                                        { value: "bem estar e saúde", label: "Bem estar e saúde" },
-                                        { value: "diversão e lazer", label: "Diversão e lazer" },
-
-                                    ]}
+                                    value={service.category}
+                                    options={subcategories.map(subcategory => ({
+                                        value: subcategory, label: subcategory
+                                    }))
+                                    }
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -138,22 +181,31 @@ export const EditServicesEntrepreneur: React.FC = () => {
                             <div className="w-full px-3 mb-6 md:mb-0">
                                 <label
                                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-1"
-                                    htmlFor="product"
+                                    htmlFor="service"
                                 >
                                     Adicionar imagem
                                 </label>
                                 <label
-                                    htmlFor="dropzone-file"
-                                    className="flex flex-col justify-center items-center w-64 h-44 bg-gray-200 rounded-lg border-2 border-gray-400 cursor-pointer hover:opacity-80 duration-300 transition-opacity"
+                                    htmlFor="service"
+                                    className="flex flex-col justify-center items-center mt-4 w-64 h-44 bg-gray-200 rounded-lg border-2 border-gray-400 cursor-pointer hover:opacity-80 duration-300 transition-opacity"
                                 >
-                                    <div className="flex flex-col justify-center items-center ">
-                                        <AiOutlineCamera size={24} />
+                                    <div className="flex flex-col justify-center items-center">
+                                        {
+                                            selectImagePreview ?
+                                                (
+                                                    <img src={selectImagePreview} className="w-60 h-40 object-cover rounded-lg border-2 border-gray-400" />
+                                                ) : !selectImagePreview && service.image_url ? (
+                                                    <img src={service.image_url} className="w-60 h-40 object-cover rounded-lg border-2 border-gray-400" />
+                                                ) : (
+                                                    <AiOutlineCamera size={24} />
+                                                )
+                                        }
                                     </div>
-                                    <input id="dropzone-file" type="file" className="hidden" />
+                                    <input id="service" name="image_url" type="file" accept="image/*" className="hidden" onChange={handleSelectedImage} />
                                 </label>
                             </div>
-
                         </div>
+
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full px-3 mb-6 md:mb-0">
                                 <input
