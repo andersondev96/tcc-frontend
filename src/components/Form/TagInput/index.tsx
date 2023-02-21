@@ -4,6 +4,7 @@ import { ChangeEvent, InputHTMLAttributes, KeyboardEvent, useCallback, useEffect
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     name: string;
     label: string;
+    value: string;
     placeholder?: string;
     inputChanges: (event: ChangeEvent<HTMLInputElement>) => void;
     inputKeydown: (event: KeyboardEvent<HTMLInputElement>) => void;
@@ -12,6 +13,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 export const TagInput: React.FC<InputProps> = ({
     name,
     label,
+    value,
     placeholder,
     inputChanges,
     inputKeydown,
@@ -59,7 +61,7 @@ export const TagInput: React.FC<InputProps> = ({
                 name={name}
                 placeholder={placeholder}
                 type="text"
-                value={defaultValue}
+                value={value}
                 onFocus={handleInputFocus}
                 onBlur={handleInputBlur}
                 onChange={inputChanges}

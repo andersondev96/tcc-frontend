@@ -133,8 +133,6 @@ export const BusinessCreate: React.FC = () => {
         } else if (event.key === "Backspace" && inputValue === "") {
             removeTag(tags.length - 1);
         }
-
-        console.log(tags);
     }
 
     const addTag = (tag: string) => {
@@ -268,6 +266,7 @@ export const BusinessCreate: React.FC = () => {
                                         name="services"
                                         label="Serviços"
                                         placeholder="Serviços oferecidos"
+                                        value={inputValue}
                                         inputChanges={handleInputChangeTag}
                                         inputKeydown={handleInputKeyDownTag}
                                     />
@@ -278,6 +277,7 @@ export const BusinessCreate: React.FC = () => {
                                         >
                                             {tag}
                                             <button
+                                                type="button"
                                                 className="ml-2 text-sm font-medium text-gray-600 hover:text-gray-600"
                                                 onClick={() => removeTag(index)}
                                             >
