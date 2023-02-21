@@ -1,6 +1,5 @@
 import { useField } from "@unform/core";
 import { SelectHTMLAttributes, useCallback, useEffect, useRef, useState } from "react";
-
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
     name: string;
     label: string;
@@ -56,7 +55,7 @@ export const Select: React.FC<SelectProps> = ({
                     defaultValue={defaultValue}
                     ref={selectRef}
                     className={
-                        `block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 mb-2 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500
+                        `block appearance-none w-full bg-gray-200 border text-gray-700 py-3 px-4 pr-8 mb-2 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500
                             ${isFocused ? 'focus:border-blue-500' : ''}
                             ${isFilled ? 'focus:border-green-500' : ''}
                             ${error ? 'border-red-500' : ''}
@@ -67,8 +66,18 @@ export const Select: React.FC<SelectProps> = ({
                     {...rest}
                 >
 
+                    <option value="">Selecione uma opção</option>
+
                     {options.map(option => {
-                        return <option key={option.value} value={option.value}>{option.label}</option>
+                        return (
+                            <option
+                                id="option-value"
+                                className="text-sm"
+                                key={option.value}
+                                value={option.value}>
+                                {option.label.substring(0, 75)}
+                            </option>
+                        )
                     })}
 
                 </select>

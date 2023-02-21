@@ -3,7 +3,7 @@ import { Form } from "@unform/web";
 import { ChangeEvent, Fragment, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import * as Yup from "yup";
 import { Input } from "../../../components/Form/Input";
 import { Select } from "../../../components/Form/Select";
@@ -22,7 +22,7 @@ interface IScheduleItem {
 interface CreateBusinessEntrepreneurFormData {
     name: string;
     cnpj: string;
-    category: string;
+    category_id: string;
     description: string;
     services: string[];
     physical_localization: boolean;
@@ -69,7 +69,7 @@ export const BusinessCreate: React.FC = () => {
     const [inputValue, setInputValue] = useState("");
     const [scheduleItems, setScheduleItems] = useState([
         {
-            weekday: 'Segunda-feira',
+            weekday: 'Todos os dias',
             opening_time: '',
             closing_time: '',
             lunch_time: '-',
@@ -101,7 +101,7 @@ export const BusinessCreate: React.FC = () => {
         setScheduleItems([
             ...scheduleItems,
             {
-                weekday: 'Segunda-feira',
+                weekday: '',
                 opening_time: '',
                 closing_time: '',
                 lunch_time: '-',
@@ -168,12 +168,37 @@ export const BusinessCreate: React.FC = () => {
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
-                    cnpj: Yup.string().min(14, 'O campo deve possuir 14 caracteres').required('CNPJ obrigatório'),
-                    category: Yup.string().required('Categoria obrigatório'),
-                    telephone: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Telefone obrigatório'),
-                    whatsapp: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('Whatsapp obrigatório'),
+                    cnpj: Yup.number()
+                        .required('CNPJ obrigatório')
+                        .integer()
+                        .positive()
+                        .typeError("Digite apenas números")
+                        .test('len',
+                            'O campo deve possuir 14 digitos',
+                            val => val ? val.toString().length === 14 : true
+                        ),
+                    category_id: Yup.string().required('Categoria obrigatório'),
+                    telephone: Yup.number()
+                        .required('Telefone obrigatório')
+                        .integer()
+                        .positive()
+                        .typeError("Digite apenas números")
+                        .test('len',
+                            'O campo deve possuir 11 digitos',
+                            val => val ? val.toString().length === 11 : true
+                        ),
+                    whatsapp: Yup
+                        .number()
+                        .required()
+                        .nullable(true)
+                        .integer()
+                        .positive()
+                        .typeError("Digite apenas números")
+                        .test('len',
+                            'O campo deve possuir 11 digitos',
+                            val => val ? val.toString().length === 11 : true
+                        ),
                     email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
-                    website: Yup.string().required('O campo website é obrigatório')
                 });
 
                 await schema.validate(data, {
@@ -183,9 +208,9 @@ export const BusinessCreate: React.FC = () => {
                 const companies = {
                     name: data.name,
                     cnpj: data.cnpj,
-                    category: data.category,
+                    category_id: data.category_id,
+                    services: tags,
                     description: data.description,
-                    services: [data.services],
                     physical_localization: hasPhysicalLocation,
                     cep: data.cep,
                     street: data.street,
@@ -204,6 +229,8 @@ export const BusinessCreate: React.FC = () => {
 
                 await api.post(`/companies/images/${response.data.id}`, imagesCompany);
 
+                toast.success("Empresa cadastrada com sucesso!");
+
                 navigate('/admin/business');
 
             } catch (err) {
@@ -217,11 +244,10 @@ export const BusinessCreate: React.FC = () => {
 
                 toast.error("Erro ao cadastrar empresa");
             }
-        }, [toast, navigate, hasPhysicalLocation, scheduleItems, images]);
+        }, [toast, navigate, hasPhysicalLocation, scheduleItems, images, tags]);
 
     return (
         <div className="flex flex-row">
-            <ToastContainer />
             <SideBar pageActive="empresa" />
             <div className="flex flex-col w-full items-center px-24 md:ml-64 mt-6 md:mt-16">
                 <div className="flex flex-col md:w-full">
@@ -251,8 +277,9 @@ export const BusinessCreate: React.FC = () => {
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+
                                 <Select
-                                    name="category"
+                                    name="category_id"
                                     label="Categoria"
                                     options={categories.map(category => ({
                                         value: category.id, label: category.name
@@ -361,6 +388,10 @@ export const BusinessCreate: React.FC = () => {
                                             value={scheduleItem.weekday}
                                             onChange={(e) => { setScheduleItemValue(index, 'weekday', e.target.value) }}
                                             options={[
+                                                { value: "Todos os dias", label: "Todos os dias" },
+                                                { value: "Segunta à Sexta", label: "Segunda à Sexta" },
+                                                { value: "Fim de semana", label: "Fim de semana" },
+                                                { value: "Feriados", label: "Feriados" },
                                                 { value: 'Domingo', label: 'Domingo' },
                                                 { value: 'Segunda-feira', label: 'Segunda-feira' },
                                                 { value: 'Terça-feira', label: 'Terça-feira' },
@@ -418,33 +449,7 @@ export const BusinessCreate: React.FC = () => {
                         {hasPhysicalLocation && (
                             <Fragment>
                                 <div className="flex flex-wrap -mx-3 md:mb-6">
-                                    <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
-                                        <Input
-                                            name="street"
-                                            label="Endereço"
-                                            defaultValue={address.logradouro || ''}
-                                            placeholder="Rua XXX"
-                                        />
-                                    </div>
-                                    <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
-                                        <Input
-                                            name="district"
-                                            label="Bairro"
-                                            defaultValue={address.bairro || ''}
-                                            placeholder="Bairro XXX"
-                                        />
-                                    </div>
                                     <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
-                                        <Input
-                                            name="number"
-                                            label="Número"
-                                            placeholder="00"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-wrap -mx-3 md:mb-6">
-                                    <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                                         <Input
                                             name="cep"
                                             label="CEP"
@@ -452,7 +457,35 @@ export const BusinessCreate: React.FC = () => {
                                             onChange={e => setCEP(e.target.value)}
                                         />
                                     </div>
-                                    <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                                    <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
+                                        <Input
+                                            name="street"
+                                            label="Endereço"
+                                            defaultValue={address.logradouro || ''}
+                                            placeholder="Digite a rua"
+                                        />
+
+                                    </div>
+                                    <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
+                                        <Input
+                                            name="district"
+                                            label="Bairro"
+                                            defaultValue={address.bairro || ''}
+                                            placeholder="Digite o bairro"
+                                        />
+
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap -mx-3 md:mb-6">
+                                    <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
+                                        <Input
+                                            name="number"
+                                            label="Número"
+                                            placeholder="00"
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <div className="relative">
                                             <Select
                                                 name="state"
@@ -493,10 +526,11 @@ export const BusinessCreate: React.FC = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                                    <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <Input
                                             name="city"
                                             label="Cidade"
+                                            placeholder="Digite a cidade"
                                             defaultValue={address.localidade || ''}
                                         />
                                     </div>
