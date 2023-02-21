@@ -1,18 +1,20 @@
 import { useField } from "@unform/core";
-import { InputHTMLAttributes, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, InputHTMLAttributes, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     name: string;
     label: string;
-    type?: string;
     placeholder?: string;
+    inputChanges: (event: ChangeEvent<HTMLInputElement>) => void;
+    inputKeydown: (event: KeyboardEvent<HTMLInputElement>) => void;
 }
 
-export const Input: React.FC<InputProps> = ({
+export const TagInput: React.FC<InputProps> = ({
     name,
     label,
-    type = "text",
     placeholder,
+    inputChanges,
+    inputKeydown,
     ...rest
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -40,7 +42,9 @@ export const Input: React.FC<InputProps> = ({
         });
     }, [fieldName, registerField]);
 
+
     return (
+
         <>
             <label
                 htmlFor={name}
@@ -48,26 +52,26 @@ export const Input: React.FC<InputProps> = ({
             >
                 {label}
             </label>
+
+
             <input
-                className={
-                    `appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-2 leading-tight focus:outline-none focus:bg-white
-                    ${isFocused ? 'focus:border-blue-500' : ''}
-                    ${isFilled ? 'focus:border-green-500' : ''}
-                    ${error ? 'border-red-500' : ''}`}
-                onFocus={handleInputFocus}
-                onBlur={handleInputBlur}
-                defaultValue={defaultValue}
                 id={name}
                 name={name}
-                type={type}
                 placeholder={placeholder}
+                type="text"
+                value={defaultValue}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
+                onChange={inputChanges}
+                onKeyDown={inputKeydown}
+                className={
+                    `appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-2 leading-tight focus:outline-none focus:bg-white
+                        ${isFocused ? 'focus:border-blue-500' : ''}
+                        ${isFilled ? 'focus:border-green-500' : ''}
+                        ${error ? 'border-red-500' : ''}`}
                 ref={inputRef}
                 {...rest}
             />
-
-            {error && (
-                <p className="text-red-500 text-xs italic">{error}</p>
-            )}
         </>
-    );
-};
+    )
+}

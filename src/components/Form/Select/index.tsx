@@ -1,5 +1,5 @@
-import { SelectHTMLAttributes, useCallback, useEffect, useRef, useState } from "react";
 import { useField } from "@unform/core";
+import { SelectHTMLAttributes, useCallback, useEffect, useRef, useState } from "react";
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
     name: string;

@@ -1,17 +1,17 @@
-import { ChangeEvent, FormEvent, Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
-import * as Yup from "yup";
-import { ToastContainer, toast } from "react-toastify";
-import { SideBar } from "../../../components/Sidebar";
+import { ChangeEvent, Fragment, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
-import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
-import getValidationErrors from "../../../utils/getValidateErrors";
+import { ToastContainer, toast } from "react-toastify";
+import * as Yup from "yup";
 import { Input } from "../../../components/Form/Input";
 import { Select } from "../../../components/Form/Select";
+import { TagInput } from "../../../components/Form/TagInput";
 import { TextArea } from "../../../components/Form/TextArea";
-import getCEP from "../../../utils/getCEP";
+import { SideBar } from "../../../components/Sidebar";
+import api from "../../../services/api";
+import getValidationErrors from "../../../utils/getValidateErrors";
 
 interface IScheduleItem {
     weekday: string;
@@ -39,6 +39,11 @@ interface CreateBusinessEntrepreneurFormData {
     city: string;
 }
 
+interface ICategories {
+    id: string;
+    name: string;
+}
+
 interface Address {
     logradouro?: string;
     bairro?: string;
@@ -58,7 +63,10 @@ export const BusinessCreate: React.FC = () => {
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [imagesCompany, setImagesCompany] = useState(new FormData());
     const [cep, setCEP] = useState('');
+    const [categories, setCategories] = useState<ICategories[]>([]);
     const [address, setAddress] = useState<Address>({});
+    const [tags, setTags] = useState<string[]>([]);
+    const [inputValue, setInputValue] = useState("");
     const [scheduleItems, setScheduleItems] = useState([
         {
             weekday: 'Segunda-feira',
@@ -68,6 +76,10 @@ export const BusinessCreate: React.FC = () => {
         }
     ]);
 
+    const loadCategories = useCallback(async () => {
+        api.get<ICategories[]>("/categories").then(response => setCategories(response.data));
+    }, [setCategories]);
+
     useEffect(() => {
         if (cep.length === 8) {
             fetch(`https://viacep.com.br/ws/${cep}/json`)
@@ -75,7 +87,11 @@ export const BusinessCreate: React.FC = () => {
                 .then(data => setAddress(data as Address))
                 .catch(error => console.error(error))
         }
-    }, [cep]);
+
+        loadCategories();
+    }, [cep, loadCategories]);
+
+
 
     function setPhysicalLocation() {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -103,6 +119,30 @@ export const BusinessCreate: React.FC = () => {
         });
 
         setScheduleItems(updateScheduleItems);
+    }
+
+    const handleInputChangeTag = (event: ChangeEvent<HTMLInputElement>) => {
+        setInputValue(event.target.value);
+    }
+
+    const handleInputKeyDownTag = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            addTag(inputValue);
+            setInputValue("");
+        } else if (event.key === "Backspace" && inputValue === "") {
+            removeTag(tags.length - 1);
+        }
+
+        console.log(tags);
+    }
+
+    const addTag = (tag: string) => {
+        setTags([...tags, tag]);
+    }
+
+    const removeTag = (index: number) => {
+        setTags([...tags.slice(0, index), ...tags.slice(index + 1)]);
     }
 
     const handleSelectedImages = useCallback(
@@ -216,21 +256,36 @@ export const BusinessCreate: React.FC = () => {
                                 <Select
                                     name="category"
                                     label="Categoria"
-                                    options={[
-                                        { value: 'agricultura', label: 'Agricultura' },
-                                        { value: 'Design', label: 'Design' },
-                                        { value: 'engenharia', label: 'Engenharia' },
-                                        { value: 'informática', label: 'Informática' },
-                                    ]}
+                                    options={categories.map(category => ({
+                                        value: category.id, label: category.name
+                                    }))}
                                     placeholder="Selecione uma opção"
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="services"
-                                    label="Serviços"
-                                    placeholder="Serviços oferecidos"
-                                />
+                                <div className="flex flex-wrap rounded-lg">
+                                    <TagInput
+                                        name="services"
+                                        label="Serviços"
+                                        placeholder="Serviços oferecidos"
+                                        inputChanges={handleInputChangeTag}
+                                        inputKeydown={handleInputKeyDownTag}
+                                    />
+                                    {tags.map((tag, index) => (
+                                        <div
+                                            key={index}
+                                            className="bg-gray-200 text-gray-700 rounded-full py-1 px-3 m-1"
+                                        >
+                                            {tag}
+                                            <button
+                                                className="ml-2 text-sm font-medium text-gray-600 hover:text-gray-600"
+                                                onClick={() => removeTag(index)}
+                                            >
+                                                x
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
@@ -465,7 +520,7 @@ export const BusinessCreate: React.FC = () => {
                                     })}
 
                                     <div className="w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300 relative">
-                                        <input type="file" multiple id="image[]" accept="image/*" className="cursor-pointer relative block opacity-0 w-full h-full p-20 z-20" onChange={handleSelectedImages} />
+                                        <input type="file" multiple id="image[]" accept="image/*" className="cursor-pointer relative block opacity-0 w-full h-full z-20" onChange={handleSelectedImages} />
                                         <div className="text-center absolute p-5 top-0 right-0 left-0 m-auto">
                                             <AiOutlineCamera size={24} />
                                         </div>
@@ -483,7 +538,7 @@ export const BusinessCreate: React.FC = () => {
                         </div>
                     </Form>
                 </div>
-            </div >
+            </div>
         </div >
     );
 };
