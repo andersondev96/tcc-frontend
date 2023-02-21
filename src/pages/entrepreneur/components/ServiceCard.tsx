@@ -1,13 +1,12 @@
 import { useCallback, useState } from "react";
 
-import CoffeeImg1 from "../../../assets/coffee-img1.jpg";
 import { AiOutlineDelete } from "react-icons/ai";
 import { FiEdit2 } from "react-icons/fi";
-import { Link, useNavigate } from "react-router-dom";
-import { DeleteModal } from "./DeleteModal";
 import Modal from "react-modal";
-import api from "../../../services/api";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import api from "../../../services/api";
+import { DeleteModal } from "./DeleteModal";
 
 interface ServiceProps {
     id: string;
@@ -84,17 +83,17 @@ export const ServiceCard: React.FC<ServiceProps> = ({
                 }
 
                 {mouseEnter && (
-                    <div className="flex flex-col justify-center gap-2 p-2 absolute w-48 h-16 mt-32 bg-gray-300 bg-opacity-60 transition ease-in-out delay-150 hover:-translate-y-1">
+                    <div className="flex flex-col justify-center gap-2 p-2 absolute w-48 h-18 mt-24 bg-gray-300 bg-opacity-60 transition ease-in-out delay-150 hover:-translate-y-1">
                         <div className="flex flex-col justify-between">
-                            <span className="font-montserrat font-semibold text-sm">
+                            <span className="font-montserrat mt-2 font-semibold text-sm">
                                 {name}
                             </span>
-                            <p className="font-inter font-light text-xs">
-                                {category}
+                            <p className="font-inter font-light text-xs leading-none">
+                                {category?.substring(0, 50)}
                             </p>
                         </div>
                         <span className="font-inter font-semibold text-sm text-red-800">
-                            {price}
+                            {price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                         </span>
                     </div>
                 )}
