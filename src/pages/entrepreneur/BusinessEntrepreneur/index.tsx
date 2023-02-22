@@ -1,19 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { GoLinkExternal } from "react-icons/go";
+import { useEffect, useState } from "react";
 import { FiEdit2 } from "react-icons/fi";
+import { GoLinkExternal } from "react-icons/go";
+import { Link } from "react-router-dom";
 import { SideBar } from "../../../components/Sidebar";
-import Coffee from "../../../assets/coffee-img1.jpg";
-import Coffee1 from "../../../assets/coffee-img1.jpg";
-import Coffee2 from "../../../assets/coffee-img2.jpg";
-import Coffee3 from "../../../assets/coffee-img3.jpg";
-import Coffee4 from "../../../assets/coffee-img4.jpg";
-import { Pictures } from "../../client/components/Pictures";
-import { AssessmentsStars } from "../../client/components/AssessmentsStars";
-import { Assessments } from "../../client/components/Assessments";
+import formatCEP from "../../../utils/formatCEP";
 import formatCPFandCNPJ from "../../../utils/formatCPFandCNPJ";
 import formatTelephone from "../../../utils/formatTelephone";
-import formatCEP from "../../../utils/formatCEP";
+import { Assessments } from "../../client/components/Assessments";
+import { AssessmentsStars } from "../../client/components/AssessmentsStars";
+import { Pictures } from "../../client/components/Pictures";
 
 import api from "../../../services/api";
 
@@ -59,22 +54,31 @@ interface CompanyData {
     user_id: string
 }
 
-export const BusinessEntrepreneur: React.FC = () => {
-    const images = [
-        { id: 1, image: Coffee1, description: "Image1" },
-        { id: 2, image: Coffee2, description: "Image2" },
-        { id: 3, image: Coffee3, description: "Image3" },
-        { id: 4, image: Coffee4, description: "Image4" },
-    ];
+interface AssessmentData {
+    id: string;
+    user_id: string;
+    table_id: string;
+    comment: string;
+    stars: number;
+}
 
+export const BusinessEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<CompanyData>();
+    const [assessments, setAssessments] = useState<AssessmentData[]>([]);
 
     useEffect(() => {
         api
             .get('/companies/me')
-            .then(response => setCompany(response.data)
-            )
+            .then(response => setCompany(response.data))
+            .catch(error => console.log("Ocorreu um erro ao realizar a requisição"))
     }, []);
+
+    useEffect(() => {
+        api.get<AssessmentData[]>(`/assessments/company/${company?.id}`)
+            .then(response => setAssessments(response.data))
+            .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error)
+            );
+    })
 
     return (
         <div className="flex flex-row">
@@ -231,30 +235,32 @@ export const BusinessEntrepreneur: React.FC = () => {
                                     ))}
                             </div>
 
-                            <div className="flex flex-col mt-14 sm:mt-10 gap-1">
-                                <span className="font-inter font-medium text-sm">
-                                    Avaliações
-                                </span>
-                                <p className="font-inter font-light text-sm">
-                                    16 avaliações recebidas
-                                </p>
-                                <div className="flex flex-row items-center gap-3">
-                                    <AssessmentsStars stars={5} mode="view" />
-                                    <span className="font-inter font-semibold text-xs text-gray-700">
-                                        3.0
-                                    </span>
+                            {assessments.length > 0 ? (
+                                <div className="flex flex-col mt-8 sm:mt-10 gap-1">
+                                    <span className="font-inter font-medium text-sm">Avaliações</span>
+                                    <p className="font-inter font-light text-sm">{assessments.length} avaliações recebidas</p>
+                                    {assessments.map(assessment => (
+                                        <div className="flex flex-row items-center gap-3">
+                                            <AssessmentsStars stars={5} mode="view" />
+                                            <span
+                                                className="font-inter font-semibold text-xs text-gray-700"
+                                            >
+                                                {assessment.stars}
+                                            </span>
+                                            <Assessments key={assessment.id} text={assessment.comment} stars={Number(assessment.stars)} />
+                                            <span className="mt-4 font-inter font-medium text-sm text-blue-600">Veja todos os comentários</span>
+                                        </div>
+                                    ))}
                                 </div>
-                                <Assessments text="O melhor café da cidade" stars={3} />
-                                <Assessments
-                                    text="Atendimento de qualidade, estão de parabéns"
-                                    stars={4}
-                                />
-                                <Assessments text="Gostei muito do atendimento" stars={5} />
-                            </div>
+                            ) : (
+                                <div className="flex flex-col mt-[2.25rem]">
+                                    <div className="flex flex-col gap-[0.375rem]">
+                                        <span className="font-inter font-semibold">Avaliações</span>
+                                        <p className="font-inter font-light text-xs">Sem comentários</p>
+                                    </div>
+                                </div>
+                            )}
 
-                            <span className="mt-4 font-inter font-medium text-sm text-blue-600">
-                                Veja todos os comentários
-                            </span>
 
                             <Link to={`/admin/business/edit/${company?.id}`}>
                                 <button className="mt-6 mb-4 w-36 h-12 p-4 flex flex-row items-center justify-center gap-2 sm:gap-4 rounded bg-green-500 font-montserrat font-medium sm:text-base text-xs text-white cursor-pointer hover:brightness-90 duration-300">

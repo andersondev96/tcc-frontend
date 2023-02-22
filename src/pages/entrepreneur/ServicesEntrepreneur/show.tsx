@@ -54,7 +54,7 @@ export const ShowServicesEntrepreneur: React.FC = () => {
             <SideBar pageActive="servicos" />
             <div className="flex flex-col w-full sm:ml-64 p-8">
                 <PreviousPageButton />
-                <div className="flex flex-row items-center gap-6 sm:gap-12 px-24 py-12 border-b-2 border-gray-300">
+                <div className="flex flex-row items-center gap-6 sm:gap-12 px-24 py-12  border-gray-300">
                     <img src={service.image_url} alt="" className="w-12 h-12 sm:w-16 sm:h-16 object-fill rounded-full" />
                     <div className="flex flex-col gap-1">
                         <span className="font-inter font-bold text-2xl text-gray-800">{service.name}</span>
@@ -84,21 +84,19 @@ export const ShowServicesEntrepreneur: React.FC = () => {
                     {assessments.length > 0 ? (
                         <div className="flex flex-col mt-8 sm:mt-10 gap-1">
                             <span className="font-inter font-medium text-sm">Avaliações</span>
-                            <p className="font-inter font-light text-sm">16 avaliações recebidas</p>
-                            <div className="flex flex-row items-center gap-3">
-                                <AssessmentsStars stars={5} mode="view" />
-                                <span
-                                    className="font-inter font-semibold text-xs text-gray-700"
-                                >
-                                    3.0
-                                </span>
-                                <span className="mt-4 font-inter font-medium text-sm text-blue-600">Veja todos os comentários</span>
-                            </div>
-                            {
-                                assessments.map(assessment => (
+                            <p className="font-inter font-light text-sm">{assessments.length} avaliações recebidas</p>
+                            {assessments.map(assessment => (
+                                <div className="flex flex-row items-center gap-3">
+                                    <AssessmentsStars stars={assessment.stars} mode="view" />
+                                    <span
+                                        className="font-inter font-semibold text-xs text-gray-700"
+                                    >
+                                        {assessment.stars}
+                                    </span>
                                     <Assessments key={assessment.id} text={assessment.comment} stars={Number(assessment.stars)} />
-                                ))
-                            }
+                                    <span className="mt-4 font-inter font-medium text-sm text-blue-600">Veja todos os comentários</span>
+                                </div>
+                            ))}
                         </div>
                     ) : (
                         <div className="flex flex-col mt-[2.25rem]">
