@@ -31,7 +31,7 @@ interface Company {
 
 export const EditServicesEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
-    const [subcategories, setSubcategories] = useState([]);
+    const [subcategories, setSubcategories] = useState<string[]>([]);
     const params = useParams();
     const [service, setService] = useState({} as Service);
     const [highlight, setHighlight] = useState<boolean>(false);
@@ -45,15 +45,24 @@ export const EditServicesEntrepreneur: React.FC = () => {
     useEffect(() => {
         api.get('/companies/me')
             .then(response => setCompany(response.data))
-
-        api.get(`/categories/list-subcategories/${company.category_id}`).then(response => {
-            setSubcategories(response.data);
-        });
+            .catch(error => console.log("Ocorreu um erro na solicitação", error));
 
         api.get<Service>(`/services/${params.id}`).then((response) => {
             setService(response.data);
         })
-    }, [params.id, company.category_id]);
+            .catch(error => {
+                console.log("Ocorreu um erro na solicitação", error);
+            })
+    }, [params.id, setCompany, setService]);
+
+    useEffect(() => {
+        api.get(`/categories/list-subcategories/${company.category_id}`)
+            .then(response => {
+                setSubcategories(response.data);
+            })
+            .catch(error => console.log("Ocorreu um erro na solicitação", error));
+
+    }, [company.category_id, setSubcategories]);
 
     function handleSetHighlight() {
         setHighlight(!highlight);

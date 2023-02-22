@@ -68,15 +68,16 @@ export const ServicesEntrepreneur: React.FC = () => {
     useEffect(() => {
         api
             .get('/companies/me')
-            .then(response => setCompany(response.data)
-            )
+            .then(response => setCompany(response.data))
+            .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error));
     }, []);
 
     useEffect(() => {
         api
             .get<ServiceData[]>(`/services/company/${company.id}`)
             .then(response => setServices(response.data))
-    }, [company?.id]);
+            .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error));
+    }, [company.id]);
 
     const searchService = useCallback(
         async (event: ChangeEvent<HTMLInputElement>) => {
@@ -109,7 +110,7 @@ export const ServicesEntrepreneur: React.FC = () => {
                 </div>
                 <div className="flex flex-col px-16 py-2 sm:py-6">
                     <div className="flex flex-col gap-4 justify-between sm:flex-row items-start sm:items-center">
-                        <Link to="/admin/create">
+                        <Link to="/admin/services/create">
                             <button className="w-36 h-10 bg-indigo-400 rounded font-semibold text-sm text-white hover:brightness-90 transition-opacity duration-300">
                                 Adicionar serviço
                             </button>

@@ -60,8 +60,8 @@ export const ServiceCard: React.FC<ServiceProps> = ({
         <div className="flex flex-col w-48">
             <ToastContainer />
             <div
-                className="h-48"
-                onClick={() => navigate("/admin/services/show")}
+                className="h-48 cursor-pointer hover:opacity-90 duration-150"
+                onClick={() => navigate(`/admin/services/${id}`)}
                 onMouseEnter={() => setMouseEnter(true)}
                 onMouseLeave={() => setMouseEnter(false)}
             >
