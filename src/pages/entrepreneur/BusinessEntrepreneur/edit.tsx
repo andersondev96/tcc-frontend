@@ -1,16 +1,17 @@
-import { ChangeEvent, FormEvent, Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
-import * as Yup from "yup";
-import { ToastContainer, toast } from "react-toastify";
-import { SideBar } from "../../../components/Sidebar";
+import { ChangeEvent, Fragment, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
-import api from "../../../services/api";
 import { useNavigate, useParams } from "react-router-dom";
-import getValidationErrors from "../../../utils/getValidateErrors";
+import { ToastContainer, toast } from "react-toastify";
+import * as Yup from "yup";
 import { Input } from "../../../components/Form/Input";
 import { Select } from "../../../components/Form/Select";
+import { TagInput } from "../../../components/Form/TagInput";
 import { TextArea } from "../../../components/Form/TextArea";
+import { SideBar } from "../../../components/Sidebar";
+import api from "../../../services/api";
+import getValidationErrors from "../../../utils/getValidateErrors";
 import { PreviousPageButton } from "../../client/components/PreviousPageButton";
 
 interface IScheduleItem {
@@ -31,7 +32,7 @@ interface CompanyData {
     id: string,
     name: string,
     cnpj: string,
-    category: string,
+    category_id: string,
     description: string,
     services: string[],
     physical_localization: boolean,
@@ -42,6 +43,11 @@ interface CompanyData {
         email: string,
         website: string
     },
+}
+
+interface ICategories {
+    id: string;
+    name: string;
 }
 
 interface UpdateBusinessEntrepreneurFormData {
@@ -75,6 +81,9 @@ export const BusinessEdit: React.FC = () => {
     const [selectedState, setSelectedState] = useState('');
     const [images, setImages] = useState<File[]>([]);
     const [cep, setCEP] = useState('');
+    const [categories, setCategories] = useState<ICategories[]>([]);
+    const [tags, setTags] = useState<string[]>([]);
+    const [inputValue, setInputValue] = useState("");
     const [address, setAddress] = useState<Address>({});
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [scheduleItems, setScheduleItems] = useState([
@@ -86,13 +95,28 @@ export const BusinessEdit: React.FC = () => {
         }
     ]);
 
+    const loadCategories = useCallback(async () => {
+        api.get<ICategories[]>("/categories")
+            .then(response => setCategories(response.data))
+            .catch(error => console.log("Ocorreu um erro ao realizar requição", error)
+            );
+    }, [setCategories]);
+
+    const loadTags = useCallback(async () => {
+        company.services && setTags(company.services);
+    }, [company.services]);
+
     useEffect(() => {
         api.get<CompanyData>(`companies/${params.id}`)
             .then(response => {
                 setCompany(response.data);
-            });
+            })
+            .catch(error => console.log("Ocorreu um erro ao realizar a rerização", error));
 
-    }, [params.id]);
+        loadCategories();
+        loadTags();
+
+    }, [params.id, loadCategories, loadTags]);
 
     useEffect(() => {
         if (cep.length === 8) {
@@ -157,6 +181,29 @@ export const BusinessEdit: React.FC = () => {
 
         setPreviewImages(selectedImagesPreview);
     }
+
+    const handleInputChangeTag = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        setInputValue(event.target.value);
+    }, []);
+
+    const addTag = useCallback((tag: string) => {
+        setTags([...tags, tag]);
+    }, [setTags]);
+
+    const removeTag = useCallback((index: number) => {
+        setTags([...tags.slice(0, index), ...tags.slice(index + 1)]);
+    }, [setTags])
+
+    const handleInputKeyDownTag = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            addTag(inputValue);
+            setInputValue("");
+        } else if (event.key === "Backspace" && inputValue === "") {
+            removeTag(tags.length - 1);
+        }
+    }, [addTag, setInputValue, removeTag]);
+
 
     const handleSubmit = useCallback(
         async (data: UpdateBusinessEntrepreneurFormData) => {
@@ -247,21 +294,39 @@ export const BusinessEdit: React.FC = () => {
                                 <Select
                                     name="category"
                                     label="Categoria"
-                                    options={[
-                                        { value: 'agricultura', label: 'Agricultura' },
-                                        { value: 'Design', label: 'Design' },
-                                        { value: 'engenharia', label: 'Engenharia' },
-                                        { value: 'informática', label: 'Informática' },
-                                    ]}
+                                    value={company.category_id}
+                                    options={categories.map(category => ({
+                                        value: category.id, label: category.name
+                                    }))}
                                     placeholder="Selecione uma opção"
                                 />
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="services"
-                                    label="Serviços"
-                                    placeholder="Serviços oferecidos"
-                                />
+                                <div className="flex flex-wrap rounded-lg">
+                                    <TagInput
+                                        name="services"
+                                        label="Serviços"
+                                        placeholder="Serviços oferecidos"
+                                        value={inputValue}
+                                        inputChanges={handleInputChangeTag}
+                                        inputKeydown={handleInputKeyDownTag}
+                                    />
+                                    {tags.map((tag, index) => (
+                                        <div
+                                            key={index}
+                                            className="bg-gray-200 text-gray-700 rounded-full py-1 px-3 m-1"
+                                        >
+                                            {tag}
+                                            <button
+                                                type="button"
+                                                className="ml-2 text-sm font-medium text-gray-600 hover:text-gray-600"
+                                                onClick={() => removeTag(index)}
+                                            >
+                                                x
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
@@ -337,7 +402,7 @@ export const BusinessEdit: React.FC = () => {
                                         <Select
                                             name="Schedule?.weekday"
                                             label="Dia da semana"
-                                            value={scheduleItem.weekday}
+                                            value={"scheduleItem?.weekday"}
                                             onChange={(e) => { setScheduleItemValue(index, 'weekday', e.target.value) }}
                                             options={[
                                                 { value: 'Domingo', label: 'Domingo' },
@@ -497,7 +562,7 @@ export const BusinessEdit: React.FC = () => {
                                     })}
 
                                     <div className="w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300 relative">
-                                        <input type="file" multiple id="image[]" accept="image/*" className="cursor-pointer relative block opacity-0 w-full h-full p-20 z-20" onChange={handleSelectedImages} />
+                                        <input type="file" multiple id="image[]" accept="image/*" className="cursor-pointer relative block opacity-0 w-full h-full z-20" onChange={handleSelectedImages} />
                                         <div className="text-center absolute p-5 top-0 right-0 left-0 m-auto">
                                             <AiOutlineCamera size={24} />
                                         </div>
