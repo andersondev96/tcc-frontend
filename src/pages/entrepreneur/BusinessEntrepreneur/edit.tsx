@@ -54,15 +54,17 @@ interface UpdateBusinessEntrepreneurFormData {
     id: string;
     name: string;
     cnpj: string;
-    category: string;
+    category_id: string;
     description: string;
     services: string[];
     physical_localization: boolean;
-    telephone: string;
-    whatsapp: string;
-    email: string;
-    website: string;
-    schedules: IScheduleItem[],
+    Schedule: IScheduleItem[],
+    contact: {
+        telephone: string,
+        whatsapp: string,
+        email: string,
+        website: string
+    },
     cep: string;
     street: string;
     district: string;
@@ -213,35 +215,35 @@ export const BusinessEdit: React.FC = () => {
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
                     cnpj: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('CNPJ obrigatório'),
-                    category: Yup.string().required('Categoria obrigatório'),
-                    /* contact: Yup.array()
-                        .of(
-                            Yup.object().shape({
-                                telephone: Yup.string().required('Telefone é obrigatório'),
-                            })
-                        ) */
+                    category_id: Yup.string().required('Categoria obrigatório'),
                 });
 
                 await schema.validate(data, {
                     abortEarly: false,
                 });
 
-                const response = await api.put(`/companies/${params.id}`, {
+                const company = {
                     name: data.name,
                     cnpj: data.cnpj,
-                    category: data.category,
+                    category_id: data.category_id,
                     description: data.description,
                     services: data.services,
                     physical_localization: hasPhysicalLocation,
-                    telephone: data.telephone,
-                    whatsapp: data.whatsapp,
-                    email: data.email,
-                    website: data.website
-                });
+                    contact: {
+                        telephone: data.contact.telephone,
+                        whatsapp: data.contact.whatsapp,
+                        email: data.contact.email,
+                        website: data.contact.website
+                    }
+                }
+
+                console.log(company);
+
+                const response = await api.put(`/companies/${params.id}`, company);
 
                 console.log(response);
 
-                navigate('/admin/business');
+                // navigate('/admin/business');
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
@@ -254,7 +256,7 @@ export const BusinessEdit: React.FC = () => {
 
                 toast.error("Erro ao cadastrar empresa");
             }
-        }, [toast]);
+        }, [toast, hasPhysicalLocation]);
 
     return (
         <div className="flex flex-row">
@@ -292,7 +294,7 @@ export const BusinessEdit: React.FC = () => {
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Select
-                                    name="category"
+                                    name="category_id"
                                     label="Categoria"
                                     value={company.category_id}
                                     options={categories.map(category => ({
@@ -400,11 +402,15 @@ export const BusinessEdit: React.FC = () => {
                                 <div key={index} className="flex flex-wrap -mx-3 md:mb-4">
                                     <div className="w-full md:w-1/4 px-3 mb-3 md:mb-0">
                                         <Select
-                                            name="Schedule?.weekday"
+                                            name="weekday"
                                             label="Dia da semana"
-                                            value={"scheduleItem?.weekday"}
+                                            value={"scheduleItem.weekday"}
                                             onChange={(e) => { setScheduleItemValue(index, 'weekday', e.target.value) }}
                                             options={[
+                                                { value: "Todos os dias", label: "Todos os dias" },
+                                                { value: "Segunta à Sexta", label: "Segunda à Sexta" },
+                                                { value: "Fim de semana", label: "Fim de semana" },
+                                                { value: "Feriados", label: "Feriados" },
                                                 { value: 'Domingo', label: 'Domingo' },
                                                 { value: 'Segunda-feira', label: 'Segunda-feira' },
                                                 { value: 'Terça-feira', label: 'Terça-feira' },
