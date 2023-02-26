@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { AssessmentsStars } from "./AssessmentsStars";
 import { ModalContainer } from "../../../components/ModalContainer";
-import Coffee1 from "../../../assets/coffee-img1.jpg";
+import { AssessmentsStars } from "./AssessmentsStars";
 
 import { AiFillHeart } from "react-icons/ai";
 import { ModalService } from "./ModalService";
@@ -12,7 +11,7 @@ interface CardProps {
     product: string;
     description: string;
     stars: number;
-    price: string;
+    price: number;
 }
 
 export const Card: React.FC<CardProps> = ({ service_id, image, product, description, stars, price }) => {
@@ -35,7 +34,12 @@ export const Card: React.FC<CardProps> = ({ service_id, image, product, descript
             onMouseOver={!like ? () => setDisplayHeart(true) : () => { }}
             onMouseLeave={!like ? () => setDisplayHeart(false) : () => { }}
         >
-            <img src={image} alt={product} className="h-20 w-20 rounded-l" />
+            <img
+                src={image ||
+                    "https://images.unsplash.com/photo-1600456899121-68eda5705257?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1557&q=80"}
+                alt={product}
+                className="h-20 w-20 rounded-l"
+            />
             <div className="flex flex-col">
                 <div className="absolute flex flex-row ml-36 sm:ml-52 mt-3">
                     {displayHeart ? (

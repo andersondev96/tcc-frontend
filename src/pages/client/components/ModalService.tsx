@@ -4,9 +4,9 @@ import { AssessmentsForm } from "./AssessmentsForm";
 import { AssessmentsStars } from "./AssessmentsStars";
 import { ButtonAction } from "./ButtonAction";
 
+import { useParams } from "react-router-dom";
 import { ModalContainer } from "../../../components/ModalContainer";
 import { ModalCalculate } from './ModalCalculate';
-import { useParams } from "react-router-dom";
 
 interface ModalServiceProps {
     service_id: string;
@@ -14,7 +14,7 @@ interface ModalServiceProps {
     description: string;
     stars: number;
     image: string;
-    price: string;
+    price: number;
 }
 
 export const ModalService: React.FC<ModalServiceProps> = ({ service_id, service, description, stars, image, price }) => {
