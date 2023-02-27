@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { AiOutlineClose, AiOutlineCloseCircle } from "react-icons/ai";
+import { AiOutlineClose } from "react-icons/ai";
 import Modal from "react-modal";
 
 interface IModalContainerProps {
@@ -33,7 +33,7 @@ export const ModalContainer: React.FC<IModalContainerProps> = ({
             onRequestClose={onRequestClose}
             style={currentStyles}
         >
-            <div className="fixed h-12 w-[56.15rem] bg-gray-800 px-14 py-3 flex flex-row items-center justify-between">
+            <div className="fixed h-12 w-[56.15rem] bg-gray-800 px-14 py-3 flex flex-row items-center justify-between over">
                 <span className="font-inter font-medium text-xl text-gray-200">{title}</span>
                 <AiOutlineClose size={24} color="#FBF8F8" className="cursor-pointer" onClick={onRequestClose} />
             </div>

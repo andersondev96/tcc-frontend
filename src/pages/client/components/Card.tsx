@@ -5,16 +5,22 @@ import { AssessmentsStars } from "./AssessmentsStars";
 import { AiFillHeart } from "react-icons/ai";
 import { ModalService } from "./ModalService";
 
-interface CardProps {
-    service_id: string;
-    image: string;
-    product: string;
+
+interface ServiceProps {
+    id: string;
+    name: string;
+    category: string;
     description: string;
     stars: number;
+    image_url: string;
     price: number;
 }
 
-export const Card: React.FC<CardProps> = ({ service_id, image, product, description, stars, price }) => {
+interface CardProps {
+    service: ServiceProps;
+}
+
+export const Card: React.FC<CardProps> = ({ service }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
     function openModal() {
@@ -35,9 +41,9 @@ export const Card: React.FC<CardProps> = ({ service_id, image, product, descript
             onMouseLeave={!like ? () => setDisplayHeart(false) : () => { }}
         >
             <img
-                src={image ||
+                src={service.image_url ||
                     "https://images.unsplash.com/photo-1600456899121-68eda5705257?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1557&q=80"}
-                alt={product}
+                alt={service.name}
                 className="h-20 w-20 rounded-l"
             />
             <div className="flex flex-col">
@@ -54,27 +60,22 @@ export const Card: React.FC<CardProps> = ({ service_id, image, product, descript
 
                 <div className="flex flex-col justify-center py-2 px-3  w-full cursor-pointer" onClick={openModal}>
                     <div className="flex flex-row justify-between">
-                        <span className="font-montserrat font-semibold mb-1 text-sm sm:text-lg">{product}</span>
+                        <span className="font-montserrat font-semibold mb-1 text-sm sm:text-lg">{service.name}</span>
                     </div>
-                    <AssessmentsStars stars={stars} />
-                    <span className="font-inter font-semibold text-xs sm:text-sm mt-2 text-amber-900">{price}</span>
+                    <AssessmentsStars stars={service.stars} />
+                    <span className="font-inter font-semibold text-xs sm:text-sm mt-2 text-amber-900">
+                        {service.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    </span>
                 </div>
             </div>
 
             <ModalContainer
-                title="Café simples"
+                title={service.name}
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
             >
 
-                <ModalService
-                    service_id={service_id}
-                    service={product}
-                    description={description}
-                    stars={stars}
-                    image={image}
-                    price={price}
-                />
+                <ModalService service={service} />
 
             </ModalContainer>
         </div>

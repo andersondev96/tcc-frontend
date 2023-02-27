@@ -59,7 +59,7 @@ export const Service: React.FC = () => {
                 })
                     .then(response => setServices(response.data));
             }
-        }, [company_id]);
+        }, [company_id, services]);
 
 
     const loadingHighlightService = useCallback(async () => {
@@ -86,7 +86,7 @@ export const Service: React.FC = () => {
         loadCompany();
         loadingCategories();
         loadingHighlightService();
-    }, [company_id, loadCompany, loadingHighlightService]);
+    }, [company_id, loadCompany, loadingCategories, loadingHighlightService]);
 
     useEffect(() => {
         const groupServices = services.reduce<CategoryServiceData>(
@@ -97,6 +97,7 @@ export const Service: React.FC = () => {
                 } else {
                     acc[category] = [service];
                 }
+                console.log(acc);
                 return acc;
             },
             {}
@@ -119,14 +120,7 @@ export const Service: React.FC = () => {
                             <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {
                                     hightLightServices.map(hightLightService => (
-                                        <Card
-                                            key={hightLightService.id}
-                                            service_id={hightLightService.id}
-                                            image={hightLightService.image_url}
-                                            product={hightLightService.name}
-                                            description={hightLightService.description}
-                                            stars={hightLightService.stars}
-                                            price={hightLightService.price}
+                                        <Card service={hightLightService}
                                         />
                                     ))
                                 }
@@ -138,24 +132,20 @@ export const Service: React.FC = () => {
                 {
                     categories ? (
                         categories.map(category => (
-                            <div key={category} className="mt-8 flex flex-col font-montserrat font-semibold text-xl">
-                                <span>{category}</span>
-                                <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    {servicesByCategory[category]?.map((service) => (
-                                        <div key={service.id}>
-                                            <Card
-                                                key={service.id}
-                                                service_id={service.id}
-                                                image={service.image_url}
-                                                product={service.name}
-                                                description={service.description}
-                                                stars={service.stars}
-                                                price={service.price}
-                                            />
-                                        </div>
-                                    ))}
+                            servicesByCategory[category] && (
+                                <div key={category} className="mt-8 flex flex-col font-montserrat font-semibold text-xl">
+                                    <span>{category}</span>
+                                    <p className="font-light text-sm">{servicesByCategory[category].length} itens</p>
+                                    <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        {servicesByCategory[category].map((service) => (
+                                            <div key={service.id}>
+                                                <Card service={service} />
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )
+
                         ))
                     ) : (
                         <h1>Nenhum serviço encontrado</h1>
