@@ -1,6 +1,5 @@
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
 import api from "../../../services/api";
@@ -141,7 +140,6 @@ export const ServicesEntrepreneur: React.FC = () => {
                             </>
                         ) : <p className="font-mono text-sm mt-12">Nenhum resultado exibido para a busca "{name}"</p>
                     }
-                    <PaginationTable />
                 </div>
             </div>
         </div>

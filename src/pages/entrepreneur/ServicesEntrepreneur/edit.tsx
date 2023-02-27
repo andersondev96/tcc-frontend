@@ -107,7 +107,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
                 await api.put(`/services/${params.id}`, service);
 
                 if (imageService) {
-                    await api.put(`services/service/${params.id}`, imageService);
+                    await api.patch(`services/service/${params.id}`, imageService);
                 }
 
                 navigate('/admin/services');
