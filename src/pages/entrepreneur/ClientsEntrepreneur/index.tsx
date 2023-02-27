@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from "react";
 import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
@@ -8,8 +9,36 @@ import { TableData } from "../../../components/Table/TableData";
 import { TableHead } from "../../../components/Table/TableHead";
 import { TableHeader } from "../../../components/Table/TableHead/TableHeader";
 import { TableRowHead } from "../../../components/Table/TableHead/TableRowHead";
+import api from "../../../services/api";
+
+interface Company {
+    id: string;
+}
+interface Customer {
+    id: string;
+    company_id: string;
+    customer_id: string;
+    customer: {
+        id: string;
+        user_id: string;
+        telephone: string;
+        status: string;
+    }
+}
 
 export const ClientsEntrepreneur: React.FC = () => {
+    const [company, setCompany] = useState<Company>({} as Company);
+    const [clients, setClients] = useState<Customer[]>([]);
+
+    useEffect(() => {
+        api.get(`companies/me`).then((response) => setCompany(response.data));
+
+        api.get(`customers/${company.id}`).then((response) => setClients(response.data));
+    }, [company.id]);
+
+    const handleSearchClients = useCallback(() => {
+        //
+    }, []);
     return (
         <div className="flex flex-row">
             <SideBar pageActive="clientes" />
@@ -18,7 +47,7 @@ export const ClientsEntrepreneur: React.FC = () => {
                     <h1 className="font-medium text-2xl">Clientes</h1>
                 </div>
                 <div className="flex flex-col px-12">
-                    <Search />
+                    <Search onChange={handleSearchClients} />
                     <div className="mt-6">
                         <Table>
                             <TableHead>
@@ -26,39 +55,26 @@ export const ClientsEntrepreneur: React.FC = () => {
                                     <TableHeader>Nome</TableHeader>
                                     <TableHeader>E-mail</TableHeader>
                                     <TableHeader>Telefone</TableHeader>
+                                    <TableHeader>Status</TableHeader>
                                 </TableRowHead>
                             </TableHead>
                             <TableBody>
-                                <TableRowBody>
-                                    <TableData>João Pedro Xavier</TableData>
-                                    <TableData>joao.xavier@gmail.com</TableData>
-                                    <TableData>(99) 99999-9999</TableData>
-                                </TableRowBody>
-                                <TableRowBody>
-                                    <TableData>João Pedro Xavier</TableData>
-                                    <TableData>joao.xavier@gmail.com</TableData>
-                                    <TableData>(99) 99999-9999</TableData>
-                                </TableRowBody>
-                                <TableRowBody>
-                                    <TableData>João Pedro Xavier</TableData>
-                                    <TableData>joao.xavier@gmail.com</TableData>
-                                    <TableData>(99) 99999-9999</TableData>
-                                </TableRowBody>
-                                <TableRowBody>
-                                    <TableData>João Pedro Xavier</TableData>
-                                    <TableData>joao.xavier@gmail.com</TableData>
-                                    <TableData>(99) 99999-9999</TableData>
-                                </TableRowBody>
-                                <TableRowBody>
-                                    <TableData>João Pedro Xavier</TableData>
-                                    <TableData>joao.xavier@gmail.com</TableData>
-                                    <TableData>(99) 99999-9999</TableData>
-                                </TableRowBody>
+                                {clients.length > 0 ? clients.map((client => (
+                                    <TableRowBody>
+                                        <TableData>{client.customer_id}</TableData>
+                                        <TableData>joao.xavier@gmail.com</TableData>
+                                        <TableData>{client.customer.telephone}</TableData>
+                                        <TableData>{client.customer.status}</TableData>
+                                    </TableRowBody>
+
+                                ))) : (
+                                    <p className="px-4">Nenhum cliente cadastrado</p>
+                                )}
                             </TableBody>
                         </Table>
                     </div>
 
-                    <PaginationTable />
+                    <PaginationTable results={clients.length} />
                 </div>
             </div>
         </div>

@@ -1,10 +1,13 @@
+interface PaginationTableProps {
+    results: number;
+}
 
-export const PaginationTable: React.FC = () => {
+export const PaginationTable: React.FC<PaginationTableProps> = ({ results }) => {
     return (
         <div className="mt-[1.625rem] flex flex-col sm:flex-row items-center justify-between">
 
             <span className="font-montserrat font-light text-sm">
-                Exibindo 5 resultados de 10
+                Exibindo {results} resultados.
             </span>
 
             <div className="flex flex-row items-center md:mt-2">
