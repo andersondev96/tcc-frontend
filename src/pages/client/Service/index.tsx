@@ -20,6 +20,7 @@ interface ServiceData {
     image_url: string;
     stars: number;
     highlight_service: boolean;
+    company_id: string;
 }
 
 interface Category {

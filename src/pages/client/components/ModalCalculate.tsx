@@ -1,11 +1,18 @@
 import { ChangeEvent, FormEvent, useCallback, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../../services/api";
 
-export const ModalCalculate: React.FC = () => {
+interface ModalCalculateProps {
+    company_id: string;
+    close_modal: () => void;
+}
+
+export const ModalCalculate: React.FC<ModalCalculateProps> = ({
+    company_id,
+    close_modal
+}) => {
     const navigate = useNavigate();
-    const { company_id } = useParams();
     const [formData, setFormData] = useState({
         time: '',
         objective: '',
@@ -25,9 +32,10 @@ export const ModalCalculate: React.FC = () => {
 
     const handleSubmit = useCallback(async (event: FormEvent) => {
         event.preventDefault();
-        const { objective, description } = formData;
+        const { time, objective, description } = formData;
 
         const response = await api.post(`proposals/${company_id}`, {
+            time,
             objective,
             description
         });
@@ -35,7 +43,7 @@ export const ModalCalculate: React.FC = () => {
         if (response.status === 201) {
             toast.success("Proposta enviada!");
 
-            navigate(`/services/${company_id}`);
+            close_modal();
         }
 
     }, [formData]);

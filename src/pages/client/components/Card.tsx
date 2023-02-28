@@ -14,6 +14,7 @@ interface ServiceProps {
     stars: number;
     image_url: string;
     price: number;
+    company_id: string;
 }
 
 interface CardProps {

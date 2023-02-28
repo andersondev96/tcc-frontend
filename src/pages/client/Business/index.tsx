@@ -4,7 +4,6 @@ import { Paragraph } from "../components/Paragraph";
 
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ImgCompany from "../../../assets/img-company.jpg";
 import { NavBar } from "../../../components/NavBar/NavBar";
 import api from "../../../services/api";
 import formatTelephone from '../../../utils/formatTelephone';
@@ -85,7 +84,7 @@ export const Business: React.FC = () => {
 
     const verifyCompanyIsOpen = useCallback(() => {
         const today = getDay(new Date());
-        const schedule = company.Schedule.find(s => s.weekday === weekdays[today]);
+        const schedule = company.Schedule && company.Schedule.find(s => s.weekday === weekdays[today]);
 
         if (!schedule) {
             return false;
@@ -106,13 +105,7 @@ export const Business: React.FC = () => {
         <div className="flex flex-col">
             <NavBar pageCurrent="negocio" />
             <BusinessHeader
-                name={company.name}
-                category={company.category_id}
-                stars={company.stars}
-                schedules={company.Schedule}
-                contact={company.contact}
-                image={company.ImageCompany && company.ImageCompany.length > 0 ? company.ImageCompany[0].image_url : ImgCompany}
-                Address={company.Address && company.Address}
+                company={company}
                 isOpen={verifyCompanyIsOpen()}
             />
             <div className="px-24 py-12">

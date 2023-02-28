@@ -16,6 +16,7 @@ interface ServiceProps {
     stars: number;
     image_url: string;
     price: number;
+    company_id: string;
 }
 
 interface Assessment {
@@ -103,7 +104,10 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
             >
-                <ModalCalculate />
+                <ModalCalculate
+                    company_id={service.company_id}
+                    close_modal={closeModal}
+                />
             </ModalContainer>
 
         </div>
