@@ -5,9 +5,9 @@ import { BiWorld } from 'react-icons/bi';
 import { MdOutlineChatBubbleOutline } from 'react-icons/md';
 import { AssessmentsStars } from './AssessmentsStars';
 
+import { ModalChat } from '../../../components/ModalChat';
 import { ModalContainer } from "../../../components/ModalContainer";
 import { ModalCalculate } from './ModalCalculate';
-import { ModalChat } from '../../../components/ModalChat';
 
 interface ISchedules {
     id: string;
@@ -35,6 +35,7 @@ interface BusinessHeaderProps {
     contact: IContact;
     Address: IAddress;
     image: string;
+    isOpen: boolean;
 }
 
 export const BusinessHeader: React.FC<BusinessHeaderProps> = ({
@@ -44,7 +45,8 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({
     schedules,
     contact,
     Address,
-    image
+    image,
+    isOpen
 }) => {
     const [modalCalculeIsOpen, setModalCalculateIsOpen] = useState(false);
     const [modalChatIsOpen, setModalChatIsOpen] = useState(false);
@@ -78,12 +80,16 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({
                 <div className="flex flex-col w-full">
                     <div className="flex flex-row items-center justify-between">
                         <span className="font-inter font-bold text-[1.475rem] mobile:text-mobile text-gray-700">{name}</span>
-                        <span className="w-[4.75rem] h-[2.125rem] bg-green-500 flex items-center justify-center rounded-full font-inter font-semibold text-sm text-white">
-                            Aberto
-                        </span>
-                        {/* <span className="w-[3.75rem] h-[1.125rem] bg-red-500 flex items-center justify-center rounded-full font-inter font-semibold text-[0.625rem] text-white">
-              Fechado
-            </span> */}
+                        {isOpen ? (
+                            <span className="w-[4.75rem] h-[2.125rem] bg-green-500 flex items-center justify-center rounded-full font-inter font-semibold text-sm text-white">
+                                Aberto
+                            </span>
+                        ) : (
+                            <span className="w-[4.75rem] h-[2.125rem] bg-red-500 flex items-center justify-center rounded-full font-inter font-semibold text-sm text-white">
+                                Fechado
+                            </span>
+                        )
+                        }
                     </div>
 
                     <div className="flex flex-col">

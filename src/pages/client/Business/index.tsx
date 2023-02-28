@@ -1,11 +1,13 @@
+import { getDay, isWithinInterval } from 'date-fns';
 import { BusinessHeader } from '../components/BusinessHeader';
 import { Paragraph } from "../components/Paragraph";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ImgCompany from "../../../assets/img-company.jpg";
 import { NavBar } from "../../../components/NavBar/NavBar";
 import api from "../../../services/api";
+import formatTelephone from '../../../utils/formatTelephone';
 import { Assessments } from "../components/Assessments";
 import { AssessmentsForm } from "../components/AssessmentsForm";
 import { ButtonAction } from "../components/ButtonAction";
@@ -64,6 +66,8 @@ export const Business: React.FC = () => {
     const params = useParams();
     const [company, setCompany] = useState<Company>({} as Company);
     const [assessments, setAssessments] = useState<Assessment[]>([]);
+    const weekdays = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+
 
     useEffect(() => {
 
@@ -79,6 +83,25 @@ export const Business: React.FC = () => {
             })
     }, [params.id]);
 
+    const verifyCompanyIsOpen = useCallback(() => {
+        const today = getDay(new Date());
+        const schedule = company.Schedule.find(s => s.weekday === weekdays[today]);
+
+        if (!schedule) {
+            return false;
+        }
+
+        const openingTime = new Date(`1970-01-01 ${schedule.opening_time}`);
+        const closingTime = new Date(`1970-01-01 ${schedule.closing_time}`);
+        const now = new Date();
+
+        if (isWithinInterval(now, { start: openingTime, end: closingTime })) {
+            return true;
+        } else {
+            return false;
+        }
+    }, []);
+
     return (
         <div className="flex flex-col">
             <NavBar pageCurrent="negocio" />
@@ -90,6 +113,7 @@ export const Business: React.FC = () => {
                 contact={company.contact}
                 image={company.ImageCompany && company.ImageCompany.length > 0 ? company.ImageCompany[0].image_url : ImgCompany}
                 Address={company.Address && company.Address}
+                isOpen={verifyCompanyIsOpen()}
             />
             <div className="px-24 py-12">
                 <div className="flex flex-col gap-4 mobile:gap-4">
@@ -139,7 +163,7 @@ export const Business: React.FC = () => {
                         company.contact && (
                             <Paragraph
                                 title="Telefone"
-                                text={company.contact.telephone}
+                                text={formatTelephone(company.contact.telephone)}
                             />
                         )
                     }
