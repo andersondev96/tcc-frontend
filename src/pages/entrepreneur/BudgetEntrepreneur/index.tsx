@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { TbSend } from "react-icons/tb";
@@ -27,11 +27,23 @@ interface Proposals {
     status: string;
     customer_id: string;
     createdAt: string;
+    customer: {
+        id: string;
+        user_id: string;
+        telephone: string;
+        status: string;
+        user: {
+            id: string;
+            name: string;
+            email: string;
+        }
+    }
 }
 
 export const BudgetEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
     const [proposals, setProposals] = useState<Proposals[]>([]);
+    const [name, setName] = useState("");
 
     useEffect(() => {
         api.get(`companies/me`).then((response) => setCompany(response.data));
@@ -42,9 +54,21 @@ export const BudgetEntrepreneur: React.FC = () => {
 
 
 
-    const handleSearchBudgets = useCallback(() => {
-        //
-    }, []);
+    const handleSearchBudgets = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
+        const name = event.target.value;
+        setName(name);
+
+        if (!name) {
+            api.get(`proposals/company/${company.id}`).then((response) => setProposals(response.data));
+        } else {
+            api.get(`proposals/filter/${company.id}`, {
+                params: {
+                    name
+                }
+            })
+                .then((response) => setProposals(response.data));
+        }
+    }, [company?.id, setProposals]);
 
     return (
         <div className="flex flex-row">
@@ -70,9 +94,9 @@ export const BudgetEntrepreneur: React.FC = () => {
                             <TableBody>
 
                                 {proposals.length > 0 ? proposals.map((proposal) => (
-                                    <TableRowBody>
+                                    <TableRowBody key={proposal.id}>
                                         <TableData>{format(new Date(proposal.createdAt), "dd/MM/yyyy")}</TableData>
-                                        <TableData>{proposal.customer_id}</TableData>
+                                        <TableData>{proposal.customer && proposal.customer.user.name}</TableData>
                                         <TableData>{proposal.description}</TableData>
                                         <TableData>{format(new Date(proposal.time), "dd/MM/yyyy")}</TableData>
                                         <TableData>{proposal.status}</TableData>

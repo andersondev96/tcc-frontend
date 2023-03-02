@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AiOutlineCalculator, AiOutlineMail, AiOutlineWhatsApp } from 'react-icons/ai';
 import { BiWorld } from 'react-icons/bi';
 import { MdOutlineChatBubbleOutline } from 'react-icons/md';
@@ -7,6 +7,7 @@ import { AssessmentsStars } from './AssessmentsStars';
 
 import { ModalChat } from '../../../components/ModalChat';
 import { ModalContainer } from "../../../components/ModalContainer";
+import api from '../../../services/api';
 import { ModalCalculate } from './ModalCalculate';
 
 interface ISchedules {
@@ -45,6 +46,11 @@ interface Company {
     Address: IAddress;
     Schedule: ISchedules[];
 }
+
+interface Category {
+    id: string;
+    name: string;
+}
 interface BusinessHeaderProps {
     company: Company;
     isOpen: boolean;
@@ -53,8 +59,14 @@ interface BusinessHeaderProps {
 export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company, isOpen }) => {
     const [modalCalculeIsOpen, setModalCalculateIsOpen] = useState(false);
     const [modalChatIsOpen, setModalChatIsOpen] = useState(false);
+    const [category, setCategory] = useState<Category>({} as Category);
     const IMAGE_DEFAULT = "https://images.unsplash.com/photo-1600456899121-68eda5705257?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1557&q=80";
 
+    useEffect(() => {
+        api.get<Category>(`/categories/${company.category_id}`)
+            .then((response) => setCategory(response.data))
+            .catch(err => console.log(err));
+    }, [company.category_id])
 
     function openModalCalculate() {
         setModalCalculateIsOpen(true);
@@ -104,7 +116,7 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company, isOpen 
                     <div className="flex flex-col">
                         {
                             company.Address ? (
-                                <span className="font-inter text-sm">{company.category_id} em {company.Address.city} - {company.Address.state}</span>
+                                <span className="font-inter text-sm">{category.name} em {company.Address.city} - {company.Address.state}</span>
                             ) : ''
                         }
                         <div className="flex flex-row mt-2 gap-4">

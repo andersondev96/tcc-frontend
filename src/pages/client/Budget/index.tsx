@@ -1,16 +1,15 @@
 import { AiOutlineEye } from "react-icons/ai";
+import { Link, useNavigate } from "react-router-dom";
+import { NavBar } from "../../../components/NavBar/NavBar";
+import { PaginationTable } from "../../../components/PaginationTable";
+import { Search } from "../../../components/Search";
 import { Table } from "../../../components/Table";
-import { TableHead } from "../../../components/Table/TableHead";
-import { TableRowHead } from "../../../components/Table/TableHead/TableRowHead";
-import { TableHeader } from "../../../components/Table/TableHead/TableHeader";
 import { TableBody } from "../../../components/Table/TableBody";
 import { TableRowBody } from "../../../components/Table/TableBody/TableRowBody";
 import { TableData } from "../../../components/Table/TableData";
-import { PaginationTable } from "../../../components/PaginationTable";
-import { Link, useNavigate } from "react-router-dom";
-import { PreviousPageButton } from "../components/PreviousPageButton";
-import { Search } from "../../../components/Search";
-import { NavBar } from "../../../components/NavBar/NavBar";
+import { TableHead } from "../../../components/Table/TableHead";
+import { TableHeader } from "../../../components/Table/TableHead/TableHeader";
+import { TableRowHead } from "../../../components/Table/TableHead/TableRowHead";
 
 export const Budget: React.FC = () => {
     const navigate = useNavigate();

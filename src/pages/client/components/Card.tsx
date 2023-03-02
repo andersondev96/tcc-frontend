@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ModalContainer } from "../../../components/ModalContainer";
 import { AssessmentsStars } from "./AssessmentsStars";
 
 import { AiFillHeart } from "react-icons/ai";
+import api from "../../../services/api";
 import { ModalService } from "./ModalService";
 
 
@@ -12,6 +13,7 @@ interface ServiceProps {
     category: string;
     description: string;
     stars: number;
+    favorites: number;
     image_url: string;
     price: number;
     company_id: string;
@@ -23,6 +25,8 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ service }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [displayHeart, setDisplayHeart] = useState(false);
+    const [like, setLike] = useState(false);
 
     function openModal() {
         setModalIsOpen(true);
@@ -32,8 +36,12 @@ export const Card: React.FC<CardProps> = ({ service }) => {
         setModalIsOpen(false);
     }
 
-    const [displayHeart, setDisplayHeart] = useState(false);
-    const [like, setLike] = useState(false);
+    const setFavoriteService = useCallback(async () => {
+        api.patch(`/services/favorites/${service.id}`);
+        setLike(true);
+    }, [service.id]);
+
+
 
     return (
         <div
@@ -52,9 +60,9 @@ export const Card: React.FC<CardProps> = ({ service }) => {
                     {displayHeart ? (
                         <AiFillHeart
                             size={16}
-                            onClick={() => setLike(!like)}
+                            onClick={setFavoriteService}
                             className="cursor-pointer"
-                            color={`${like ? '#D0103F' : '#FFFFFF'}`}
+                            color={`${like || service.favorites >= 0 ? '#D0103F' : '#FFFFFF'}`}
                         />
                     ) : ''}
                 </div>
