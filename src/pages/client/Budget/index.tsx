@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+import { useCallback, useEffect, useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { NavBar } from "../../../components/NavBar/NavBar";
@@ -10,9 +12,28 @@ import { TableData } from "../../../components/Table/TableData";
 import { TableHead } from "../../../components/Table/TableHead";
 import { TableHeader } from "../../../components/Table/TableHead/TableHeader";
 import { TableRowHead } from "../../../components/Table/TableHead/TableRowHead";
+import api from "../../../services/api";
 
+interface Proposal {
+    id: string;
+    company_id: string;
+    objective: string;
+    time: string;
+    description: string;
+    status: string;
+    createdAt: string;
+}
 export const Budget: React.FC = () => {
     const navigate = useNavigate();
+    const [proposals, setProposals] = useState<Proposal[]>([]);
+
+    useEffect(() => {
+        api.get("/proposals").then(response => setProposals(response.data));
+    }, []);
+
+    const handleSearch = useCallback(() => {
+
+    }, []);
     return (
         <div className="flex flex-col">
             <NavBar pageCurrent="orcamentos" />
@@ -24,7 +45,7 @@ export const Budget: React.FC = () => {
                         </h1>
                     </div>
                     <div className="flex flex-col">
-                        <Search />
+                        <Search onChange={handleSearch} />
 
                         <div className="mt-6">
                             <Table>
@@ -39,70 +60,28 @@ export const Budget: React.FC = () => {
                                     </TableRowHead>
                                 </TableHead>
                                 <TableBody>
-                                    <TableRowBody>
-                                        <TableData>04/07/2022</TableData>
-                                        <TableData>Sightglass coffee</TableData>
-                                        <TableData>Cappuccino para festa</TableData>
-                                        <TableData>12/04/2022</TableData>
-                                        <TableData>Finalizada</TableData>
-                                        <TableData>
-                                            <Link to="/budget/details">
-                                                <AiOutlineEye size={24} color="#547DE5" />
-                                            </Link>
-                                        </TableData>
-                                    </TableRowBody>
-                                    <TableRowBody>
-                                        <TableData>04/07/2022</TableData>
-                                        <TableData>Sightglass coffee</TableData>
-                                        <TableData>Cappuccino para festa</TableData>
-                                        <TableData>12/04/2022</TableData>
-                                        <TableData>Finalizada</TableData>
-                                        <TableData>
-                                            <Link to="/budget/details">
-                                                <AiOutlineEye size={24} color="#547DE5" />
-                                            </Link>
-                                        </TableData>
-                                    </TableRowBody>
-                                    <TableRowBody>
-                                        <TableData>04/07/2022</TableData>
-                                        <TableData>Sightglass coffee</TableData>
-                                        <TableData>Cappuccino para festa</TableData>
-                                        <TableData>12/04/2022</TableData>
-                                        <TableData>Finalizada</TableData>
-                                        <TableData>
-                                            <Link to="/budget/details">
-                                                <AiOutlineEye size={24} color="#547DE5" />
-                                            </Link>
-                                        </TableData>
-                                    </TableRowBody>
-                                    <TableRowBody>
-                                        <TableData>04/07/2022</TableData>
-                                        <TableData>Sightglass coffee</TableData>
-                                        <TableData>Cappuccino para festa</TableData>
-                                        <TableData>12/04/2022</TableData>
-                                        <TableData>Finalizada</TableData>
-                                        <TableData>
-                                            <Link to="/budget/details">
-                                                <AiOutlineEye size={24} color="#547DE5" />
-                                            </Link>
-                                        </TableData>
-                                    </TableRowBody>
-                                    <TableRowBody>
-                                        <TableData>04/07/2022</TableData>
-                                        <TableData>Sightglass coffee</TableData>
-                                        <TableData>Cappuccino para festa</TableData>
-                                        <TableData>12/04/2022</TableData>
-                                        <TableData>Finalizada</TableData>
-                                        <TableData>
-                                            <Link to="/budget/details">
-                                                <AiOutlineEye size={24} color="#547DE5" />
-                                            </Link>
-                                        </TableData>
-                                    </TableRowBody>
+                                    {proposals ? (
+                                        proposals.map(proposal => (
+                                            <TableRowBody key={proposal.id}>
+                                                <TableData>{format(new Date(proposal.createdAt), "dd/MM/yyyy")}</TableData>
+                                                <TableData>{proposal.company_id}</TableData>
+                                                <TableData>{proposal.objective}</TableData>
+                                                <TableData>{format(new Date(proposal.time), "dd/MM/yyyy")}</TableData>
+                                                <TableData>{proposal.status}</TableData>
+                                                <TableData>
+                                                    <Link to="/budget/details">
+                                                        <AiOutlineEye size={24} color="#547DE5" />
+                                                    </Link>
+                                                </TableData>
+                                            </TableRowBody>
+                                        ))
+                                    ) : (
+                                        <p>Nenhuma proposta encontrada</p>
+                                    )}
                                 </TableBody>
                             </Table>
                         </div>
-                        <PaginationTable />
+                        <PaginationTable results={proposals.length} />
                     </div>
                 </div>
             </div>

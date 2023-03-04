@@ -23,6 +23,11 @@ interface Customer {
         user_id: string;
         telephone: string;
         status: string;
+        user: {
+            id: string;
+            name: string;
+            email: string;
+        }
     }
 }
 
@@ -61,8 +66,8 @@ export const ClientsEntrepreneur: React.FC = () => {
                             <TableBody>
                                 {clients.length > 0 ? clients.map((client => (
                                     <TableRowBody>
-                                        <TableData>{client.customer_id}</TableData>
-                                        <TableData>joao.xavier@gmail.com</TableData>
+                                        <TableData>{client.customer.user.name}</TableData>
+                                        <TableData>{client.customer.user.email}</TableData>
                                         <TableData>{client.customer.telephone}</TableData>
                                         <TableData>{client.customer.status}</TableData>
                                     </TableRowBody>
