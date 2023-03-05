@@ -102,10 +102,10 @@ export const BudgetEntrepreneur: React.FC = () => {
                                         <TableData>{proposal.status}</TableData>
                                         <TableData>
                                             <div className="flex flex-row gap-2">
-                                                <Link to="/admin/budget/details">
+                                                <Link to={`/admin/budget/details/${proposal.id}`}>
                                                     <AiOutlineEye size={24} color="#547DE5" />
                                                 </Link>
-                                                <Link to="/admin/budget/create-proposal">
+                                                <Link to={`/admin/budget/create-proposal/${proposal.id}`}>
                                                     <IoDocumentTextOutline size={24} color="#1EBF1B" />
                                                 </Link>
                                                 <TbSend size={24} color="#EEB522" />

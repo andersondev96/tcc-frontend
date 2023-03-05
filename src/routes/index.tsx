@@ -50,8 +50,8 @@ export const Router: React.FC = () => {
             <Route path="/admin/services/edit/:id" element={<EditServicesEntrepreneur />} />
             <Route path="/admin/clients" element={<ClientsEntrepreneur />} />
             <Route path="/admin/budget" element={<BudgetEntrepreneur />} />
-            <Route path="/admin/budget/details" element={<DetailsBudgetEntrepreneur />} />
-            <Route path="/admin/budget/create-proposal" element={<CreateProposal />} />
+            <Route path="/admin/budget/details/:proposal_id" element={<DetailsBudgetEntrepreneur />} />
+            <Route path="/admin/budget/create-proposal/:proposal_id" element={<CreateProposal />} />
             <Route path="/admin/chat" element={<ChatEntrepreneur />} />
             <Route path="/admin/chat/message" element={<ChatMessageEntrepreneur />} />
             <Route path="/admin/settings" element={<Settings />} />
