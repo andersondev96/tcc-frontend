@@ -7,6 +7,7 @@ import { AssessmentsStars } from './AssessmentsStars';
 
 import { ModalChat } from '../../../components/ModalChat';
 import { ModalContainer } from "../../../components/ModalContainer";
+import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../services/api';
 import { ModalCalculate } from './ModalCalculate';
 
@@ -57,6 +58,7 @@ interface BusinessHeaderProps {
 }
 
 export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company, isOpen }) => {
+    const { authenticated } = useAuth();
     const [modalCalculeIsOpen, setModalCalculateIsOpen] = useState(false);
     const [modalChatIsOpen, setModalChatIsOpen] = useState(false);
     const [category, setCategory] = useState<Category>({} as Category);
@@ -155,19 +157,25 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company, isOpen 
                                     />
                                 </a>
 
-                                <MdOutlineChatBubbleOutline
-                                    size={24}
-                                    color="#EB1B2E"
-                                    className="hover:brightness-90 transition-colors cursor-pointer mobile:w-6"
-                                    onClick={openModalChat}
-                                />
+                                {authenticated && (
+                                    <MdOutlineChatBubbleOutline
+                                        size={24}
+                                        color="#EB1B2E"
+                                        className="hover:brightness-90 transition-colors cursor-pointer mobile:w-6"
+                                        onClick={openModalChat}
+                                    />
+                                )}
 
-                                <AiOutlineCalculator
-                                    size={24}
-                                    color="#28267C"
-                                    className="hover:brightness-90 transition-colors cursor-pointer mobile:w-6"
-                                    onClick={openModalCalculate}
-                                />
+                                {
+                                    authenticated && (
+                                        <AiOutlineCalculator
+                                            size={24}
+                                            color="#28267C"
+                                            className="hover:brightness-90 transition-colors cursor-pointer mobile:w-6"
+                                            onClick={openModalCalculate}
+                                        />
+                                    )
+                                }
                             </div>
                         )
                     }

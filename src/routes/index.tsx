@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 
+import { RequireAuth } from '../hooks/RequireAuth';
 import { SignIn } from "../pages/SignIn";
 import { SignUp } from "../pages/SignUp";
 import { Budget } from "../pages/client/Budget";
@@ -35,26 +36,169 @@ export const Router: React.FC = () => {
             <Route path="/register" element={<SignUp />} />
             <Route path="/business/:id" element={<Business />} />
             <Route path="/services/:company_id" element={<Service />} />
-            <Route path="/profile" element={<EditProfile />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/budget" element={<Budget />} />
-            <Route path="/budget/details" element={<BudgetDetails />} />
+
+            <Route
+                path="/profile"
+                element={
+                    <RequireAuth>
+                        <EditProfile />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/favorites"
+                element={
+                    <RequireAuth>
+                        <Favorites />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/budget"
+                element={
+                    <RequireAuth>
+                        <Budget />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/budget/details"
+                element={
+                    <RequireAuth>
+                        <BudgetDetails />
+                    </RequireAuth>
+                }
+            />
 
             <Route path="/admin" element={<Dashboard />} />
-            <Route path="/admin/business" element={<BusinessEntrepreneur />} />
-            <Route path="/admin/business/create" element={<BusinessCreate />} />
-            <Route path="/admin/business/edit/:id" element={<BusinessEdit />} />
-            <Route path="/admin/services" element={<ServicesEntrepreneur />} />
-            <Route path="/admin/services/create" element={<CreateServicesEntrepreneur />} />
-            <Route path="/admin/services/:id" element={<ShowServicesEntrepreneur />} />
-            <Route path="/admin/services/edit/:id" element={<EditServicesEntrepreneur />} />
-            <Route path="/admin/clients" element={<ClientsEntrepreneur />} />
-            <Route path="/admin/budget" element={<BudgetEntrepreneur />} />
-            <Route path="/admin/budget/details/:proposal_id" element={<DetailsBudgetEntrepreneur />} />
-            <Route path="/admin/budget/create-proposal/:proposal_id" element={<CreateProposal />} />
-            <Route path="/admin/chat" element={<ChatEntrepreneur />} />
-            <Route path="/admin/chat/message" element={<ChatMessageEntrepreneur />} />
-            <Route path="/admin/settings" element={<Settings />} />
+
+            <Route
+                path="/admin/business"
+                element={
+                    <RequireAuth>
+                        <BusinessEntrepreneur />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/business/create"
+                element={
+                    <RequireAuth>
+                        <BusinessCreate />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/business/edit/:id"
+                element={
+                    <RequireAuth>
+                        <BusinessEdit />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/services"
+                element={
+                    <RequireAuth>
+                        <ServicesEntrepreneur />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/services/create"
+                element={
+                    <RequireAuth>
+                        <CreateServicesEntrepreneur />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/services/:id"
+                element={
+                    <RequireAuth>
+                        <ShowServicesEntrepreneur />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/services/edit/:id"
+                element={
+                    <RequireAuth>
+                        <EditServicesEntrepreneur />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/clients"
+                element={
+                    <RequireAuth>
+                        <ClientsEntrepreneur />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/budget"
+                element={
+                    <RequireAuth>
+                        <BudgetEntrepreneur />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/budget/details/:proposal_id"
+                element={
+                    <RequireAuth>
+                        <DetailsBudgetEntrepreneur />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/budget/create-proposal/:proposal_id"
+                element={
+                    <RequireAuth>
+                        <CreateProposal />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/chat"
+                element={
+                    <RequireAuth>
+                        <ChatEntrepreneur />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/chat/message"
+                element={
+                    <RequireAuth>
+                        <ChatMessageEntrepreneur />
+                    </RequireAuth>
+                } />
+
+            <Route
+                path="/admin/settings"
+                element={
+                    <RequireAuth>
+                        <Settings />
+                    </RequireAuth>
+                }
+            />
         </Routes>
     );
 };

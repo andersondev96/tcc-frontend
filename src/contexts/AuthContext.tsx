@@ -25,6 +25,7 @@ interface AuthContextData {
     signIn(credentials: SignInCredentials): Promise<void>;
     signOut(): void;
     updateUser(user: User): void;
+    authenticated: boolean;
 }
 
 type AuthContextProviderProps = {
@@ -34,6 +35,8 @@ type AuthContextProviderProps = {
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 function AuthContextProvider({ children }: AuthContextProviderProps) {
+    const [authenticated, setAuthenticated] = useState(false);
+
     const [data, setData] = useState<AuthState>(() => {
         const token = localStorage.getItem('@web:token');
         const user = localStorage.getItem('@web:user');
@@ -60,6 +63,7 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
 
         api.defaults.headers.authorization = `Bearer ${token}`;
 
+        setAuthenticated(true);
         setData({ token, user });
     }, []);
 
@@ -67,6 +71,7 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
         localStorage.removeItem('@web:token');
         localStorage.removeItem('@web:user');
 
+        setAuthenticated(false);
         setData({} as AuthState);
     }, []);
 
@@ -80,7 +85,7 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
     }, [setData, data.token]);
 
     return (
-        <AuthContext.Provider value={{ user: data.user, signIn, signOut, updateUser }}>
+        <AuthContext.Provider value={{ user: data.user, signIn, signOut, updateUser, authenticated }}>
             {children}
         </AuthContext.Provider>
     );

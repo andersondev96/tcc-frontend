@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import * as Yup from "yup";
 
@@ -18,18 +18,17 @@ interface SignInFormData {
     password: string;
 }
 
-interface CompanyData {
-    id: string;
-    name: string;
-    cnpj: string;
-    category: string;
-    description: string;
+interface LocationState {
+    path?: string;
 }
 
 export const SignIn: React.FC = () => {
+    const [redirectTo, setRedirectTo] = useState(null);
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
-    const [company, setCompany] = useState<CompanyData>({} as CompanyData);
+    const location = useLocation();
+
+    const state = useLocation();
 
     const { user, signInWithGoogle } = useAuthWithGoogle();
     const { signIn } = useAuth();
@@ -65,7 +64,9 @@ export const SignIn: React.FC = () => {
                     password: data.password
                 });
 
-                navigate('/');
+                navigate("/");
+
+
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {

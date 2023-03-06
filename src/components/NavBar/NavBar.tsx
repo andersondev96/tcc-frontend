@@ -12,7 +12,7 @@ interface NavBarProps {
 }
 
 export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
-    const { user, signOut } = useAuth();
+    const { user, signOut, authenticated } = useAuth();
     const [isAdmin, setIsAdmin] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const company_id = localStorage.getItem('@web:company_id');
@@ -79,7 +79,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                         </span>
                                     </div>
                                     <div className="hidden sm:ml-6 sm:block">
-                                        {user && company_id ? (
+                                        {authenticated && company_id ? (
                                             <div className="flex space-x-4">
                                                 {navigation.map((item) => (
                                                     <Link
@@ -108,7 +108,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                     </div>
                                 </div>
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                    {user ? (
+                                    {authenticated ? (
                                         <button
                                             onClick={openModal}
                                             type="button"
@@ -119,7 +119,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                         </button>
                                     ) : ''}
 
-                                    {user ? (
+                                    {authenticated ? (
                                         <Menu as="div" className="relative ml-3">
                                             <div>
                                                 <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-5 focus:transition-shadow focus:duration-200 focus:ring-offset-2 focus:ring-offset-gray-800">
