@@ -23,9 +23,19 @@ interface Proposal {
     status: string;
     createdAt: string;
 }
+
+interface Customer {
+    id: string;
+}
+
 export const Budget: React.FC = () => {
     const navigate = useNavigate();
+    const [customer, setCustomer] = useState<Customer>({} as Customer);
     const [proposals, setProposals] = useState<Proposal[]>([]);
+
+    useEffect(() => {
+        api.get(`/customers/my-customer`).then(response => setCustomer(response.data));
+    }, []);
 
     useEffect(() => {
         api.get("/proposals").then(response => setProposals(response.data));
