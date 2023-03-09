@@ -1,19 +1,27 @@
-import React, { useState } from 'react';
-
-import { Container, InputRange, Legend } from './styles';
+import { useState } from "react";
 
 export const Range: React.FC = () => {
-  const [valueType, setValueType] = useState(0);
+
+  const [price, setPrice] = useState(0);
 
   return (
-  <Container>
-    <InputRange
-      type="range"
-      max="10000"
-      step="10"
-      onChange={(e) => setValueType(Number(e.target.value))}
-    />
-    <Legend>{ valueType ? valueType : ''}</Legend>
-  </Container>
-);
+    <div>
+      <label
+        htmlFor="price"
+        className="font-montserrat font-medium text-lg text-white"
+      >
+        Preço máximo
+      </label>
+
+      <input
+        id="default-range"
+        type="range"
+        max="1000"
+        step="10"
+        className="estilo w-full h-2 bg-white rounded-lg appearance-none inline-block outline-none cursor-pointer dark:bg-gray-700 "
+        onChange={(e) => setPrice(Number(e.target.value))}
+      />
+      <span className="flex flex-row items-end justify-end font-montserrat font-semibold text-white">{price}</span>
+    </div>
+  )
 }
