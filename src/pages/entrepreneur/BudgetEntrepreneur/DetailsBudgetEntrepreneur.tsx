@@ -162,7 +162,7 @@ export const DetailsBudgetEntrepreneur: React.FC = () => {
                         }
 
                         <div className="mt-2 flex flex-col sm:flex-row gap-2 sm:gap-12">
-                            <Link to={`/admin/budget/create-proposal/${proposal_id}`}>
+                            <Link to={budget ? `/admin/budget/edit-proposal/${proposal_id}` : `/admin/budget/create-proposal/${proposal_id}`}>
                                 <button className="flex flex-row items-center justify-center gap-5 w-32 sm:w-40 h-8 sm:h-12 rounded bg-blue-600 font-semibold text-white text-sm hover:brightness-90  transition-opacity duration-300">
                                     <span>{!budget ? 'Criar proposta' : 'Editar proposta'}</span>
                                 </button>

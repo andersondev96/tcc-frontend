@@ -15,13 +15,13 @@ import { Service } from "../pages/client/Service";
 import { BudgetEntrepreneur } from "../pages/entrepreneur/BudgetEntrepreneur";
 import { CreateProposal } from "../pages/entrepreneur/BudgetEntrepreneur/CreateProposal";
 import { DetailsBudgetEntrepreneur } from "../pages/entrepreneur/BudgetEntrepreneur/DetailsBudgetEntrepreneur";
+import { EditProposal } from '../pages/entrepreneur/BudgetEntrepreneur/EditProposal';
 import { BusinessEntrepreneur } from "../pages/entrepreneur/BusinessEntrepreneur";
 import { BusinessCreate } from "../pages/entrepreneur/BusinessEntrepreneur/create";
 import { BusinessEdit } from '../pages/entrepreneur/BusinessEntrepreneur/edit';
 import { ChatEntrepreneur } from "../pages/entrepreneur/ChatEntrepreneur";
 import { ChatMessageEntrepreneur } from "../pages/entrepreneur/ChatEntrepreneur/ChatMessageEntrepreneur";
 import { ClientsEntrepreneur } from "../pages/entrepreneur/ClientsEntrepreneur";
-import { Dashboard } from "../pages/entrepreneur/Dashboard";
 import { ServicesEntrepreneur } from "../pages/entrepreneur/ServicesEntrepreneur";
 import { CreateServicesEntrepreneur } from "../pages/entrepreneur/ServicesEntrepreneur/create";
 import { EditServicesEntrepreneur } from '../pages/entrepreneur/ServicesEntrepreneur/edit';
@@ -72,8 +72,6 @@ export const Router: React.FC = () => {
                     </RequireAuth>
                 }
             />
-
-            <Route path="/admin" element={<Dashboard />} />
 
             <Route
                 path="/admin/business"
@@ -170,6 +168,15 @@ export const Router: React.FC = () => {
                 element={
                     <RequireAuth>
                         <CreateProposal />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path="/admin/budget/edit-proposal/:proposal_id"
+                element={
+                    <RequireAuth>
+                        <EditProposal />
                     </RequireAuth>
                 }
             />
