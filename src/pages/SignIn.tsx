@@ -28,8 +28,6 @@ export const SignIn: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const state = useLocation();
-
     const { user, signInWithGoogle } = useAuthWithGoogle();
     const { signIn } = useAuth();
 
@@ -38,7 +36,7 @@ export const SignIn: React.FC = () => {
             await signInWithGoogle();
         }
 
-        navigate("/home");
+        navigate(location.pathname || "/home");
     }
 
     const handleSubmit = useCallback(

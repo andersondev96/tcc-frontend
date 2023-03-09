@@ -43,6 +43,7 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
 
         if (token && user) {
             api.defaults.headers.authorization = `Bearer ${token}`;
+            setAuthenticated(true);
             return { token, user: JSON.parse(user) };
         }
 
