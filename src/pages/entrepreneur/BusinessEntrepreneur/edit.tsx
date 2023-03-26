@@ -67,16 +67,21 @@ interface UpdateBusinessEntrepreneurFormData {
     description: string;
     services: string[];
     physical_localization: boolean;
-    telephone: string;
-    whatsapp: string;
-    email: string;
-    website: string;
-    cep: string;
-    street: string;
-    district: string;
-    number: number;
-    state: string;
-    city: string;
+    contact: {
+        telephone: string;
+        whatsapp: string;
+        email: string;
+        website: string;
+    },
+    Address: {
+        id: string;
+        cep: string;
+        street: string;
+        district: string;
+        city: string;
+        state: string;
+        number: number;
+    }
 }
 
 export const BusinessEdit: React.FC = () => {
@@ -228,12 +233,22 @@ export const BusinessEdit: React.FC = () => {
                     abortEarly: false,
                 });
 
-                console.log(data);
+                const company = {
+                    name: data.name,
+                    cnpj: data.cnpj,
+                    category_id: data.category_id,
+                    description: data.description,
+                    telephone: data.contact.telephone,
+                    whatsapp: data.contact.whatsapp,
+                    email: data.contact.email,
+                    website: data.contact.website,
+                    physical_localization: hasPhysicalLocation,
+                    cep: data.Address.cep,
+                }
 
-                const response = await api.put(`/companies/${params.id}`, data);
+                await api.put(`/companies/${params.id}`, company);
 
-                console.log(response);
-
+                toast.success('Empresa atualizada com sucesso');
 
                 navigate('/admin/business');
 
@@ -470,7 +485,7 @@ export const BusinessEdit: React.FC = () => {
                                         <Input
                                             name="street"
                                             label="Endereço"
-                                            defaultValue={company.Address.street || address.localidade || ''}
+                                            defaultValue={address.localidade || ''}
                                             placeholder="Digite a rua"
                                         />
 
@@ -479,7 +494,7 @@ export const BusinessEdit: React.FC = () => {
                                         <Input
                                             name="district"
                                             label="Bairro"
-                                            defaultValue={company.Address.district || address.bairro || ''}
+                                            defaultValue={address.bairro || ''}
                                             placeholder="Digite o bairro"
                                         />
 
@@ -499,7 +514,7 @@ export const BusinessEdit: React.FC = () => {
                                             <Select
                                                 name="state"
                                                 label="Estado"
-                                                value={company.Address.state || address.uf || selectedState}
+                                                value={address.uf || selectedState}
                                                 onChange={(e) => setSelectedState(e.target.value)}
                                                 options={[
                                                     { value: 'AC', label: 'Acre' },
@@ -540,7 +555,7 @@ export const BusinessEdit: React.FC = () => {
                                             name="city"
                                             label="Cidade"
                                             placeholder="Digite a cidade"
-                                            defaultValue={company.Address.city || address.localidade || ''}
+                                            defaultValue={address.localidade || ''}
                                         />
                                     </div>
                                 </div>
