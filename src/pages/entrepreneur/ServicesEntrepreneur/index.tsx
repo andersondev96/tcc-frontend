@@ -127,11 +127,8 @@ export const ServicesEntrepreneur: React.FC = () => {
                                         services.map(service => (
                                             <ServiceCard
                                                 key={service.id}
-                                                id={service.id}
-                                                name={service.name}
-                                                price={service.price}
-                                                category={service.category}
-                                                image={service.image_url}
+                                                data={service}
+                                                setServices={setServices}
                                             />
                                         ))
                                     }

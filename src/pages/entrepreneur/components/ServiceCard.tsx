@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { AiOutlineDelete } from "react-icons/ai";
 import { FiEdit2 } from "react-icons/fi";
@@ -8,25 +8,32 @@ import { ToastContainer, toast } from "react-toastify";
 import api from "../../../services/api";
 import { DeleteModal } from "./DeleteModal";
 
-interface ServiceProps {
+Modal.setAppElement('#root');
+
+interface ServiceData {
     id: string;
     name: string;
+    description: string;
     price: number;
-    image?: string;
-    category?: string;
+    category: string;
+    image_url: string;
+}
+
+interface ServiceProps {
+    data: ServiceData;
+    setServices: React.Dispatch<React.SetStateAction<ServiceData[]>>;
 }
 
 
-export const ServiceCard: React.FC<ServiceProps> = ({
-    id,
-    name,
-    price,
-    category,
-    image,
-}) => {
+export const ServiceCard: React.FC<ServiceProps> = ({ data, setServices }) => {
     const navigate = useNavigate();
+    const [service, setService] = useState<ServiceData>({} as ServiceData);
     const [mouseEnter, setMouseEnter] = useState(false);
     const [isOpenModal, setIsOpenModal] = useState(false);
+
+    useEffect(() => {
+        api.get(`/services/${data.id}`).then(response => setService(response.data));
+    }, []);
 
     function openModal() {
         setIsOpenModal(true);
@@ -37,12 +44,15 @@ export const ServiceCard: React.FC<ServiceProps> = ({
     }
 
     const handleDeleteProduct = useCallback(() => {
-        api.delete(`/services/${id}`);
+        api.delete(`/services/${service.id}`).then(() => {
+            setServices((prevServices) =>
+                prevServices.filter((service) => service.id !== data.id)
+            );
+            closeModal();
+            toast.info("Serviço removido com sucesso!");
+        });
 
-        closeModal();
-        toast.info("Serviço removido com sucesso!");
-        window.location.reload(); // melhorar isso aqui
-    }, [toast, closeModal]);
+    }, [data.id, setServices, closeModal]);
 
     const currentStyles = {
         content: {
@@ -61,15 +71,15 @@ export const ServiceCard: React.FC<ServiceProps> = ({
             <ToastContainer />
             <div
                 className="h-48 cursor-pointer hover:opacity-90 duration-150"
-                onClick={() => navigate(`/admin/services/${id}`)}
+                onClick={() => navigate(`/admin/services/${service.id}`)}
                 onMouseEnter={() => setMouseEnter(true)}
                 onMouseLeave={() => setMouseEnter(false)}
             >
                 {
-                    image ? (
+                    service.image_url ? (
                         <img
-                            src={image}
-                            alt={name}
+                            src={service.image_url}
+                            alt={service.name}
                             className="absolute w-48 h-48 border-4 border-gray-600 rounded object-cover"
                         />
                     ) : (
@@ -86,14 +96,14 @@ export const ServiceCard: React.FC<ServiceProps> = ({
                     <div className="flex flex-col justify-center gap-2 p-2 absolute w-48 h-18 mt-24 bg-gray-300 bg-opacity-60 transition ease-in-out delay-150 hover:-translate-y-1">
                         <div className="flex flex-col justify-between">
                             <span className="font-montserrat mt-2 font-semibold text-sm">
-                                {name}
+                                {service.name}
                             </span>
                             <p className="font-inter font-light text-xs leading-none">
-                                {category?.substring(0, 50)}
+                                {service.category?.substring(0, 50)}
                             </p>
                         </div>
                         <span className="font-inter font-semibold text-sm text-red-800">
-                            {price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                            {service.price && service.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                         </span>
                     </div>
                 )}
@@ -101,7 +111,7 @@ export const ServiceCard: React.FC<ServiceProps> = ({
             <div className="flex flex-row justify-between px-2 mt-2">
                 <button className="flex flex-row items-center gap-2 text-green-500 font-montserrat font-medium text-sm hover:text-green-600  transition-colors duration-300">
                     <FiEdit2 />
-                    <Link to={`/admin/services/edit/${id}`}>
+                    <Link to={`/admin/services/edit/${service.id}`}>
                         <span>Editar</span>
                     </Link>
                 </button>
@@ -119,7 +129,7 @@ export const ServiceCard: React.FC<ServiceProps> = ({
                 onRequestClose={closeModal}
                 style={currentStyles}
             >
-                <DeleteModal name={name} removeProduct={handleDeleteProduct} onCancel={closeModal} />
+                <DeleteModal name={service.name} removeProduct={handleDeleteProduct} onCancel={closeModal} />
             </Modal>
         </div>
     );
