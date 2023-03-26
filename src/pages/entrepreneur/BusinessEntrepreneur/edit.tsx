@@ -51,7 +51,15 @@ interface CompanyData {
         city: string,
         state: string,
         number: number
-    }
+    },
+    ImageCompany?: [
+        {
+            id: string,
+            title: string,
+            image_name: string,
+            image_url: string,
+        }
+    ]
 }
 
 interface ICategories {
@@ -81,7 +89,15 @@ interface UpdateBusinessEntrepreneurFormData {
         city: string;
         state: string;
         number: number;
-    }
+    },
+    ImageCompany?: [
+        {
+            id: string,
+            title: string,
+            image_name: string,
+            image_url: string,
+        }
+    ]
 }
 
 export const BusinessEdit: React.FC = () => {
@@ -233,7 +249,7 @@ export const BusinessEdit: React.FC = () => {
                     abortEarly: false,
                 });
 
-                const company = {
+                const companyData = {
                     name: data.name,
                     cnpj: data.cnpj,
                     category_id: data.category_id,
@@ -246,7 +262,13 @@ export const BusinessEdit: React.FC = () => {
                     cep: data.Address.cep,
                 }
 
-                await api.put(`/companies/${params.id}`, company);
+                await api.put(`/companies/${params.id}`, companyData);
+
+                if (company?.ImageCompany && company.ImageCompany.length > 0) {
+                    //
+                } else {
+                    await api.post(`/companies/images/${company.id}`, images);
+                }
 
                 toast.success('Empresa atualizada com sucesso');
 
@@ -263,7 +285,7 @@ export const BusinessEdit: React.FC = () => {
 
                 toast.error("Erro ao cadastrar empresa");
             }
-        }, [toast, hasPhysicalLocation]);
+        }, [toast, navigate, params.id, images, company, hasPhysicalLocation]);
 
     return (
         <div className="flex flex-row">
