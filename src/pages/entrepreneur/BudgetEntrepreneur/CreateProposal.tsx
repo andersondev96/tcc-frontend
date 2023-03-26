@@ -43,6 +43,7 @@ interface Proposal {
 }
 
 export const CreateProposal: React.FC = () => {
+    const [file, setFile] = useState<File | null>(null);
     const [proposal, setProposal] = useState<Proposal>({} as Proposal);
     const [selectedFiles, setSelectedFiles] = useState(new FormData());
     const { proposal_id } = useParams();
@@ -53,18 +54,14 @@ export const CreateProposal: React.FC = () => {
         api.get(`proposals/${proposal_id}`).then(response => setProposal(response.data));
     }, []);
 
-    const handleSelectFiles = useCallback(
-        (e: ChangeEvent<HTMLInputElement>) => {
-            if (e.target.files) {
-                const files = Array.from(e.target.files);
+    const handleFileUpload = useCallback(
+        async (event: ChangeEvent<HTMLInputElement>) => {
+            const selectedFile = event.target.files && event.target.files[0];
 
-                files.map(
-                    file => selectedFiles.append('file', file)
-                );
+            if (selectedFile) {
+                setFile(selectedFile);
             }
-        }, [selectedFiles]);
-
-
+        }, [setFile]);
 
     const handleSubmit = useCallback(
         async (data: BudgetData) => {
@@ -89,15 +86,18 @@ export const CreateProposal: React.FC = () => {
                     installments: data.installments
                 }
 
-                //const response = await api.post(`budgets/${proposal_id}`, budget);
+                const response = await api.post(`budgets/${proposal_id}`, budget);
 
-                console.log(selectedFiles);
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('budget', file);
 
-                //await api.patch(`budgets/${response.data.id}`, selectedFiles);
+                    await api.patch(`budgets/${response.data.id}`, formData);
+                }
 
                 toast.success("Orçamento criado com sucesso!");
 
-                //navigate(`/admin/budget/details/${proposal_id}`);
+                navigate(`/admin/budget/details/${proposal_id}`);
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
                     const errors = getValidationErrors(err);
@@ -111,7 +111,7 @@ export const CreateProposal: React.FC = () => {
 
                 toast.error("Error ao criar o orçamento");
             }
-        }, [proposal_id, selectedFiles, navigate]);
+        }, [proposal_id, selectedFiles, navigate, file]);
     return (
         <div className="flex flex-row">
             <SideBar pageActive="orcamentos" />
@@ -150,7 +150,7 @@ export const CreateProposal: React.FC = () => {
                                 id="files"
                                 multiple
                                 accept="image/*,.txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                                onChange={handleSelectFiles}
+                                onChange={handleFileUpload}
                             />
                         </div>
                         <div className="flex flex-wrap -mx-3">

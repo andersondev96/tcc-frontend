@@ -43,9 +43,9 @@ interface Proposal {
 }
 
 export const EditProposal: React.FC = () => {
+    const [file, setFile] = useState<File | null>(null);
     const [proposal, setProposal] = useState<Proposal>({} as Proposal);
     const [budget, setBudget] = useState<BudgetData>({} as BudgetData);
-    const [selectedFiles, setSelectedFiles] = useState(new FormData());
     const { proposal_id } = useParams();
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
@@ -53,20 +53,28 @@ export const EditProposal: React.FC = () => {
     useEffect(() => {
         api.get(`proposals/${proposal_id}`).then(response => setProposal(response.data));
 
-        api.get(`proposals/budget/${proposal_id}`).then(response => setBudget(response.data));
+        api.get(`proposals/budget/${proposal_id}`).then(response => {
+            const data = response.data;
+            const date = new Date(data.delivery_date);
+            date.setUTCHours(date.getUTCHours() - 3);
+            const formattedDate = date.toISOString().substring(0, 10);
+            data.delivery_date = formattedDate;
+            setBudget(data);
+        });
+
+        console.log(budget);
 
     }, [proposal_id, setBudget]);
 
     const handleSelectFiles = useCallback(
-        (e: ChangeEvent<HTMLInputElement>) => {
-            if (e.target.files) {
-                const files = Array.from(e.target.files);
+        async (event: ChangeEvent<HTMLInputElement>) => {
+            const selectedFile = event.target.files && event.target.files[0];
 
-                files.map(
-                    file => selectedFiles.append('file', file)
-                );
+            if (selectedFile) {
+                setFile(selectedFile);
             }
-        }, [selectedFiles]);
+
+        }, [setFile]);
 
 
 
@@ -95,6 +103,13 @@ export const EditProposal: React.FC = () => {
 
                 await api.put(`budgets/${budget.id}`, updateBudget);
 
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('budget', file);
+
+                    await api.patch(`budgets/${budget.id}`, formData);
+                }
+
                 toast.success("Orçamento atualizado com sucesso!");
 
                 navigate(`/admin/budget`);
@@ -109,7 +124,7 @@ export const EditProposal: React.FC = () => {
 
                 toast.error("Error ao atualizar o orçamento");
             }
-        }, [proposal_id, budget, navigate]);
+        }, [proposal_id, budget, navigate, file]);
     return (
         <div className="flex flex-row">
             <SideBar pageActive="orcamentos" />
@@ -151,7 +166,15 @@ export const EditProposal: React.FC = () => {
                                 accept="image/*,.txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
                                 onChange={handleSelectFiles}
                             />
+                            <div>
+                                {budget.files && budget.files.map(file => (
+                                    <div key={file}>
+                                        <p className="text-sm text-blue-700">{file}</p>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
+
                         <div className="flex flex-wrap -mx-3">
                             <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                 <Input

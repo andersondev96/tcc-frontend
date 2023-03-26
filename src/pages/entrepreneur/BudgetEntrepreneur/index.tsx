@@ -3,7 +3,7 @@ import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { TbSend } from "react-icons/tb";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
@@ -40,9 +40,24 @@ interface Proposals {
     }
 }
 
+interface Budget {
+    id: string;
+    customer_id: string;
+    company_id: string;
+    proposal_id: string;
+    description: string;
+    delivery_date: string;
+    amount: number;
+    installments: number;
+    files: string[];
+}
+
 export const BudgetEntrepreneur: React.FC = () => {
+    const navigate = useNavigate();
+
     const [company, setCompany] = useState<Company>({} as Company);
     const [proposals, setProposals] = useState<Proposals[]>([]);
+    const [budget, setBudget] = useState<Budget>({} as Budget);
     const [name, setName] = useState("");
 
     useEffect(() => {
@@ -51,7 +66,15 @@ export const BudgetEntrepreneur: React.FC = () => {
         api.get(`proposals/company/${company.id}`).then((response) => setProposals(response.data));
     }, [company.id]);
 
+    const handleEditBudget = useCallback((proposal_id: string) => {
+        api.get(`proposals/budget/${proposal_id}`).then((response) => setBudget(response.data));
 
+        if (budget) {
+            navigate(`/admin/budget/edit-proposal/${proposal_id}`);
+        } else {
+            navigate(`/admin/budget/create-proposal/${proposal_id}`);
+        }
+    }, [budget, navigate]);
 
 
     const handleSearchBudgets = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
@@ -105,9 +128,9 @@ export const BudgetEntrepreneur: React.FC = () => {
                                                 <Link to={`/admin/budget/details/${proposal.id}`}>
                                                     <AiOutlineEye size={24} color="#547DE5" />
                                                 </Link>
-                                                <Link to={`/admin/budget/create-proposal/${proposal.id}`}>
+                                                <span onClick={() => handleEditBudget(proposal.id)}>
                                                     <IoDocumentTextOutline size={24} color="#1EBF1B" />
-                                                </Link>
+                                                </span>
                                                 <TbSend size={24} color="#EEB522" />
                                             </div>
                                         </TableData>
