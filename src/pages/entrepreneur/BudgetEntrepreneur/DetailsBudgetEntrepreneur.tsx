@@ -157,6 +157,17 @@ export const DetailsBudgetEntrepreneur: React.FC = () => {
                                                 ou ${budget.installments}x de ${(budget.amount / budget.installments).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`}
                                         </p>
                                     </div>
+
+                                    <div className="flex flex-col gap-2 w-60 sm:w-[45.25rem]">
+                                        <span className="font-semibold sm:text-lg">
+                                            Anexos
+                                        </span>
+                                        {budget.files && budget.files.map(file => (
+                                            <p key={file} className="font-light text-xs text-blue-700 sm:text-sm text-justify">
+                                                {file}
+                                            </p>
+                                        ))}
+                                    </div>
                                 </div>
                             )
                         }

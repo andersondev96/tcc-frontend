@@ -27,6 +27,7 @@ interface Proposals {
     status: string;
     customer_id: string;
     createdAt: string;
+    updatedAt: string;
     customer: {
         id: string;
         user_id: string;
@@ -111,6 +112,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                                     <TableHeader>Objetivo do serviço</TableHeader>
                                     <TableHeader>Prazo</TableHeader>
                                     <TableHeader>Status</TableHeader>
+                                    <TableHeader>Última atualização</TableHeader>
                                     <TableHeader></TableHeader>
                                 </TableRowHead>
                             </TableHead>
@@ -123,6 +125,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                                         <TableData>{proposal.description}</TableData>
                                         <TableData>{format(new Date(proposal.time), "dd/MM/yyyy")}</TableData>
                                         <TableData>{proposal.status}</TableData>
+                                        <TableData>{format(new Date(proposal.updatedAt), "dd/MM/yyyy")}</TableData>
                                         <TableData>
                                             <div className="flex flex-row gap-2">
                                                 <Link to={`/admin/budget/details/${proposal.id}`}>
