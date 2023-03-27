@@ -63,6 +63,7 @@ interface Assessment {
 
 export const Business: React.FC = () => {
     const params = useParams();
+    const [companyFavorited, setCompanyFavorited] = useState(false);
     const [company, setCompany] = useState<Company>({} as Company);
     const [assessments, setAssessments] = useState<Assessment[]>([]);
     const weekdays = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -100,6 +101,16 @@ export const Business: React.FC = () => {
             return false;
         }
     }, []);
+
+    const handleFavoriteCompany = useCallback(async () => {
+        if (!companyFavorited) {
+            await api.patch(`/companies/favorites/${company.id}`);
+            setCompanyFavorited(true);
+        } else {
+            await api.patch(`/companies/favorites/unfavorite/${company.id}`);
+            setCompanyFavorited(false);
+        }
+    }, [company, setCompanyFavorited, companyFavorited]);
 
     return (
         <div className="flex flex-col">
@@ -173,7 +184,11 @@ export const Business: React.FC = () => {
                             </div>
                         )
                     }
-                    <ButtonAction type="favorite" />
+                    <ButtonAction
+                        type="favorite"
+                        onClick={handleFavoriteCompany}
+                        active={companyFavorited}
+                    />
 
                     {assessments && assessments.length > 0 ? (
                         <div className="flex flex-col mt-[2.25rem]">
