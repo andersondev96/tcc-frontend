@@ -1,25 +1,49 @@
-import { FormEvent, useCallback, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import AvatarImg from "../../../assets/avatar.jpg";
 import api from "../../../services/api";
 import { AssessmentsStars } from "./AssessmentsStars";
 
-interface AssessmentFormProps {
-    table_id: string;
+interface Assessment {
+    id: string;
+    user_id: string;
+    comment: string;
+    stars: string;
 }
 
-export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id }) => {
+interface AssessmentState {
+    current: Assessment | null;
+    previous: Assessment[];
+}
+interface AssessmentFormProps {
+    table_id: string;
+    onAddAssessment: (newAssessment: Assessment) => void;
+}
+
+export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, onAddAssessment }) => {
     const [comment, setComment] = useState("");
     const [stars, setStars] = useState(0);
+    const [assessment, setAssessment] = useState<AssessmentState>({ current: null, previous: [] });
 
     const handleSubmit = useCallback(async (event: FormEvent) => {
         event.preventDefault();
 
-        await api.post(`/assessments/company/${table_id}`, {
+        const response = await api.post(`/assessments/company/${table_id}`, {
             comment,
             stars
         });
 
-    }, [comment, table_id]);
+        if (response.status === 201) {
+            const newAssessment: Assessment = response.data;
+            onAddAssessment(newAssessment);
+            setComment("");
+            setStars(0);
+        }
+
+    }, [comment, table_id, onAddAssessment]);
+
+    const handleInputChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
+        setComment(event.target.value);
+    }, []);
 
     const updateAssessment = useCallback(async () => {
         const company = await api.get(`/assessments/company/${table_id}`);
@@ -40,8 +64,11 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id }) => 
                     <textarea
                         name="assessment"
                         placeholder="Escreva aqui o seu comentário"
-                        onChange={e => setComment(e.target.value)}
-                        className="w-72 p-2 sm:w-116 sm:h-16 resize-none rounded border-2 border-gray-400 outline-0 focus:border-indigo-600 font-inter text-sm text-gray-700" />
+                        onChange={handleInputChange}
+                        value={comment}
+                        className="w-72 p-2 sm:w-116 sm:h-16 resize-none rounded border-2 border-gray-400 outline-0 focus:border-indigo-600 font-inter text-sm text-gray-700"
+
+                    />
                 </div>
                 <div className="px-14 sm:px-20 flex flex-col gap-2">
                     <span className="font-inter font-semibold text-sm text-gray-700">Classificação</span>

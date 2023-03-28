@@ -112,6 +112,10 @@ export const Business: React.FC = () => {
         }
     }, [company, setCompanyFavorited, companyFavorited]);
 
+    const handleAddAssessments = useCallback((newAssessment: Assessment) => {
+        setAssessments((prevAssessments) => [...prevAssessments, newAssessment]);
+    }, []);
+
     return (
         <div className="flex flex-col">
             <NavBar pageCurrent="negocio" />
@@ -210,7 +214,10 @@ export const Business: React.FC = () => {
                     )}
 
                     <div className="flex flex-row mt-8">
-                        <AssessmentsForm table_id={company.id} />
+                        <AssessmentsForm
+                            table_id={company.id}
+                            onAddAssessment={handleAddAssessments}
+                        />
                     </div>
 
                 </div>
