@@ -22,7 +22,6 @@ interface AssessmentFormProps {
 export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, onAddAssessment }) => {
     const [comment, setComment] = useState("");
     const [stars, setStars] = useState(0);
-    const [assessment, setAssessment] = useState<AssessmentState>({ current: null, previous: [] });
 
     const handleSubmit = useCallback(async (event: FormEvent) => {
         event.preventDefault();
@@ -39,17 +38,11 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, onAdd
             setStars(0);
         }
 
-    }, [comment, table_id, onAddAssessment]);
+    }, [comment, stars, table_id, onAddAssessment]);
 
     const handleInputChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
         setComment(event.target.value);
     }, []);
-
-    const updateAssessment = useCallback(async () => {
-        const company = await api.get(`/assessments/company/${table_id}`);
-
-        return company;
-    }, [table_id]);
 
 
     return (
@@ -72,7 +65,11 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, onAdd
                 </div>
                 <div className="px-14 sm:px-20 flex flex-col gap-2">
                     <span className="font-inter font-semibold text-sm text-gray-700">Classificação</span>
-                    <AssessmentsStars mode="edit" />
+                    <AssessmentsStars
+                        mode="edit"
+                        stars={stars}
+                        setStars={setStars}
+                    />
                 </div>
                 <button className="ml-14 sm:ml-20 w-32 h-11 sm:w-24 sm:h-10 bg-indigo-600 rounded text-white font-inter font-medium text-lg hover:brightness-90 transition-opacity">
                     Enviar
