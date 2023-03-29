@@ -107,6 +107,14 @@ export const Business: React.FC = () => {
         }
     }, []);
 
+    const verifyCompanyIsFavorited = useCallback(() => {
+        api.get(`users/favorite/${company.id}`).then((response) => {
+            if (response.data.length > 0) {
+                setCompanyFavorited(true);
+            }
+        })
+    }, [company.id, setCompanyFavorited]);
+
     const handleFavoriteCompany = useCallback(async () => {
         if (!companyFavorited) {
             await api.patch(`/companies/favorites/${company.id}`);
@@ -120,6 +128,10 @@ export const Business: React.FC = () => {
     const handleAddAssessments = useCallback((newAssessment: Assessment) => {
         setAssessments((prevAssessments) => [...prevAssessments, newAssessment]);
     }, []);
+
+    useEffect(() => {
+        verifyCompanyIsFavorited();
+    }, [verifyCompanyIsFavorited]);
 
     return (
         <div className="flex flex-col">
