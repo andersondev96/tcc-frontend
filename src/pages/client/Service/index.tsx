@@ -14,12 +14,12 @@ interface CompanyData {
 interface ServiceData {
     id: string;
     name: string;
-    description: string;
-    price: number;
     category: string;
-    image_url: string;
+    description: string;
     stars: number;
-    highlight_service: boolean;
+    favorites: number;
+    image_url: string;
+    price: number;
     company_id: string;
 }
 

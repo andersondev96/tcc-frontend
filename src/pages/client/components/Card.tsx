@@ -26,7 +26,7 @@ interface CardProps {
 export const Card: React.FC<CardProps> = ({ service }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [displayHeart, setDisplayHeart] = useState(false);
-    const [like, setLike] = useState(false);
+    const [serviceFavorited, setServiceFavorited] = useState(false);
 
     function openModal() {
         setModalIsOpen(true);
@@ -37,17 +37,33 @@ export const Card: React.FC<CardProps> = ({ service }) => {
     }
 
     const setFavoriteService = useCallback(async () => {
-        api.patch(`/services/favorites/${service.id}`);
-        setLike(true);
-    }, [service.id]);
+        if (!serviceFavorited) {
+            api.patch(`/services/favorites/${service.id}`);
+            setServiceFavorited(true);
+        } else {
+            api.patch(`/services/favorites/unfavorite/${service.id}`);
+            setServiceFavorited(false);
+        }
+    }, [service.id, serviceFavorited]);
 
+    const verifyServiceIsFavorited = useCallback(() => {
+        api.get(`users/favorite/${service.id}`).then((response) => {
+            if (response.data.length > 0) {
+                setServiceFavorited(true);
+            }
+        })
+    }, [service.id, setServiceFavorited]);
+
+    /* useEffect(() => {
+        verifyServiceIsFavorited();
+    }, [verifyServiceIsFavorited]); */
 
 
     return (
         <div
             className="flex flex-row items-center sm:w-80 w-64  h-20 bg-gray-300  rounded"
-            onMouseOver={!like ? () => setDisplayHeart(true) : () => { }}
-            onMouseLeave={!like ? () => setDisplayHeart(false) : () => { }}
+            onMouseOver={!serviceFavorited ? () => setDisplayHeart(true) : () => { }}
+            onMouseLeave={!serviceFavorited ? () => setDisplayHeart(false) : () => { }}
         >
             <img
                 src={service.image_url ||
@@ -62,7 +78,7 @@ export const Card: React.FC<CardProps> = ({ service }) => {
                             size={16}
                             onClick={setFavoriteService}
                             className="cursor-pointer"
-                            color={`${like || service.favorites >= 0 ? '#D0103F' : '#FFFFFF'}`}
+                            color={`${serviceFavorited || service.favorites >= 0 ? '#D0103F' : '#FFFFFF'}`}
                         />
                     ) : ''}
                 </div>
