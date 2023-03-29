@@ -3,8 +3,9 @@ import { BusinessHeader } from '../components/BusinessHeader';
 import { Paragraph } from "../components/Paragraph";
 
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { NavBar } from "../../../components/NavBar/NavBar";
+import { useAuth } from '../../../contexts/AuthContext';
 import api from "../../../services/api";
 import formatTelephone from '../../../utils/formatTelephone';
 import { Assessments } from "../components/Assessments";
@@ -58,11 +59,15 @@ interface Assessment {
     id: string;
     user_id: string;
     comment: string;
-    stars: string;
+    stars: number;
+    user: {
+        avatar: string;
+    }
 }
 
 export const Business: React.FC = () => {
     const params = useParams();
+    const { user } = useAuth();
     const [companyFavorited, setCompanyFavorited] = useState(false);
     const [company, setCompany] = useState<Company>({} as Company);
     const [assessments, setAssessments] = useState<Assessment[]>([]);
@@ -188,38 +193,52 @@ export const Business: React.FC = () => {
                             </div>
                         )
                     }
-                    <ButtonAction
-                        type="favorite"
-                        onClick={handleFavoriteCompany}
-                        active={companyFavorited}
-                    />
+                    {
+                        user ? (
+                            <div>
+                                <ButtonAction
+                                    type="favorite"
+                                    onClick={handleFavoriteCompany}
+                                    active={companyFavorited}
+                                />
 
-                    {assessments && assessments.length > 0 ? (
-                        <div className="flex flex-col mt-[2.25rem]">
-                            <div className="flex flex-col gap-[0.375rem]">
-                                <span className="font-inter font-semibold">Avaliações</span>
-                                <p className="font-inter font-light text-xs">{assessments.length} comentário(s)</p>
+                                {assessments && assessments.length > 0 ? (
+                                    <div className="flex flex-col mt-[2.25rem]">
+                                        <div className="flex flex-col gap-[0.375rem]">
+                                            <span className="font-inter font-semibold">Avaliações</span>
+                                            <p className="font-inter font-light text-xs">{assessments.length} comentário(s)</p>
+                                        </div>
+                                        {assessments.slice(-5).map(assessment => (
+                                            <Assessments
+                                                key={assessment.id}
+                                                data={assessment}
+                                            />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col mt-[2.25rem]">
+                                        <div className="flex flex-col gap-[0.375rem]">
+                                            <span className="font-inter font-semibold">Avaliações</span>
+                                            <p className="font-inter font-light text-xs">Sem comentários</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="flex flex-row mt-8">
+                                    <AssessmentsForm
+                                        table_id={company.id}
+                                        avatar_url={user.avatar}
+                                        onAddAssessment={handleAddAssessments}
+                                    />
+                                </div>
+
                             </div>
-                            {assessments.map(assessment => (
-                                <Assessments key={assessment.id} text={assessment.comment} stars={Number(assessment.stars)} />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="flex flex-col mt-[2.25rem]">
-                            <div className="flex flex-col gap-[0.375rem]">
-                                <span className="font-inter font-semibold">Avaliações</span>
-                                <p className="font-inter font-light text-xs">Sem comentários</p>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="flex flex-row mt-8">
-                        <AssessmentsForm
-                            table_id={company.id}
-                            onAddAssessment={handleAddAssessments}
-                        />
-                    </div>
-
+                        ) : (
+                            <span className="font-medium text-sm text-gray-700">Faça
+                                <Link to="/login" className="text-blue-700 hover:text-blue-800 duration-300"> login </Link>
+                                para visualizar mais opções</span>
+                        )
+                    }
                 </div>
             </div>
         </div>

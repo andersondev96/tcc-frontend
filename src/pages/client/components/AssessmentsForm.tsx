@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useCallback, useState } from "react";
-import AvatarImg from "../../../assets/avatar.jpg";
+import AvatarImg from "../../../assets/user.png";
 import api from "../../../services/api";
 import { AssessmentsStars } from "./AssessmentsStars";
 
@@ -7,19 +7,19 @@ interface Assessment {
     id: string;
     user_id: string;
     comment: string;
-    stars: string;
+    stars: number;
+    user: {
+        avatar: string;
+    }
 }
 
-interface AssessmentState {
-    current: Assessment | null;
-    previous: Assessment[];
-}
 interface AssessmentFormProps {
     table_id: string;
+    avatar_url?: string;
     onAddAssessment: (newAssessment: Assessment) => void;
 }
 
-export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, onAddAssessment }) => {
+export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, onAddAssessment, avatar_url }) => {
     const [comment, setComment] = useState("");
     const [stars, setStars] = useState(0);
 
@@ -50,7 +50,7 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, onAdd
             <form className="flex flex-col gap-4" method="get" onSubmit={handleSubmit} action="">
                 <div className="flex flex-row items-center gap-6">
                     <img
-                        src={AvatarImg}
+                        src={AvatarImg || avatar_url}
                         alt="avatar"
                         className="w-6 h-6 sm:h-10 sm:w-10 rounded-full"
                     />
