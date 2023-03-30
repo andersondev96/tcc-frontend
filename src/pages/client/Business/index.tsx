@@ -239,6 +239,7 @@ export const Business: React.FC = () => {
                                 <div className="flex flex-row mt-8">
                                     <AssessmentsForm
                                         table_id={company.id}
+                                        assessment_type="company"
                                         avatar_url={user.avatar}
                                         onAddAssessment={handleAddAssessments}
                                     />

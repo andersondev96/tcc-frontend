@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Assessments } from "./Assessments";
 import { AssessmentsForm } from "./AssessmentsForm";
 import { AssessmentsStars } from "./AssessmentsStars";
 import { ButtonAction } from "./ButtonAction";
 
 import { ModalContainer } from "../../../components/ModalContainer";
+import { useAuth } from "../../../contexts/AuthContext";
 import api from "../../../services/api";
 import { ModalCalculate } from './ModalCalculate';
 
@@ -23,7 +24,10 @@ interface Assessment {
     id: string;
     user_id: string;
     comment: string;
-    stars: string;
+    stars: number;
+    user: {
+        avatar: string;
+    }
 }
 
 interface ModalServiceProps {
@@ -31,11 +35,12 @@ interface ModalServiceProps {
 }
 
 export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
+    const { user } = useAuth();
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [assessments, setAssessments] = useState<Assessment[]>([]);
 
     useEffect(() => {
-        api.get<Assessment[]>(`/assessments/company/${service.id}`)
+        api.get<Assessment[]>(`/assessments/service/${service.id}`)
             .then(response => {
                 setAssessments(response.data);
             })
@@ -50,6 +55,10 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
     function closeModal() {
         setModalIsOpen(false);
     }
+
+    const handleAddAssessments = useCallback((newAssessment: Assessment) => {
+        setAssessments((prevAssessments) => [...prevAssessments, newAssessment]);
+    }, []);
 
     return (
         <div className="py-16 px-12">
@@ -82,7 +91,10 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
                             <p className="font-inter font-light text-xs">{assessments.length} comentário(s)</p>
                         </div>
                         {assessments.map(assessment => (
-                            <Assessments key={assessment.id} text={assessment.comment} stars={Number(assessment.stars)} />
+                            <Assessments
+                                key={assessment.id}
+                                data={assessment}
+                            />
                         ))}
                     </div>
                 ) : (
@@ -95,7 +107,12 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
                 )}
 
                 <div className="mt-8">
-                    <AssessmentsForm table_id={service.id} />
+                    <AssessmentsForm
+                        table_id={service.id}
+                        assessment_type="service"
+                        avatar_url={user.avatar}
+                        onAddAssessment={handleAddAssessments}
+                    />
                 </div>
             </div>
 

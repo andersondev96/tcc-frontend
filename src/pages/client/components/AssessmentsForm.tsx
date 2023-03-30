@@ -15,27 +15,42 @@ interface Assessment {
 
 interface AssessmentFormProps {
     table_id: string;
+    assessment_type: string;
     avatar_url?: string;
     onAddAssessment: (newAssessment: Assessment) => void;
 }
 
-export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, onAddAssessment, avatar_url }) => {
+export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, assessment_type, onAddAssessment, avatar_url }) => {
     const [comment, setComment] = useState("");
     const [stars, setStars] = useState(0);
 
     const handleSubmit = useCallback(async (event: FormEvent) => {
         event.preventDefault();
 
-        const response = await api.post(`/assessments/company/${table_id}`, {
-            comment,
-            stars
-        });
+        if (assessment_type === "company") {
+            const response = await api.post(`/assessments/company/${table_id}`, {
+                comment,
+                stars
+            });
 
-        if (response.status === 201) {
-            const newAssessment: Assessment = response.data;
-            onAddAssessment(newAssessment);
-            setComment("");
-            setStars(0);
+            if (response.status === 201) {
+                const newAssessment: Assessment = response.data;
+                onAddAssessment(newAssessment);
+                setComment("");
+                setStars(0);
+            }
+        } else if (assessment_type === "service") {
+            const response = await api.post(`/assessments/service/${table_id}`, {
+                comment,
+                stars
+            });
+
+            if (response.status === 201) {
+                const newAssessment: Assessment = response.data;
+                onAddAssessment(newAssessment);
+                setComment("");
+                setStars(0);
+            }
         }
 
     }, [comment, stars, table_id, onAddAssessment]);
