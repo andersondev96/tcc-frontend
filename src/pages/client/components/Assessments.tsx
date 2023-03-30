@@ -22,7 +22,7 @@ export const Assessments: React.FC<AssessmentsProps> = ({ data }) => {
             <div>
                 <img
                     className="h-[2.625rem] w-[2.625rem] mobile:h-[1.75rem] mobile:w-[1.75rem] rounded-full"
-                    src={AvatarImg || data.user && data.user.avatar && data.user.avatar}
+                    src={data.user && data.user.avatar && (`http://localhost:3333/avatar/${data.user.avatar}`) || AvatarImg}
                     alt="avatar" />
             </div>
             <div className="flex flex-col gap-2">

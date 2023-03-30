@@ -240,7 +240,9 @@ export const Business: React.FC = () => {
                                     <AssessmentsForm
                                         table_id={company.id}
                                         assessment_type="company"
-                                        avatar_url={user.avatar}
+                                        avatar_url={user.avatar &&
+                                            `http://localhost:3333/avatar/${user.avatar}`
+                                        }
                                         onAddAssessment={handleAddAssessments}
                                     />
                                 </div>

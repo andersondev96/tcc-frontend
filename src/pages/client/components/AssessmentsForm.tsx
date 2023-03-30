@@ -65,7 +65,7 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, asses
             <form className="flex flex-col gap-4" method="get" onSubmit={handleSubmit} action="">
                 <div className="flex flex-row items-center gap-6">
                     <img
-                        src={AvatarImg || avatar_url}
+                        src={avatar_url || AvatarImg}
                         alt="avatar"
                         className="w-6 h-6 sm:h-10 sm:w-10 rounded-full"
                     />

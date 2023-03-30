@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ModalContainer } from "../../../components/ModalContainer";
 import { AssessmentsStars } from "./AssessmentsStars";
 
@@ -36,15 +36,15 @@ export const Card: React.FC<CardProps> = ({ service }) => {
         setModalIsOpen(false);
     }
 
-    const setFavoriteService = useCallback(async () => {
+    const handleFavoriteService = useCallback(async () => {
         if (!serviceFavorited) {
-            api.patch(`/services/favorites/${service.id}`);
+            await api.patch(`/services/favorites/${service.id}`);
             setServiceFavorited(true);
         } else {
-            api.patch(`/services/favorites/unfavorite/${service.id}`);
+            await api.patch(`/services/favorites/unfavorite/${service.id}`);
             setServiceFavorited(false);
         }
-    }, [service.id, serviceFavorited]);
+    }, [service.id, setServiceFavorited, serviceFavorited]);
 
     const verifyServiceIsFavorited = useCallback(() => {
         api.get(`users/favorite/${service.id}`).then((response) => {
@@ -54,9 +54,9 @@ export const Card: React.FC<CardProps> = ({ service }) => {
         })
     }, [service.id, setServiceFavorited]);
 
-    /* useEffect(() => {
+    useEffect(() => {
         verifyServiceIsFavorited();
-    }, [verifyServiceIsFavorited]); */
+    }, [verifyServiceIsFavorited]);
 
 
     return (
@@ -73,10 +73,10 @@ export const Card: React.FC<CardProps> = ({ service }) => {
             />
             <div className="flex flex-col">
                 <div className="absolute flex flex-row ml-36 sm:ml-52 mt-3">
-                    {displayHeart ? (
+                    {displayHeart || serviceFavorited ? (
                         <AiFillHeart
                             size={16}
-                            onClick={setFavoriteService}
+                            onClick={handleFavoriteService}
                             className="cursor-pointer"
                             color={`${serviceFavorited || service.favorites >= 0 ? '#D0103F' : '#FFFFFF'}`}
                         />
