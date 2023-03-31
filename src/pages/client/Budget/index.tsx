@@ -13,6 +13,7 @@ import { TableHead } from "../../../components/Table/TableHead";
 import { TableHeader } from "../../../components/Table/TableHead/TableHeader";
 import { TableRowHead } from "../../../components/Table/TableHead/TableRowHead";
 import api from "../../../services/api";
+import { PreviousPageButton } from "../components/PreviousPageButton";
 
 interface Proposal {
     id: string;
@@ -46,8 +47,10 @@ export const Budget: React.FC = () => {
     }, []);
     return (
         <div className="flex flex-col">
-            <NavBar pageCurrent="orcamentos" />
-            <div className="flex flex-col p-8">
+            <NavBar />
+            <div className="flex flex-col p-10">
+                <PreviousPageButton />
+
                 <div className="flex flex-col">
                     <div className="flex flex-col items-start sm:items-center py-4">
                         <h1 className="font-montserrat font-medium text-2xl">
