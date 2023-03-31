@@ -23,6 +23,10 @@ interface Proposal {
     description: string;
     status: string;
     createdAt: string;
+    company: {
+        id: string;
+        name: string;
+    }
 }
 
 interface Customer {
@@ -77,12 +81,12 @@ export const Budget: React.FC = () => {
                                         proposals.map(proposal => (
                                             <TableRowBody key={proposal.id}>
                                                 <TableData>{format(new Date(proposal.createdAt), "dd/MM/yyyy")}</TableData>
-                                                <TableData>{proposal.company_id}</TableData>
+                                                <TableData>{proposal.company.name}</TableData>
                                                 <TableData>{proposal.objective}</TableData>
                                                 <TableData>{format(new Date(proposal.time), "dd/MM/yyyy")}</TableData>
                                                 <TableData>{proposal.status}</TableData>
                                                 <TableData>
-                                                    <Link to="/budget/details">
+                                                    <Link to={`/budget/details/${proposal.id}`}>
                                                         <AiOutlineEye size={24} color="#547DE5" />
                                                     </Link>
                                                 </TableData>

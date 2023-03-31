@@ -65,7 +65,7 @@ export const Router: React.FC = () => {
             />
 
             <Route
-                path="/budget/details"
+                path="/budget/details/:proposal_id"
                 element={
                     <RequireAuth>
                         <BudgetDetails />
