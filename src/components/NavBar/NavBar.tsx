@@ -47,7 +47,6 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
         { name: 'Home', href: '/', current: pageCurrent === 'home' },
         { name: 'Negócio', href: `/business/${company_id}`, current: pageCurrent === 'negocio' },
         { name: 'Serviços', href: `/services/${company_id}`, current: pageCurrent === 'servicos' },
-        { name: 'Orçamentos', href: '/budget', current: pageCurrent === 'orcamentos' }
     ]
 
     function classNames(...classes: any) {
@@ -166,6 +165,28 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                                 className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                                                             >
                                                                 Perfil
+                                                            </Link>
+                                                        )}
+                                                    </Menu.Item>
+
+                                                    <Menu.Item>
+                                                        {({ active }) => (
+                                                            <Link
+                                                                to="/budget"
+                                                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                            >
+                                                                Orçamentos
+                                                            </Link>
+                                                        )}
+                                                    </Menu.Item>
+
+                                                    <Menu.Item>
+                                                        {({ active }) => (
+                                                            <Link
+                                                                to="/favorites"
+                                                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                            >
+                                                                Favoritos
                                                             </Link>
                                                         )}
                                                     </Menu.Item>

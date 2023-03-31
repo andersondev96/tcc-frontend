@@ -1,48 +1,97 @@
-import { AiOutlineArrowLeft } from "react-icons/ai";
-import { Header } from "../../../components/Header";
+import { useCallback, useEffect, useState } from "react";
+import { NavBar } from "../../../components/NavBar/NavBar";
+import api from "../../../services/api";
 import { CardFavorites } from "../components/CardFavorites";
-import Reading from "../../../assets/reading.jpg";
-import BarberShop from "../../../assets/barber-shop.jpg";
-import Mechanic from "../../../assets/mechanic.jpg";
-import Interface from "../../../assets/interface.jpg";
-import Painting from "../../../assets/painting.jpg";
-import Candy from "../../../assets/candy.jpg";
 import { PreviousPageButton } from "../components/PreviousPageButton";
 
-export const Favorites: React.FC = () => {
-  return (
-    <div className="flex flex-col">
-      <Header />
-      <div className="flex flex-col p-12">
-        <PreviousPageButton />
-        
-        <div className="flex flex-col items-center py-[3.375rem] mobile:py-[1.75rem] mobile:items-start">
-          <h1 className="font-montserrat font-medium text-2xl">Favoritos</h1>
-        </div>
-        <div className="flex flex-col gap-12">
-          <div className="flex flex-col gap-9 ">
-            <div className="flex flex-col py-2 w-[31.25rem] border-b border-gray-300 ">
-              <span className="font-montserrat font-semibold text-2xl">Negócios</span>
-            </div>
-            <div className="flex flex-row gap-[1.625rem] mobile:flex-col">
-              <CardFavorites image={Reading} description="Clube dos livros" />
-              <CardFavorites image={BarberShop} description="Barbearia Azevedo" />
-              <CardFavorites image={Mechanic} description="Oswaldo Mecânica" />
-            </div>
-          </div>
+interface ICompany {
+    id: string;
+    name: string;
+    image: string;
+    favorites: number;
+}
 
-          <div className="flex flex-col gap-9 ">
-            <div className="flex flex-col py-2 w-[31.25rem] border-b border-gray-300 ">
-              <span className="font-montserrat font-semibold text-2xl">Serviços</span>
+interface IService {
+    id: string;
+    name: string;
+    image_url: string;
+    company: string;
+    favorites: number;
+}
+interface IFavoritesProps {
+    companies: ICompany[];
+    services: IService[];
+
+}
+
+export const Favorites: React.FC = () => {
+    const [favorites, setFavorites] = useState<IFavoritesProps>({ companies: [], services: [] });
+
+    useEffect(() => {
+        api.get(`/users/favorites`).then((response) => {
+            const { companies, services } = response.data;
+            setFavorites({ companies, services });
+        })
+    }, []);
+
+    const showCompanyName = useCallback((company_id: string) => {
+        const name = api.get<ICompany>(`companies/${company_id}`).then((response) => response.data.name);
+
+        return name;
+
+    }, []);
+
+    return (
+        <div className="flex flex-col">
+            <NavBar />
+            <div className="flex flex-col p-10">
+                <PreviousPageButton />
+
+                <div className="flex flex-col">
+                    <h1 className="ffont-montserrat font-bold text-center text-2xl">Favoritos</h1>
+                </div>
+
+                <div className="flex flex-col gap-12 p-10">
+                    <div className="flex flex-col gap-6 ">
+                        <div className="flex flex-col py-2 w-full border-b border-gray-300 ">
+                            <span className="font-montserrat font-semibold text-2xl">Negócios</span>
+                        </div>
+                        <div className="flex gap-7 flex-col sm:flex-row">
+                            {
+                                favorites.companies.map((company) => company && (
+
+                                    <CardFavorites
+                                        key={company.id}
+                                        image={company.image}
+                                        description={company.name}
+                                    />
+                                ))
+                            }
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-6 ">
+                        <div className="flex flex-col py-2 w-full border-b border-gray-300 ">
+                            <span className="font-montserrat font-semibold text-2xl">Serviços</span>
+                        </div>
+                        <div className="flex gap-7 flex-col sm:flex-row">
+                            {
+                                favorites.services.map((service) => service && (
+                                    <>
+                                        <CardFavorites
+                                            key={service.id}
+                                            image={`http://localhost:3333/service/${service.image_url}`}
+                                            description={service.name}
+                                            businessName={service.company}
+                                        />
+                                    </>
+                                ))
+                            }
+                        </div>
+                    </div>
+
+                </div>
             </div>
-            <div className="flex flex-row gap-[1.625rem] mobile:flex-col">
-              <CardFavorites image={Interface} description="Design de telas" businessName="Pablo Design" />
-              <CardFavorites image={Painting} description="Pintura externa de casas" businessName="Art Design Pinturas" />
-              <CardFavorites image={Candy} description="Doces para festas" businessName="Snacks & Cands Buffet" />
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
