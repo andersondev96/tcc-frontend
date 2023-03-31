@@ -7,7 +7,6 @@ import formatCEP from "../../../utils/formatCEP";
 import formatCPFandCNPJ from "../../../utils/formatCPFandCNPJ";
 import formatTelephone from "../../../utils/formatTelephone";
 import { Assessments } from "../../client/components/Assessments";
-import { AssessmentsStars } from "../../client/components/AssessmentsStars";
 import { Pictures } from "../../client/components/Pictures";
 
 import api from "../../../services/api";
@@ -57,9 +56,11 @@ interface CompanyData {
 interface AssessmentData {
     id: string;
     user_id: string;
-    table_id: string;
     comment: string;
     stars: number;
+    user: {
+        avatar: string;
+    }
 }
 
 export const BusinessEntrepreneur: React.FC = () => {
@@ -220,20 +221,29 @@ export const BusinessEntrepreneur: React.FC = () => {
                                 )
                             }
 
-                            <span className="py-3 border-b border-black font-inter font-medium">
-                                Imagens
-                            </span>
-                            <div className="grid grid-cols-2 sm:flex sm:flex-row gap-5">
-                                {
-                                    company.ImageCompany &&
-                                    company.ImageCompany.map((img) => (
-                                        <Pictures
-                                            key={img.id}
-                                            image={img.image_url}
-                                            description={img.title}
-                                        />
-                                    ))}
-                            </div>
+
+                            {
+                                company.ImageCompany && company.ImageCompany.length > 0 &&
+                                (
+                                    <div className="flex flex-col">
+                                        <span className="py-3 border-b border-black font-inter font-medium">
+                                            Imagens
+                                        </span>
+                                        <div className="grid grid-cols-2 mt-4 sm:flex sm:flex-row gap-5">
+                                            {
+                                                company.ImageCompany &&
+                                                company.ImageCompany.map((img) => (
+                                                    <Pictures
+                                                        key={img.id}
+                                                        image={img.image_url}
+                                                        description={img.title}
+                                                    />
+                                                ))}
+                                        </div>
+                                    </div>
+                                )
+                            }
+
 
                             {assessments.length > 0 ? (
                                 <div className="flex flex-col mt-8 sm:mt-10 gap-1">
@@ -241,14 +251,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                                     <p className="font-inter font-light text-sm">{assessments.length} avaliações recebidas</p>
                                     {assessments.map(assessment => (
                                         <div className="flex flex-row items-center gap-3">
-                                            <AssessmentsStars stars={5} mode="view" />
-                                            <span
-                                                className="font-inter font-semibold text-xs text-gray-700"
-                                            >
-                                                {assessment.stars}
-                                            </span>
-                                            <Assessments key={assessment.id} text={assessment.comment} stars={Number(assessment.stars)} />
-                                            <span className="mt-4 font-inter font-medium text-sm text-blue-600">Veja todos os comentários</span>
+                                            <Assessments key={assessment.id} data={assessment} />
                                         </div>
                                     ))}
                                 </div>
