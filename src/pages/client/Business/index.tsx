@@ -138,7 +138,6 @@ export const Business: React.FC = () => {
             <NavBar pageCurrent="negocio" />
             <BusinessHeader
                 company={company}
-                isOpen={verifyCompanyIsOpen()}
             />
             <div className="px-24 py-12">
                 <div className="flex flex-col gap-4 mobile:gap-4">

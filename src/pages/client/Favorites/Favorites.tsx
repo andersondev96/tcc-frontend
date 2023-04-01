@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { NavBar } from "../../../components/NavBar/NavBar";
 import api from "../../../services/api";
 import { CardFavorites } from "../components/CardFavorites";
@@ -32,13 +32,6 @@ export const Favorites: React.FC = () => {
             const { companies, services } = response.data;
             setFavorites({ companies, services });
         })
-    }, []);
-
-    const showCompanyName = useCallback((company_id: string) => {
-        const name = api.get<ICompany>(`companies/${company_id}`).then((response) => response.data.name);
-
-        return name;
-
     }, []);
 
     return (
