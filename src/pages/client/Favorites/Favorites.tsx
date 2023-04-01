@@ -63,6 +63,7 @@ export const Favorites: React.FC = () => {
                                     <CardFavorites
                                         key={company.id}
                                         id={company.id}
+                                        type="company"
                                         image={company.image}
                                         description={company.name}
                                     />
@@ -82,6 +83,7 @@ export const Favorites: React.FC = () => {
                                         <CardFavorites
                                             key={service.id}
                                             id={service.id}
+                                            type="service"
                                             image={`http://localhost:3333/service/${service.image_url}`}
                                             description={service.name}
                                             businessName={service.company}

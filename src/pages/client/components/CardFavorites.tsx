@@ -5,6 +5,7 @@ import NoImageImg from "../../../assets/no-camera.png";
 import api from "../../../services/api";
 interface CardFavoritesProps {
     id: string;
+    type: "company" | "service";
     image?: string | null;
     description: string;
     businessName?: string;
@@ -13,32 +14,37 @@ interface CardFavoritesProps {
 export const CardFavorites: React.FC<CardFavoritesProps> = (
     {
         id,
+        type,
         image,
         description,
-        businessName }
+        businessName
+    }
 ) => {
     const [favorite, setFavorite] = useState(true);
 
     const handleFavorite = useCallback(async () => {
-        if (favorite) {
+        if (type === "company") {
             await api.get(`/companies/${id}`).then(response => {
+                console.log(response.data);
                 if (response.status === 200) {
-                    api.patch(`/companies/favorites/unfavorite/${id}`).then(
-                        () => setFavorite(false)
-                    )
+                    if (favorite) {
+                        api.patch(`/companies/favorites/unfavorite/${id}`).then(
+                            () => setFavorite(false)
+                        )
+                    }
                 }
-            }).catch(error => {
-                return;
             })
-
+        } else {
+            console.log(id);
             await api.get(`/services/${id}`).then(response => {
                 if (response.status === 200) {
-                    api.patch(`/services/favorites/unfavorite/${id}`).then(
-                        () => setFavorite(false)
-                    )
+                    console.log('favorite');
+                    if (favorite) {
+                        api.patch(`/services/favorites/unfavorite/${id}`).then(
+                            () => setFavorite(false)
+                        )
+                    }
                 }
-            }).catch(error => {
-                return;
             })
         }
     }, [setFavorite]);
