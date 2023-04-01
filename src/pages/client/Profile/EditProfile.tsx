@@ -1,16 +1,16 @@
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
-import { Form } from "@unform/web";
 import { FormHandles } from "@unform/core";
-import * as Yup from "yup";
-import { ToastContainer, toast } from "react-toastify";
+import { Form } from "@unform/web";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
-import getValidationErrors from "../../../utils/getValidateErrors";
-import { PreviousPageButton } from "../components/PreviousPageButton";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import * as Yup from "yup";
+import { Input } from "../../../components/Form/Input";
 import { NavBar } from "../../../components/NavBar/NavBar";
 import { useAuth } from "../../../contexts/AuthContext";
-import { Input } from "../../../components/Form/Input";
 import api from "../../../services/api";
-import { useNavigate } from "react-router-dom";
+import getValidationErrors from "../../../utils/getValidateErrors";
+import { PreviousPageButton } from "../components/PreviousPageButton";
 
 interface ProfileFormData {
     name: string;
@@ -24,6 +24,7 @@ export const EditProfile: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const [avatar, setAvatar] = useState(new FormData());
     const [previewAvatar, setPreviewAvatar] = useState<string>();
+    const [selectedNewAvatar, setSelectedNewAvatar] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -70,7 +71,9 @@ export const EditProfile: React.FC = () => {
                     return;
                 }
 
-                await api.patch("/users/avatar", avatar);
+                if (selectedNewAvatar) {
+                    await api.patch("/users/avatar", avatar);
+                }
 
                 const response = await api.put("/users", formData);
 
@@ -92,7 +95,7 @@ export const EditProfile: React.FC = () => {
                 toast.error("Error ao editar usuário, tente novamente!");
 
             }
-        }, [toast, history]);
+        }, [toast, history, avatar, selectedNewAvatar]);
 
     const handleAvatarChange = useCallback(
         (e: ChangeEvent<HTMLInputElement>) => {
@@ -102,6 +105,7 @@ export const EditProfile: React.FC = () => {
 
                 const selectedAvatarPreview = URL.createObjectURL(selectedAvatar);
 
+                setSelectedNewAvatar(true);
                 setPreviewAvatar(selectedAvatarPreview);
             }
         }, []);
