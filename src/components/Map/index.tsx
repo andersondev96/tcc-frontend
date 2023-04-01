@@ -5,9 +5,9 @@ import {
     TileLayer,
     useMapEvent
 } from "react-leaflet";
-import { Popup } from "./Popup";
 import ImgCompany from "../../assets/img-company.jpg";
 import api from "../../services/api";
+import { Popup } from "./Popup";
 
 interface ICompanies {
     id: string;
@@ -79,7 +79,7 @@ export const Map: React.FC = () => {
     return latitude && longitude ? (
         <div>
             <MapContainer
-                className="w-screen h-screen absolute z-10 flex mobile:min-w-min"
+                className="w-screen h-screen relative z-0 flex mobile:min-w-min"
                 center={[latitude, longitude]}
                 zoom={13}
                 scrollWheelZoom={true}
@@ -90,7 +90,8 @@ export const Map: React.FC = () => {
                 />
                 {companies && companies.map(company => company.Address && (
                     <div key={company.id}>
-                        <Marker position={[company.Address.latitude, company.Address.longitude]}>
+                        <Marker
+                            position={[company.Address.latitude, company.Address.longitude]}>
                             <Popup
                                 id={company.id}
                                 image={company.ImageCompany && company.ImageCompany.length > 0

@@ -24,6 +24,7 @@ export const ModalContainer: React.FC<IModalContainerProps> = ({
             maxHeight: '620px',
             margin: 'auto',
             padding: '0',
+            zIndex: 20
         }
     }
 

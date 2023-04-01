@@ -1,5 +1,5 @@
-import { NavBar } from "../../components/NavBar/NavBar";
 import { Map } from "../../components/Map";
+import { NavBar } from "../../components/NavBar/NavBar";
 
 export const Home: React.FC = () => {
     /*  const { user, signInWithGoogle, signOutWithGoogle } = useAuthWithGoogle(); */

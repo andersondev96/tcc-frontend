@@ -1,9 +1,13 @@
-import { Popup as PopupContainer } from "react-leaflet";
-import { Link } from "react-router-dom";
 import { AiFillHeart, AiOutlineCalculator, AiOutlineMail, AiOutlineWhatsApp } from 'react-icons/ai';
 import { BiWorld } from "react-icons/bi";
 import { MdOutlineChatBubbleOutline } from "react-icons/md";
+import { Popup as PopupContainer } from "react-leaflet";
+import { Link } from "react-router-dom";
 
+import { useState } from "react";
+import { ModalCalculate } from "../../../pages/client/components/ModalCalculate";
+import { ModalChat } from "../../ModalChat";
+import { ModalContainer } from "../../ModalContainer";
 import './styles.scss';
 
 interface IContact {
@@ -20,6 +24,25 @@ interface PopupProps {
     image: string;
 }
 export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image }) => {
+    const [modalCalculeIsOpen, setModalCalculateIsOpen] = useState(false);
+    const [modalChatIsOpen, setModalChatIsOpen] = useState(false);
+
+    function openModalCalculate() {
+        setModalCalculateIsOpen(true);
+    }
+
+    function closeModalCalculate() {
+        setModalCalculateIsOpen(false);
+    }
+
+    function openModalChat() {
+        setModalChatIsOpen(true);
+    }
+
+    function closeModalChat() {
+        setModalChatIsOpen(false);
+    }
+
     return (
         <PopupContainer closeButton={false}>
             <div className="leaflet-popup-container">
@@ -51,10 +74,28 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image
                     <a href={contact.email} target="_blank">
                         <AiOutlineMail size={16} />
                     </a>
-                    <MdOutlineChatBubbleOutline size={16} />
-                    <AiOutlineCalculator size={16} />
+                    <MdOutlineChatBubbleOutline size={16} onClick={openModalChat} />
+                    <AiOutlineCalculator size={16} onClick={openModalCalculate} />
                 </div>
             </div>
+            <ModalContainer
+                title="Solicitar orçamento"
+                isOpen={modalCalculeIsOpen}
+                onRequestClose={closeModalCalculate}
+            >
+                <ModalCalculate
+                    company_id={id}
+                    close_modal={closeModalCalculate}
+                />
+            </ModalContainer>
+
+            <ModalContainer
+                title="Singhtglass Coffee"
+                isOpen={modalChatIsOpen}
+                onRequestClose={closeModalChat}
+            >
+                <ModalChat />
+            </ModalContainer>
         </PopupContainer>
 
     );
