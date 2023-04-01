@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import { AiOutlineCalculator, AiOutlineMail, AiOutlineWhatsApp } from 'react-icons/ai';
 import { BiWorld } from 'react-icons/bi';
 import { MdOutlineChatBubbleOutline } from 'react-icons/md';
-import { AssessmentsStars } from './AssessmentsStars';
-
+import NoImageImg from '../../../assets/no-camera.png';
 import { ModalChat } from '../../../components/ModalChat';
 import { ModalContainer } from "../../../components/ModalContainer";
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../services/api';
+import { AssessmentsStars } from './AssessmentsStars';
 import { ModalCalculate } from './ModalCalculate';
 
 interface ISchedules {
@@ -62,7 +62,6 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
     const [modalCalculeIsOpen, setModalCalculateIsOpen] = useState(false);
     const [modalChatIsOpen, setModalChatIsOpen] = useState(false);
     const [category, setCategory] = useState<Category>({} as Category);
-    const IMAGE_DEFAULT = "https://images.unsplash.com/photo-1600456899121-68eda5705257?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1557&q=80";
 
     useEffect(() => {
         api.get<Category>(`/categories/${company.category_id}`)
@@ -94,7 +93,7 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
                         src={
                             company.ImageCompany && company.ImageCompany.length > 0 ?
                                 company.ImageCompany[0].image_url
-                                : IMAGE_DEFAULT
+                                : NoImageImg
                         }
                         alt="Coffee"
                         className="h-[6.25rem] w-[6.25rem] mobile:h-[3.125rem] mobile:w-[3.125rem] object-fill rounded-full"
@@ -143,11 +142,13 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
                                     />
                                 </a>
 
-                                <AiOutlineMail
-                                    size={24}
-                                    color="#547DE5"
-                                    className="hover:brightness-90 transition-colors mobile:w-6"
-                                />
+                                <a href={`mailto:${company.contact.email}`}>
+                                    <AiOutlineMail
+                                        size={24}
+                                        color="#547DE5"
+                                        className="hover:brightness-90 transition-colors mobile:w-6"
+                                    />
+                                </a>
 
                                 <a href={`https://wa.me/55${company.contact.whatsapp}`} target="_blank">
                                     <AiOutlineWhatsApp

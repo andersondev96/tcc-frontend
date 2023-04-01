@@ -5,7 +5,7 @@ import {
     TileLayer,
     useMapEvent
 } from "react-leaflet";
-import ImgCompany from "../../assets/img-company.jpg";
+import NoImageImg from "../../assets/no-camera.png";
 import api from "../../services/api";
 import { Popup } from "./Popup";
 
@@ -96,7 +96,7 @@ export const Map: React.FC = () => {
                                 id={company.id}
                                 image={company.ImageCompany && company.ImageCompany.length > 0
                                     ? company.ImageCompany[0].image_url
-                                    : ImgCompany
+                                    : NoImageImg
                                 }
                                 name={company.name}
                                 category={company.category}
