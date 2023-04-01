@@ -24,28 +24,24 @@ export const CardFavorites: React.FC<CardFavoritesProps> = (
 
     const handleFavorite = useCallback(async () => {
         if (type === "company") {
-            await api.get(`/companies/${id}`).then(response => {
-                console.log(response.data);
-                if (response.status === 200) {
-                    if (favorite) {
-                        api.patch(`/companies/favorites/unfavorite/${id}`).then(
-                            () => setFavorite(false)
-                        )
-                    }
+            const company = await api.get(`/companies/${id}`);
+            if (company.status === 200) {
+                if (favorite) {
+                    api.patch(`/companies/favorites/unfavorite/${id}`).then(
+                        () => setFavorite(false)
+                    );
+
                 }
-            })
+            }
         } else {
-            console.log(id);
-            await api.get(`/services/${id}`).then(response => {
-                if (response.status === 200) {
-                    console.log('favorite');
-                    if (favorite) {
-                        api.patch(`/services/favorites/unfavorite/${id}`).then(
-                            () => setFavorite(false)
-                        )
-                    }
+            const service = await api.get(`/services/${id}`);
+            if (service.status === 201) {
+                if (favorite) {
+                    api.patch(`/services/favorites/unfavorite/${id}`).then(
+                        () => setFavorite(false)
+                    )
                 }
-            })
+            }
         }
     }, [setFavorite]);
 
