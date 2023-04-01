@@ -24,6 +24,10 @@
     justify-content: flex-end;
     cursor: pointer;
 
+    .favorited {
+        color: #D0103F; 
+      }
+
     .icon-heart {
       transition: color 0.3s;
 
