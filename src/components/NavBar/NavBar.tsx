@@ -11,15 +11,28 @@ interface NavBarProps {
     pageCurrent?: string;
 }
 
+interface SettingsCompanyData {
+    id: string;
+    entrepreneur_id: string;
+    online_budget: string;
+    online_chat: string;
+}
+
 export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
     const { user, signOut, authenticated } = useAuth();
     const [isAdmin, setIsAdmin] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const company_id = localStorage.getItem('@web:company_id');
+    const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
+
 
     useEffect(() => {
+        api.get(`/entrepreneurs/${company_id}`)
+            .then((response) => setSettings(response.data))
+            .catch(err => console.log(err));
+
         handleToAdmPage();
-    }, [handleToAdmPage]);
+    }, [handleToAdmPage, company_id]);
 
     function openModal() {
         setModalIsOpen(true);
@@ -107,7 +120,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                     </div>
                                 </div>
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                    {authenticated ? (
+                                    {authenticated && settings.online_chat ? (
                                         <button
                                             onClick={openModal}
                                             type="button"

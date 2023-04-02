@@ -30,6 +30,13 @@ interface Assessment {
     }
 }
 
+interface SettingsCompanyData {
+    id: string;
+    entrepreneur_id: string;
+    online_budget: string;
+    online_chat: string;
+}
+
 interface ModalServiceProps {
     service: ServiceProps;
 }
@@ -39,13 +46,19 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
     const [serviceFavorited, setServiceFavorited] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [assessments, setAssessments] = useState<Assessment[]>([]);
+    const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
+
 
     useEffect(() => {
         api.get<Assessment[]>(`/assessments/service/${service.id}`)
             .then(response => {
                 setAssessments(response.data);
             })
-    }, [service.id]);
+
+        api.get(`/entrepreneurs/${service.company_id}`)
+            .then((response) => setSettings(response.data))
+            .catch(err => console.log(err));
+    }, [service.id, service.company_id]);
 
     const IMAGE_DEFAULT = "https://images.unsplash.com/photo-1600456899121-68eda5705257?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1557&q=80";
 
@@ -108,7 +121,7 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
                             onClick={handleFavoriteService}
                             active={serviceFavorited}
                         />
-                        <ButtonAction type="calculate" onClick={openModal} />
+                        {settings.online_budget && <ButtonAction type="calculate" onClick={openModal} />}
                     </div>
                 </div>
                 {assessments && assessments.length > 0 ? (

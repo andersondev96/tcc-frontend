@@ -24,10 +24,25 @@ interface PopupProps {
     contact: IContact;
     image: string;
 }
+
+interface SettingsCompanyData {
+    id: string;
+    entrepreneur_id: string;
+    online_budget: string;
+    online_chat: string;
+}
+
 export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image }) => {
     const [companyFavorited, setCompanyFavorited] = useState(false);
     const [modalCalculeIsOpen, setModalCalculateIsOpen] = useState(false);
     const [modalChatIsOpen, setModalChatIsOpen] = useState(false);
+    const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
+
+    useEffect(() => {
+        api.get(`/entrepreneurs/${id}`)
+            .then((response) => setSettings(response.data))
+            .catch(err => console.log(err));
+    }, []);
 
     const verifyCompanyIsFavorited = useCallback(() => {
         api.get(`users/favorite/${id}`).then((response) => {
@@ -98,8 +113,14 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image
                     <a href={`mailto:${contact.email}`} target="_blank">
                         <AiOutlineMail size={16} />
                     </a>
-                    <MdOutlineChatBubbleOutline size={16} onClick={openModalChat} />
-                    <AiOutlineCalculator size={16} onClick={openModalCalculate} />
+                    {settings.online_chat && (
+                        <MdOutlineChatBubbleOutline size={16} onClick={openModalChat} />
+                    )}
+                    {
+                        settings.online_budget && (
+                            <AiOutlineCalculator size={16} onClick={openModalCalculate} />
+                        )
+                    }
                 </div>
             </div>
             <ModalContainer

@@ -52,6 +52,13 @@ interface Category {
     id: string;
     name: string;
 }
+
+interface SettingsCompanyData {
+    id: string;
+    entrepreneur_id: string;
+    online_budget: string;
+    online_chat: string;
+}
 interface BusinessHeaderProps {
     company: Company;
     // isOpen: boolean;
@@ -62,12 +69,18 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
     const [modalCalculeIsOpen, setModalCalculateIsOpen] = useState(false);
     const [modalChatIsOpen, setModalChatIsOpen] = useState(false);
     const [category, setCategory] = useState<Category>({} as Category);
+    const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
 
     useEffect(() => {
         api.get<Category>(`/categories/${company.category_id}`)
             .then((response) => setCategory(response.data))
             .catch(err => console.log(err));
-    }, [company.category_id])
+
+        api.get(`/entrepreneurs/${company.id}`)
+            .then((response) => setSettings(response.data))
+            .catch(err => console.log(err));
+
+    }, [company.category_id, company.id]);
 
     function openModalCalculate() {
         setModalCalculateIsOpen(true);
@@ -158,7 +171,7 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
                                     />
                                 </a>
 
-                                {authenticated && (
+                                {authenticated && settings.online_chat && (
                                     <MdOutlineChatBubbleOutline
                                         size={24}
                                         color="#EB1B2E"
@@ -168,7 +181,7 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
                                 )}
 
                                 {
-                                    authenticated && (
+                                    authenticated && settings.online_budget && (
                                         <AiOutlineCalculator
                                             size={24}
                                             color="#28267C"
