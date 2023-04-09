@@ -36,13 +36,13 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image
     const [companyFavorited, setCompanyFavorited] = useState(false);
     const [modalCalculeIsOpen, setModalCalculateIsOpen] = useState(false);
     const [modalChatIsOpen, setModalChatIsOpen] = useState(false);
-    const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
+    /* const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData); */
 
-    useEffect(() => {
+    /* useEffect(() => {
         api.get(`/entrepreneurs/${id}`)
             .then((response) => setSettings(response.data))
             .catch(err => console.log(err));
-    }, []);
+    }, [id, settings, setSettings]); */
 
     const verifyCompanyIsFavorited = useCallback(() => {
         api.get(`users/favorite/${id}`).then((response) => {
@@ -50,7 +50,7 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image
                 setCompanyFavorited(true);
             }
         })
-    }, [setCompanyFavorited]);
+    }, [id, companyFavorited, setCompanyFavorited]);
 
     const handleFavoriteCompany = useCallback(async () => {
         if (!companyFavorited) {
@@ -60,7 +60,7 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image
             await api.patch(`/companies/favorites/unfavorite/${id}`);
             setCompanyFavorited(false);
         }
-    }, [setCompanyFavorited, companyFavorited]);
+    }, [id, setCompanyFavorited, companyFavorited]);
 
     function openModalCalculate() {
         setModalCalculateIsOpen(true);
@@ -80,7 +80,7 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image
 
     useEffect(() => {
         verifyCompanyIsFavorited();
-    }, [verifyCompanyIsFavorited]);
+    }, [verifyCompanyIsFavorited, setCompanyFavorited]);
 
     return (
         <PopupContainer closeButton={false}>
@@ -113,14 +113,12 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image
                     <a href={`mailto:${contact.email}`} target="_blank">
                         <AiOutlineMail size={16} />
                     </a>
-                    {settings.online_chat && (
-                        <MdOutlineChatBubbleOutline size={16} onClick={openModalChat} />
-                    )}
-                    {
-                        settings.online_budget && (
-                            <AiOutlineCalculator size={16} onClick={openModalCalculate} />
-                        )
-                    }
+
+                    <MdOutlineChatBubbleOutline size={16} onClick={openModalChat} />
+
+                    <AiOutlineCalculator size={16} onClick={openModalCalculate} />
+
+
                 </div>
             </div>
             <ModalContainer
