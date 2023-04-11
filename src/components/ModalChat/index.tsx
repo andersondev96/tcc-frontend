@@ -23,6 +23,34 @@ interface ConnectionsData {
     user_id: string;
 }
 
+interface MessageData {
+    id: string;
+    name: string;
+    text: string;
+    chatroom_id: string;
+    connection_id: string;
+    socket_id: string;
+    created_at: string;
+    updated_at: string;
+}
+
+interface RoomData {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+interface ChatData {
+    room: RoomData;
+    messages: MessageData[];
+}
+
+interface ChatDataResponse {
+    message: MessageData;
+    connection: string;
+}
+
+
 export const ModalChat: React.FC = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -30,6 +58,7 @@ export const ModalChat: React.FC = () => {
     const [isConnected, setIsConnected] = useState(false);
     const [connectionsUser, setConnectionsUser] = useState<ConnectionsData[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [chatData, setChatData] = useState<ChatDataResponse[]>([]);
 
     const socket = io("http://localhost:3333");
 
@@ -73,6 +102,23 @@ export const ModalChat: React.FC = () => {
         }
     }, [setName, setEmail, setTelephone, setIsConnected, setIsLoading]);
 
+    const handleLoadingMessage = useCallback((idUser: string) => {
+
+        socket.emit("start_chat", { idUser }, (response: ChatData) => {
+            const idChatRoom = response.room.id;
+
+            const messagesData = response.messages.map((message: MessageData) => {
+                return {
+                    message,
+                    connection: message.connection_id
+                };
+            });
+
+
+            setChatData((prevChatData) => [...prevChatData, ...messagesData]);
+
+        })
+    }, []);
 
 
     return (
@@ -81,7 +127,11 @@ export const ModalChat: React.FC = () => {
                 !isConnected ? (
                     <WelcomeChat handleSubmit={handleFormSubmit} isLoading={isLoading} />
                 ) : (
-                    <MessageChat connections={connectionsUser} />
+                    <MessageChat
+                        connections={connectionsUser}
+                        handleLoadingMessage={handleLoadingMessage}
+                        chatData={chatData}
+                    />
                 )
             }
         </div>

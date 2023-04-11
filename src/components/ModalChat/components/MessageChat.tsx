@@ -1,5 +1,4 @@
-import { FiSend } from "react-icons/fi";
-import UserAvatar from '../../../assets/avatar.jpg';
+import { useEffect } from "react";
 import Coffee1 from '../../../assets/coffee-img1.jpg';
 import { Message } from "../../../pages/client/components/Message";
 
@@ -17,9 +16,42 @@ interface ConnectionsData {
 }
 interface MessageChatProps {
     connections: ConnectionsData[] | undefined;
+    handleLoadingMessage: (idUser: string) => void;
+    chatData: ChatDataResponse[];
 }
 
-export const MessageChat: React.FC<MessageChatProps> = ({ connections }) => {
+interface MessageData {
+    id: string;
+    name: string;
+    text: string;
+    chatroom_id: string;
+    connection_id: string;
+    socket_id: string;
+    created_at: string;
+    updated_at: string;
+}
+
+interface RoomData {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+interface ChatData {
+    room: RoomData;
+    messages: MessageData[];
+}
+
+interface ChatDataResponse {
+    message: MessageData;
+    connection: string;
+}
+
+export const MessageChat: React.FC<MessageChatProps> = ({ connections, handleLoadingMessage, chatData }) => {
+
+    useEffect(() => {
+        console.log(chatData);
+    }, [chatData]);
 
     return (
         <>
@@ -30,9 +62,10 @@ export const MessageChat: React.FC<MessageChatProps> = ({ connections }) => {
                         <ul className="flex flex-col gap-8">
                             {connections && connections.map(connection => (
                                 <li
-                                    className="flex flex-row items-center gap-4"
+                                    className="flex flex-row items-center gap-4 p-1.5 hover:bg-gray-200 duration-300 transition-all cursor-pointer"
                                     id={`user_${connection.id}`}
                                     key={connection.id}
+                                    onClick={() => handleLoadingMessage(connection.id)}
                                 >
                                     <img
                                         className="rounded-full w-12"
@@ -55,45 +88,33 @@ export const MessageChat: React.FC<MessageChatProps> = ({ connections }) => {
                     </div>
                 </div>
 
-                <div className="flex flex-col w-3/4">
-                    <div className="flex flex-col gap-9 p-7 border border-gray-400 rounded overflow-auto">
+                {
+                    chatData && chatData.length > 0 && (
+                        <div className="flex flex-col w-3/4">
+                            <div className="flex flex-col gap-9 p-7 border border-gray-400 rounded overflow-auto">
 
-                        <Message
-                            send="business"
-                            userAvatar={Coffee1}
-                            message="Olá, em que posso ajudar?"
-                        />
+                                {
+                                    chatData.map((chat) => (
+                                        <Message
+                                            key={chat.message.id}
+                                            userAvatar={Coffee1}
+                                            message={chat.message.text}
+                                        />
+                                    ))
+                                }
 
-                        <Message
-                            send="client"
-                            userAvatar={UserAvatar}
-                            message="Gostaria de saber informações de um certo serviço que vocês oferecem para os clientes."
-                        />
 
-                        <Message
-                            send="business"
-                            userAvatar={Coffee1}
-                            message="Entendi, você já conhece os nossos serviços?"
-                        />
+                            </div>
 
-                        <Message
-                            send="client"
-                            userAvatar={UserAvatar}
-                            message="Conheço sim"
-                        />
-
-                    </div>
-
-                    <div className="flex flex-row items-center justify-between">
-                        <textarea
-                            className="w-[48.75rem] h-14 p-4 pr-16 rounded resize-none bg-gray-100 border-none text-gray-800"
-                            placeholder="Digite a sua mensagem aqui"
-                        />
-                        <button className="flex absolute ml-24">
-                            <FiSend size={24} color="#08A358" />
-                        </button>
-                    </div>
-                </div>
+                            <div className="flex flex-row items-center justify-between">
+                                <textarea
+                                    className="w-[48.75rem] h-14 p-4 pr-16 rounded resize-none bg-gray-100 border-none text-gray-800"
+                                    placeholder="Digite a sua mensagem aqui"
+                                />
+                            </div>
+                        </div>
+                    )
+                }
             </div>
 
         </>
