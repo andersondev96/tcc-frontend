@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { io } from "socket.io-client";
 import { MessageChat } from "./components/MessageChat";
 import { WelcomeChat } from "./components/WelcomeChat";
@@ -28,10 +29,9 @@ export const ModalChat: React.FC = () => {
     const [telephone, setTelephone] = useState("");
     const [isConnected, setIsConnected] = useState(false);
     const [connectionsUser, setConnectionsUser] = useState<ConnectionsData[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const socket = io("http://localhost:3333");
-
-
 
     useEffect(() => {
 
@@ -39,31 +39,39 @@ export const ModalChat: React.FC = () => {
             console.log(socket.id);
         });
 
-        socket.emit("start", {
-            telephone,
-            email
-        });
-
-        socket.on("start-response", (data) => {
-            console.log(data);
-            if (data.success) {
-                setIsConnected(true);
-            }
-        })
-
         socket.emit("get_connections", (connections: ConnectionsData[]) => {
 
             setConnectionsUser(connections);
         });
-    }, [socket, setIsConnected, setConnectionsUser]);
+    }, [setConnectionsUser]);
 
-    const handleFormSubmit = useCallback((data: FormData) => {
-        setName(data.name);
-        setEmail(data.email);
-        setTelephone(data.telephone);
+    const handleFormSubmit = useCallback(async (data: FormData) => {
+        setIsLoading(true);
 
-        console.log(data);
-    }, [setName, setEmail, setTelephone]);
+        try {
+            setName(data.name);
+            setEmail(data.email);
+            setTelephone(data.telephone);
+
+            socket.emit("start", {
+                telephone: data.telephone,
+                email: data.email
+            });
+
+            socket.on("start-response", (data) => {
+                if (data.success) {
+                    setIsConnected(true);
+                } else {
+                    toast.error(data.error);
+                }
+            });
+
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [setName, setEmail, setTelephone, setIsConnected, setIsLoading]);
 
 
 
@@ -71,7 +79,7 @@ export const ModalChat: React.FC = () => {
         <div className="flex flex-col h-full justify-between px-12 py-16">
             {
                 !isConnected ? (
-                    <WelcomeChat handleSubmit={handleFormSubmit} />
+                    <WelcomeChat handleSubmit={handleFormSubmit} isLoading={isLoading} />
                 ) : (
                     <MessageChat connections={connectionsUser} />
                 )
