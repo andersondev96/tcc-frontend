@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { io } from "socket.io-client";
+import { ContactsChat } from "./components/ContactsChat";
 import { MessageChat } from "./components/MessageChat";
 import { WelcomeChat } from "./components/WelcomeChat";
 
@@ -59,6 +60,7 @@ export const ModalChat: React.FC = () => {
     const [connectionsUser, setConnectionsUser] = useState<ConnectionsData[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [chatData, setChatData] = useState<ChatDataResponse[]>([]);
+    const [chatMessageActive, setChatMessageActive] = useState(false);
 
     const socket = io("http://localhost:3333");
 
@@ -107,6 +109,8 @@ export const ModalChat: React.FC = () => {
         socket.emit("start_chat", { idUser }, (response: ChatData) => {
             const idChatRoom = response.room.id;
 
+            setChatMessageActive(true);
+
             const messagesData = response.messages.map((message: MessageData) => {
                 return {
                     message,
@@ -118,7 +122,7 @@ export const ModalChat: React.FC = () => {
             setChatData((prevChatData) => [...prevChatData, ...messagesData]);
 
         })
-    }, []);
+    }, [setChatMessageActive]);
 
 
     return (
@@ -127,11 +131,20 @@ export const ModalChat: React.FC = () => {
                 !isConnected ? (
                     <WelcomeChat handleSubmit={handleFormSubmit} isLoading={isLoading} />
                 ) : (
-                    <MessageChat
-                        connections={connectionsUser}
-                        handleLoadingMessage={handleLoadingMessage}
-                        chatData={chatData}
-                    />
+                    chatMessageActive ? (
+                        <MessageChat
+                            connections={connectionsUser}
+                            handleLoadingMessage={handleLoadingMessage}
+                            chatData={chatData}
+                        />
+                    ) : (
+                        <ContactsChat
+                            connections={connectionsUser}
+                            handleLoadingMessage={handleLoadingMessage}
+                        />
+                    )
+
+
                 )
             }
         </div>
