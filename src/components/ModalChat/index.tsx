@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { KeyboardEvent, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { io } from "socket.io-client";
 import { ContactsChat } from "./components/ContactsChat";
@@ -61,6 +61,8 @@ export const ModalChat: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [chatData, setChatData] = useState<ChatDataResponse[]>([]);
     const [chatMessageActive, setChatMessageActive] = useState(false);
+    const [message, setMessage] = useState("");
+    let idChatRoom = "";
 
     const socket = io("http://localhost:3333");
 
@@ -107,7 +109,8 @@ export const ModalChat: React.FC = () => {
     const handleLoadingMessage = useCallback((idUser: string) => {
 
         socket.emit("start_chat", { idUser }, (response: ChatData) => {
-            const idChatRoom = response.room.id;
+            console.log(response);
+            idChatRoom = response.room.id;
 
             setChatMessageActive(true);
 
@@ -124,6 +127,49 @@ export const ModalChat: React.FC = () => {
         })
     }, [setChatMessageActive]);
 
+    const handleSendMessage = useCallback((event: KeyboardEvent<HTMLTextAreaElement>) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+
+            const messageToSend = event.currentTarget.value;
+
+            if (messageToSend.trim() !== "") {
+                setMessage(messageToSend);
+
+                event.currentTarget.value = "";
+
+                const data = {
+                    message: messageToSend,
+                    idChatRoom
+                };
+
+                console.log(data);
+
+                socket.emit("message", data);
+
+                socket.on("message", (data: ChatDataResponse) => {
+                    if (data.message.chatroom_id === idChatRoom) {
+                        const newMessage: MessageData = {
+                            id: data.message.id,
+                            name: data.message.name,
+                            text: data.message.text,
+                            chatroom_id: data.message.chatroom_id,
+                            connection_id: data.message.connection_id,
+                            socket_id: data.message.socket_id,
+                            created_at: data.message.created_at,
+                            updated_at: data.message.updated_at,
+                        };
+                        setChatData((prevChatData) => [...prevChatData, { message: newMessage, connection: data.connection }]);
+                    }
+                })
+
+            }
+
+        }
+    }, [setMessage, setChatData]);
+
+
+
 
     return (
         <div className="flex flex-col h-full justify-between px-12 py-16">
@@ -133,9 +179,8 @@ export const ModalChat: React.FC = () => {
                 ) : (
                     chatMessageActive ? (
                         <MessageChat
-                            connections={connectionsUser}
-                            handleLoadingMessage={handleLoadingMessage}
                             chatData={chatData}
+                            handleSendMessage={handleSendMessage}
                         />
                     ) : (
                         <ContactsChat
