@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import * as Yup from "yup";
 
 import { useAuth } from "../contexts/AuthContext";
-import { useAuthWithGoogle } from "../hooks/useAuthWithGoogle";
+import { useAuthGoogle } from "../contexts/AuthContextWithGoogle";
 
 
 import { FormHandles } from "@unform/core";
@@ -28,7 +28,7 @@ export const SignIn: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { user, signInWithGoogle } = useAuthWithGoogle();
+    const { user, signInWithGoogle } = useAuthGoogle();
     const { signIn } = useAuth();
 
     async function handleGoogleSignIn() {
@@ -36,7 +36,7 @@ export const SignIn: React.FC = () => {
             await signInWithGoogle();
         }
 
-        navigate(location.pathname || "/home");
+        navigate("/");
     }
 
     const handleSubmit = useCallback(

@@ -1,13 +1,12 @@
-import React, { useEffect } from "react";
-import { useAuthWithGoogle } from "../../hooks/useAuthWithGoogle";
+import React from "react";
 
 import { AiOutlineHome } from "react-icons/ai";
-import AvatarImg from "../../assets/avatar.jpg";
+import { useAuthGoogle } from "../../contexts/AuthContextWithGoogle";
 import { DropdownMenu } from "./DropdownMenu";
 import { Item } from "./Item";
 
 export const Header: React.FC = () => {
-    const { user, signInWithGoogle } = useAuthWithGoogle();
+    const { user, signInWithGoogle } = useAuthGoogle();
 
     return (
         <nav className="flex flex-row items-center px-[3.75rem]  bg-blue-400 mobile:hidden">

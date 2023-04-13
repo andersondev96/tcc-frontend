@@ -1,8 +1,9 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { ChatIcon, MenuIcon, XIcon } from '@heroicons/react/solid';
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { useAuthGoogle } from "../../contexts/AuthContextWithGoogle";
 import api from "../../services/api";
 import { ModalChat } from "../ModalChat";
 import { ModalContainer } from "../ModalContainer";
@@ -20,19 +21,25 @@ interface SettingsCompanyData {
 
 export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
     const { user, signOut, authenticated } = useAuth();
+    const { user: googleUser, signOutWithGoogle } = useAuthGoogle();
     const [isAdmin, setIsAdmin] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const company_id = localStorage.getItem('@web:company_id');
     const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
+    const [isAuthWithGoogle, setIsAuthWithGoogle] = useState(false);
 
 
     useEffect(() => {
-        api.get(`/entrepreneurs/${company_id}`)
-            .then((response) => setSettings(response.data))
-            .catch(err => console.log(err));
+        if (authenticated) {
+            api.get(`/entrepreneurs/${company_id}`)
+                .then((response) => setSettings(response.data))
+                .catch(err => console.log(err));
+        }
 
-        handleToAdmPage();
-    }, [handleToAdmPage, company_id, setSettings]);
+        if (googleUser) {
+            setIsAuthWithGoogle(true);
+        }
+    }, [handleToAdmPage, company_id, setSettings, setIsAuthWithGoogle, isAuthWithGoogle]);
 
     function openModal() {
         setModalIsOpen(true);
@@ -42,12 +49,28 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
         setModalIsOpen(false);
     }
 
+    const clearGoogleAuth = useCallback(() => {
+        setIsAuthWithGoogle(false);
+        signOutWithGoogle();
+    }, [setIsAuthWithGoogle, signOutWithGoogle]);
+
+    const logOut = useCallback(() => {
+        if (isAuthWithGoogle) {
+            clearGoogleAuth();
+        } else {
+            signOut();
+        }
+    }, [signOut, clearGoogleAuth, isAuthWithGoogle]);
+
+
+
     async function handleToAdmPage() {
         api.get('/users/entrepreneur').then(response => {
             if (response.data === null) {
                 setIsAdmin(false)
             } else {
                 setIsAdmin(true);
+
             }
 
         });
@@ -91,7 +114,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                         </span>
                                     </div>
                                     <div className="hidden sm:ml-6 sm:block">
-                                        {authenticated && company_id ? (
+                                        {authenticated || isAuthWithGoogle && company_id ? (
                                             <div className="flex space-x-4">
                                                 {navigation.map((item) => (
                                                     <Link
@@ -120,7 +143,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                     </div>
                                 </div>
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                    {authenticated && (
+                                    {authenticated || isAuthWithGoogle && (
                                         <button
                                             onClick={openModal}
                                             type="button"
@@ -131,24 +154,23 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                         </button>
                                     )}
 
-                                    {authenticated ? (
+                                    {authenticated || isAuthWithGoogle ? (
                                         <Menu as="div" className="relative ml-3">
                                             <div>
                                                 <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-5 focus:transition-shadow focus:duration-200 focus:ring-offset-2 focus:ring-offset-gray-800">
                                                     <span className="sr-only">Abrir menu do usuário</span>
 
                                                     <div className="flex items-center">
-                                                        {user.avatar ? (
+                                                        {!isAuthWithGoogle && user.avatar ? (
                                                             <div className="shrink-0">
-                                                                <img src={`http://localhost:3333/avatar/${user.avatar}`} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
+                                                                <img src={`http://localhost:3333/avatar/${user.avatar || googleUser?.avatar}`} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
                                                             </div>
                                                         ) : (
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#9ca3af" className="rounded-full h-8 sm:h-10 w-8 sm:w-10">
-                                                                <path fillRule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clipRule="evenodd" />
-                                                            </svg>
-
-
+                                                            <div className="shrink-0">
+                                                                <img src={googleUser?.avatar} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
+                                                            </div>
                                                         )}
+
                                                     </div>
                                                 </Menu.Button>
                                             </div>
@@ -166,7 +188,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                         <span
                                                             className='block px-4 py-2 font-medium text-sm text-gray-700'
                                                         >
-                                                            {user.name}
+                                                            {!isAuthWithGoogle ? user.name : googleUser?.name}
                                                         </span>
 
                                                     </div>
@@ -221,7 +243,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                     <Menu.Item>
                                                         {({ active }) => (
                                                             <span
-                                                                onClick={signOut}
+                                                                onClick={logOut}
                                                                 className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700 cursor-pointer')}
                                                             >
                                                                 Sair

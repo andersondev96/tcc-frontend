@@ -1,15 +1,16 @@
-import { useCallback, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
-import { Form } from "@unform/web";
 import { FormHandles } from "@unform/core";
-import * as Yup from "yup";
+import { Form } from "@unform/web";
+import { useCallback, useRef, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import * as Yup from "yup";
 
-import getValidationErrors from "../utils/getValidateErrors";
 import { Input } from "../components/Form/Input";
+import { useAuthGoogle } from "../contexts/AuthContextWithGoogle";
 import api from "../services/api";
+import getValidationErrors from "../utils/getValidateErrors";
 
 interface SignUpFormData {
     name: string;
@@ -21,6 +22,7 @@ interface SignUpFormData {
 export const SignUp: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
+    const { user, signInWithGoogle } = useAuthGoogle();
 
     const [selectedType, setSelectedType] = useState("");
 
@@ -28,6 +30,14 @@ export const SignUp: React.FC = () => {
         setSelectedType(String(value));
 
     }, [setSelectedType]);
+
+    async function handleGoogleSignIn() {
+        if (!user) {
+            await signInWithGoogle();
+        }
+
+        navigate("/");
+    }
 
     const handleSubmit = useCallback(
         async (data: SignUpFormData) => {
@@ -165,6 +175,7 @@ export const SignUp: React.FC = () => {
                             <button
                                 className="px-7 py-3 text-black font-medium text-sm leading-snug uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full flex justify-center items-center mb-3"
                                 type="button"
+                                onClick={handleGoogleSignIn}
 
                             >
                                 <FcGoogle size={24} />

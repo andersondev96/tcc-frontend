@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ItemDropdown } from "./ItemDropdown";
 
-import { useAuthWithGoogle } from "../../../hooks/useAuthWithGoogle";
 import { useNavigate } from "react-router-dom";
+import { useAuthGoogle } from "../../../contexts/AuthContextWithGoogle";
 
 interface DropdownMenuProps {
     name: string;
@@ -14,7 +14,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({ name, avatar }) => {
 
     const navigate = useNavigate();
 
-    const { signOutWithGoogle } = useAuthWithGoogle();
+    const { user, signInWithGoogle, signOutWithGoogle } = useAuthGoogle();
 
     function handleSignOutWithGoogle() {
         signOutWithGoogle();

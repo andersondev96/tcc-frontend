@@ -1,8 +1,10 @@
 import { Map } from "../../components/Map";
 import { NavBar } from "../../components/NavBar/NavBar";
+import { useAuthGoogle } from "../../contexts/AuthContextWithGoogle";
 
 export const Home: React.FC = () => {
-    /*  const { user, signInWithGoogle, signOutWithGoogle } = useAuthWithGoogle(); */
+    const { user, signInWithGoogle } = useAuthGoogle();
+
     return (
 
         <div>

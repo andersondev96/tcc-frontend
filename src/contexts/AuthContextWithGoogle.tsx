@@ -1,5 +1,5 @@
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../services/firebase";
 
 type User = {
@@ -19,11 +19,11 @@ type AuthContextProviderProps = {
     children: ReactNode;
 };
 
-export const AuthContextWithGoogle = createContext(
+const AuthContextWithGoogle = createContext(
     {} as AuthContextWithGoogleType
 );
 
-export function AuthContextProvider(props: AuthContextProviderProps) {
+function AuthContextProviderWithGoogle(props: AuthContextProviderProps) {
     const [user, setUser] = useState<User>();
 
     useEffect(() => {
@@ -84,3 +84,12 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
         </AuthContextWithGoogle.Provider>
     );
 }
+
+function useAuthGoogle(): AuthContextWithGoogleType {
+    const context = useContext(AuthContextWithGoogle);
+
+    return context;
+}
+
+export { AuthContextProviderWithGoogle, useAuthGoogle };
+
