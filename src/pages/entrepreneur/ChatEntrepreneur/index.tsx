@@ -1,9 +1,55 @@
+import AvatarImg from "../../../assets/user.png";
 import { SideBar } from "../../../components/Sidebar";
+import { useAuth } from "../../../contexts/AuthContext";
 import { Message } from "../components/Message";
 
-import People1 from "../../../assets/people1.jpg";
+import { useCallback, useEffect, useState } from "react";
+
+import { io } from "socket.io-client";
+
+interface ConnectionsData {
+    id: string;
+    socket_id: string;
+    createdAt: Date;
+    user: {
+        id: string;
+        name: string;
+        email: string;
+        avatar: string;
+    }
+    user_id: string;
+}
+
 
 export const ChatEntrepreneur: React.FC = () => {
+    const { user } = useAuth();
+    const [connectionsUser, setConnectionsUser] = useState<ConnectionsData[]>([]);
+    const [userConected, setUserConected] = useState(false);
+
+    const handleUserIsConected = useCallback((user: { email: string }) => {
+        const isConected = connectionsUser.find((connection) => (
+            connection.user.email === user.email ? true : false
+        ));
+        setUserConected(!!isConected);
+    }, [setUserConected]);
+
+    useEffect(() => {
+        const socket = io("http://localhost:3333");
+
+        socket.on("connect", () => {
+            console.log(socket.id);
+        });
+
+        socket.emit("get_connections", (connections: ConnectionsData[]) => {
+
+            setConnectionsUser(connections);
+        });
+
+        handleUserIsConected({ email: user.email });
+
+
+    }, [setConnectionsUser, handleUserIsConected, userConected]);
+
     return (
         <div className="flex flex-row">
             <SideBar pageActive="chat" />
@@ -16,42 +62,23 @@ export const ChatEntrepreneur: React.FC = () => {
                 <div className="flex flex-col items-center">
                     <div className="flex flex-col mt-2">
                         <span className="font-montserrat font-semibold text-lg">
-                            Mensagens recentes
+                            Contatos recentes
                         </span>
                         <div className="mt-4 flex flex-col gap-3">
-                            <Message
-                                img={People1}
-                                name="Júlia Duarte"
-                                last_message="Como faço para solicitar este serviço ?"
-                                dateTime_of_last_message="06/07/2022 17:00"
-                                cont_messages_not_read={2}
-                            />
-
-                            <Message
-                                img={People1}
-                                name="Júlia Duarte"
-                                last_message="Como faço para solicitar este serviço ?"
-                                dateTime_of_last_message="06/07/2022 17:00"
-                                cont_messages_not_read={2}
-                            />
-
-                            <Message
-                                img={People1}
-                                name="Júlia Duarte"
-                                last_message="Como faço para solicitar este serviço ?"
-                                dateTime_of_last_message="06/07/2022 17:00"
-                                cont_messages_not_read={2}
-                                isActive={false}
-                            />
-
-                            <Message
-                                img={People1}
-                                name="Júlia Duarte"
-                                last_message="Como faço para solicitar este serviço ?"
-                                dateTime_of_last_message="06/07/2022 17:00"
-                                cont_messages_not_read={2}
-                                isActive={false}
-                            />
+                            {
+                                connectionsUser && connectionsUser.map((connection) => (
+                                    connection.user.email !== user.email && (
+                                        <Message
+                                            key={connection.id}
+                                            img={connection.user.avatar ?
+                                                `http://localhost:3333/avatar/${connection.user.avatar}` :
+                                                AvatarImg}
+                                            name={connection.user.name}
+                                            isConnected={userConected}
+                                        />
+                                    )
+                                ))
+                            }
                         </div>
                     </div>
                 </div>

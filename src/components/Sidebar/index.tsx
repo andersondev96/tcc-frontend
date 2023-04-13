@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import Avatar from '../../assets/avatar.jpg';
 import api from "../../services/api";
 
 interface SideBarProps {
@@ -28,7 +27,7 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
     }
 
     return (
-        <div className={`mx-auto max-w-7xl ${company.length === 0 ? 'hidden' : 'block'}`}>
+        <div className={`mx-auto max-w-7xl block`}>
             <div className="w-12 sm:w-60 h-full bg-gray-800 shadow-md fixed ">
                 <div className="flex flex-col flex-1 items-center mt-8 justify-center sm:items-stretch sm:justify-start">
                     <div className="hidden sm:flex ml-6 flex-shrink-0 items-center">

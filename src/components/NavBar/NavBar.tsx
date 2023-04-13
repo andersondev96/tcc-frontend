@@ -1,6 +1,6 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { ChatIcon, MenuIcon, XIcon } from '@heroicons/react/solid';
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
@@ -23,16 +23,16 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const company_id = localStorage.getItem('@web:company_id');
-    /* const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData); */
+    const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
 
 
-    /* useEffect(() => {
+    useEffect(() => {
         api.get(`/entrepreneurs/${company_id}`)
             .then((response) => setSettings(response.data))
             .catch(err => console.log(err));
 
         handleToAdmPage();
-    }, [handleToAdmPage, company_id]); */
+    }, [handleToAdmPage, company_id, setSettings]);
 
     function openModal() {
         setModalIsOpen(true);

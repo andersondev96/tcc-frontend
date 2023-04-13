@@ -51,8 +51,12 @@ interface ChatDataResponse {
     connection: string;
 }
 
+interface ModalChatProps {
+    userIsConected?: boolean;
+}
 
-export const ModalChat: React.FC = () => {
+
+export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [telephone, setTelephone] = useState("");
@@ -68,6 +72,8 @@ export const ModalChat: React.FC = () => {
 
     useEffect(() => {
 
+        console.log(userIsConected);
+
         socket.on("connect", () => {
             console.log(socket.id);
         });
@@ -76,7 +82,7 @@ export const ModalChat: React.FC = () => {
 
             setConnectionsUser(connections);
         });
-    }, [setConnectionsUser]);
+    }, [setConnectionsUser, userIsConected]);
 
     const handleFormSubmit = useCallback(async (data: FormData) => {
         setIsLoading(true);
@@ -174,10 +180,10 @@ export const ModalChat: React.FC = () => {
     return (
         <div className="flex flex-col h-full justify-between px-12 py-16">
             {
-                !isConnected ? (
+                !isConnected && !userIsConected ? (
                     <WelcomeChat handleSubmit={handleFormSubmit} isLoading={isLoading} />
                 ) : (
-                    chatMessageActive ? (
+                    chatMessageActive && userIsConected ? (
                         <MessageChat
                             chatData={chatData}
                             handleSendMessage={handleSendMessage}
