@@ -180,10 +180,10 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
     return (
         <div className="flex flex-col h-full justify-between px-12 py-16">
             {
-                !isConnected && !userIsConected ? (
+                !isConnected ? (
                     <WelcomeChat handleSubmit={handleFormSubmit} isLoading={isLoading} />
                 ) : (
-                    chatMessageActive && userIsConected ? (
+                    chatMessageActive ? (
                         <MessageChat
                             chatData={chatData}
                             handleSendMessage={handleSendMessage}
