@@ -26,7 +26,6 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const company_id = localStorage.getItem('@web:company_id');
     const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
-    const [isAuthWithGoogle, setIsAuthWithGoogle] = useState(false);
 
 
     useEffect(() => {
@@ -34,12 +33,10 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
             api.get(`/entrepreneurs/${company_id}`)
                 .then((response) => setSettings(response.data))
                 .catch(err => console.log(err));
-        }
 
-        if (googleUser) {
-            setIsAuthWithGoogle(true);
+            handleToAdmPage();
         }
-    }, [handleToAdmPage, company_id, setSettings, setIsAuthWithGoogle, isAuthWithGoogle]);
+    }, [handleToAdmPage, company_id, setSettings]);
 
     function openModal() {
         setModalIsOpen(true);
@@ -50,17 +47,16 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
     }
 
     const clearGoogleAuth = useCallback(() => {
-        setIsAuthWithGoogle(false);
         signOutWithGoogle();
-    }, [setIsAuthWithGoogle, signOutWithGoogle]);
+    }, [signOutWithGoogle]);
 
     const logOut = useCallback(() => {
-        if (isAuthWithGoogle) {
+        if (googleUser) {
             clearGoogleAuth();
         } else {
             signOut();
         }
-    }, [signOut, clearGoogleAuth, isAuthWithGoogle]);
+    }, [signOut, clearGoogleAuth, googleUser]);
 
 
 
@@ -114,7 +110,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                         </span>
                                     </div>
                                     <div className="hidden sm:ml-6 sm:block">
-                                        {authenticated || isAuthWithGoogle && company_id ? (
+                                        {(authenticated || googleUser) && company_id ? (
                                             <div className="flex space-x-4">
                                                 {navigation.map((item) => (
                                                     <Link
@@ -143,7 +139,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                     </div>
                                 </div>
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                    {authenticated || isAuthWithGoogle && (
+                                    {authenticated || googleUser && (
                                         <button
                                             onClick={openModal}
                                             type="button"
@@ -154,16 +150,16 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                         </button>
                                     )}
 
-                                    {authenticated || isAuthWithGoogle ? (
+                                    {authenticated || googleUser ? (
                                         <Menu as="div" className="relative ml-3">
                                             <div>
                                                 <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-5 focus:transition-shadow focus:duration-200 focus:ring-offset-2 focus:ring-offset-gray-800">
                                                     <span className="sr-only">Abrir menu do usuário</span>
 
                                                     <div className="flex items-center">
-                                                        {!isAuthWithGoogle && user.avatar ? (
+                                                        {!googleUser && user.avatar ? (
                                                             <div className="shrink-0">
-                                                                <img src={`http://localhost:3333/avatar/${user.avatar || googleUser?.avatar}`} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
+                                                                <img src={`http://localhost:3333/avatar/${user.avatar}`} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
                                                             </div>
                                                         ) : (
                                                             <div className="shrink-0">
@@ -188,7 +184,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                         <span
                                                             className='block px-4 py-2 font-medium text-sm text-gray-700'
                                                         >
-                                                            {!isAuthWithGoogle ? user.name : googleUser?.name}
+                                                            {!googleUser ? user.name : googleUser?.name}
                                                         </span>
 
                                                     </div>

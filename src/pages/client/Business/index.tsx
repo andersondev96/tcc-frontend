@@ -156,10 +156,10 @@ export const Business: React.FC = () => {
                             <Paragraph
                                 title="Endereço"
                                 text={`
-                                    ${company.Address.street} , 
-                                    ${company.Address.district}, 
-                                    ${company.Address.number},
-                                    ${company.Address.cep},
+                                    ${company.Address.street && company.Address.street, ' '}  
+                                    ${company.Address.district && company.Address.district, ' '}
+                                    ${company.Address.number && company.Address.number, ' '}
+                                    ${company.Address.cep && company.Address.cep, ' '}
                                     ${company.Address.city} - 
                                     ${company.Address.state}`
                                 }
