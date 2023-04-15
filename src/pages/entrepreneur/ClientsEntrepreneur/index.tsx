@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
@@ -34,16 +34,65 @@ interface Customer {
 export const ClientsEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
     const [clients, setClients] = useState<Customer[]>([]);
+    const [name, setName] = useState("");
 
     useEffect(() => {
-        api.get(`companies/me`).then((response) => setCompany(response.data));
-
-        api.get(`customers/${company.id}`).then((response) => setClients(response.data));
+        api.get(`companies/me`)
+            .then((response) => {
+                if (response.data) {
+                    setCompany(response.data);
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }, [company.id]);
 
-    const handleSearchClients = useCallback(() => {
-        //
-    }, []);
+    useEffect(() => {
+        if (company.id) {
+            api.get(`customers/${company.id}`)
+                .then((response) => {
+                    if (response.data) {
+                        setClients(response.data);
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+        }
+    }, [company.id]);
+
+    const handleSearchClients = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
+
+        const name = event.target.value;
+
+        setName(name);
+
+        if (company.id) {
+
+            if (name) {
+                const response = await api.get(`customers/${company.id}/filter`, {
+                    params: {
+                        name
+                    }
+                });
+
+                if (response.data) {
+                    setClients(response.data);
+                }
+            }
+
+            if (name.length === 0) {
+                const response = await api.get(`customers/${company.id}`);
+
+                if (response.data) {
+                    setClients(response.data);
+                }
+            }
+        }
+
+    }, [company.id]);
+
     return (
         <div className="flex flex-row">
             <SideBar pageActive="clientes" />
@@ -65,7 +114,7 @@ export const ClientsEntrepreneur: React.FC = () => {
                             </TableHead>
                             <TableBody>
                                 {clients.length > 0 ? clients.map((client => (
-                                    <TableRowBody>
+                                    <TableRowBody key={client.id}>
                                         <TableData>{client.customer.user.name}</TableData>
                                         <TableData>{client.customer.user.email}</TableData>
                                         <TableData>{client.customer.telephone}</TableData>
@@ -73,7 +122,9 @@ export const ClientsEntrepreneur: React.FC = () => {
                                     </TableRowBody>
 
                                 ))) : (
-                                    <p className="px-4">Nenhum cliente cadastrado</p>
+                                    <TableRowBody>
+                                        <TableData>Nenhum cliente cadastrado</TableData>
+                                    </TableRowBody>
                                 )}
                             </TableBody>
                         </Table>
