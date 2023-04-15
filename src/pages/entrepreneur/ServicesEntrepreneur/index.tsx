@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
 import api from "../../../services/api";
@@ -58,8 +58,6 @@ interface CompanyData {
 }
 
 export const ServicesEntrepreneur: React.FC = () => {
-    const navigate = useNavigate();
-
     const [company, setCompany] = useState<CompanyData>({} as CompanyData);
     const [services, setServices] = useState<ServiceData[]>([]);
     const [name, setName] = useState("");
@@ -69,9 +67,7 @@ export const ServicesEntrepreneur: React.FC = () => {
             .get('/companies/me')
             .then(response => setCompany(response.data))
             .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error));
-    }, []);
 
-    useEffect(() => {
         api
             .get<ServiceData[]>(`/services/company/${company.id}`)
             .then(response => setServices(response.data))
@@ -90,12 +86,13 @@ export const ServicesEntrepreneur: React.FC = () => {
             } else {
                 await api.get<ServiceData[]>(`/services/company/${company.id}`, {
                     params: {
-                        name
+                        name:
+                            name
                     }
                 })
                     .then(response => setServices(response.data));
             }
-        }, [company?.id, setServices]);
+        }, [company?.id]);
 
 
     return (

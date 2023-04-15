@@ -104,15 +104,18 @@ export const EditServicesEntrepreneur: React.FC = () => {
                     highlight_service: highlight,
                 };
 
-                await api.put(`/services/${params.id}`, service);
+                const response = await api.put(`/services/${params.id}`, service);
 
-                if (imageService) {
-                    await api.patch(`services/service/${params.id}`, imageService);
+                if (response.status === 201) {
+                    if (!imageService.entries().next().done) {
+                        await api.patch(`services/service/${params.id}`, imageService);
+                    }
+
+                    toast.success("Serviço atualizado com sucesso!");
+
+                    navigate('/admin/services');
                 }
 
-                navigate('/admin/services');
-
-                toast.success("Serviço atualizado com sucesso!")
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {

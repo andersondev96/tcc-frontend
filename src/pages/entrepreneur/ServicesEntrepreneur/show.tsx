@@ -24,9 +24,11 @@ interface ServiceData {
 interface AssessmentsData {
     id: string;
     user_id: string;
-    table_id: string;
     comment: string;
     stars: number;
+    user: {
+        avatar: string;
+    }
 }
 
 export const ShowServicesEntrepreneur: React.FC = () => {
@@ -93,7 +95,7 @@ export const ShowServicesEntrepreneur: React.FC = () => {
                                     >
                                         {assessment.stars}
                                     </span>
-                                    <Assessments key={assessment.id} text={assessment.comment} stars={Number(assessment.stars)} />
+                                    <Assessments data={assessment} />
                                     <span className="mt-4 font-inter font-medium text-sm text-blue-600">Veja todos os comentários</span>
                                 </div>
                             ))}

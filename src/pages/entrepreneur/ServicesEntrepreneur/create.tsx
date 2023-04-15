@@ -94,11 +94,19 @@ export const CreateServicesEntrepreneur: React.FC = () => {
 
                 const response = await api.post(`/services/${company.id}`, service);
 
-                const image = await api.patch(`services/service/${response.data.id}`, imageService);
+                console.log(response);
 
-                toast.success("Serviço adicionado com sucesso!")
+                if (response.status === 201) {
+                    if (!imageService.entries().next().done) {
+                        await api.patch(`services/service/${response.data.id}`, imageService);
+                    }
 
-                navigate('/admin/services');
+                    toast.success("Serviço adicionado com sucesso!")
+
+                    navigate('/admin/services');
+                }
+
+
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
@@ -111,7 +119,7 @@ export const CreateServicesEntrepreneur: React.FC = () => {
 
                 toast.error("Erro ao cadastrar o serviço")
             }
-        }, [highlight, company, navigate]);
+        }, [highlight, company, navigate, imageService]);
 
     return (
         <div className="flex flex-row">
