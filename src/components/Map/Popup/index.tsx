@@ -5,6 +5,7 @@ import { Popup as PopupContainer } from "react-leaflet";
 import { Link } from "react-router-dom";
 
 import { useCallback, useEffect, useState } from "react";
+import { useAuth } from '../../../contexts/AuthContext';
 import { ModalCalculate } from "../../../pages/client/components/ModalCalculate";
 import api from '../../../services/api';
 import { ModalChat } from "../../ModalChat";
@@ -33,6 +34,7 @@ interface SettingsCompanyData {
 }
 
 export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image }) => {
+    const { user } = useAuth();
     const [companyFavorited, setCompanyFavorited] = useState(false);
     const [modalCalculeIsOpen, setModalCalculateIsOpen] = useState(false);
     const [modalChatIsOpen, setModalChatIsOpen] = useState(false);
@@ -79,15 +81,19 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image
     }
 
     useEffect(() => {
-        verifyCompanyIsFavorited();
-    }, [verifyCompanyIsFavorited, setCompanyFavorited]);
+        user && verifyCompanyIsFavorited();
+    }, [user, verifyCompanyIsFavorited, setCompanyFavorited]);
 
     return (
         <PopupContainer closeButton={false}>
             <div className="leaflet-popup-container">
-                <div className="leaflet-popup-icon-like" onClick={handleFavoriteCompany}>
-                    <AiFillHeart className={`icon-heart ${companyFavorited && 'favorited'}`} size={18} />
-                </div>
+                {
+                    user && (
+                        <div className="leaflet-popup-icon-like" onClick={handleFavoriteCompany}>
+                            <AiFillHeart className={`icon-heart ${companyFavorited && 'favorited'}`} size={18} />
+                        </div>
+                    )
+                }
                 <Link to={`/business/${id}`}>
                     <div className="leaflet-popup-image-container">
                         <img src={image} alt={name} className="image h-24 w-24 rounded" />

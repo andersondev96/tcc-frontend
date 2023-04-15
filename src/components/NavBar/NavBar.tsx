@@ -28,15 +28,30 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
     const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
 
 
+    const handleToAdmPage = useCallback(async () => {
+        try {
+            await api.get('/users/entrepreneur').then(response => {
+                if (response.data === null) {
+                    setIsAdmin(false)
+                } else {
+                    setIsAdmin(true);
+                }
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    }, [setIsAdmin]);
+
     useEffect(() => {
-        if (authenticated) {
+
+        if (company_id) {
             api.get(`/entrepreneurs/${company_id}`)
                 .then((response) => setSettings(response.data))
                 .catch(err => console.log(err));
-
-            handleToAdmPage();
         }
-    }, [handleToAdmPage, company_id, setSettings]);
+
+        handleToAdmPage();
+    }, [company_id, handleToAdmPage, company_id, setSettings]);
 
     function openModal() {
         setModalIsOpen(true);
@@ -46,32 +61,6 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
         setModalIsOpen(false);
     }
 
-    const clearGoogleAuth = useCallback(() => {
-        signOutWithGoogle();
-    }, [signOutWithGoogle]);
-
-    const logOut = useCallback(() => {
-        if (googleUser) {
-            clearGoogleAuth();
-        } else {
-            signOut();
-        }
-    }, [signOut, clearGoogleAuth, googleUser]);
-
-
-
-    async function handleToAdmPage() {
-        api.get('/users/entrepreneur').then(response => {
-            if (response.data === null) {
-                setIsAdmin(false)
-            } else {
-                setIsAdmin(true);
-
-            }
-
-        });
-
-    }
 
     const navigate = useNavigate();
 
@@ -249,7 +238,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                     <Menu.Item>
                                                         {({ active }) => (
                                                             <span
-                                                                onClick={logOut}
+                                                                onClick={signOut}
                                                                 className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700 cursor-pointer')}
                                                             >
                                                                 Sair

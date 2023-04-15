@@ -1,5 +1,7 @@
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import api from "../services/api";
 import { auth } from "../services/firebase";
 
 type User = {
@@ -29,7 +31,7 @@ function AuthContextProviderWithGoogle(props: AuthContextProviderProps) {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
-                const { uid, displayName, email, photoURL } = user;
+                const { uid, displayName, email, photoURL, } = user;
 
                 if (!displayName || !email || !photoURL) {
                     throw new Error("Missing information from Google Account.");
@@ -54,10 +56,30 @@ function AuthContextProviderWithGoogle(props: AuthContextProviderProps) {
 
         const result = await signInWithPopup(auth, provider);
 
-        console.log(result);
-
         if (result.user) {
             const { uid, displayName, email, photoURL } = result.user;
+            const token = await result.user.getIdToken();
+
+            localStorage.setItem('@web:token', token);
+            localStorage.setItem('@web:user', JSON.stringify(result));
+
+            const response = await api.get("users/email", {
+                params: {
+                    email: email
+                }
+            });
+
+            if (!response.data) {
+
+                const data = {
+                    name: displayName,
+                    email: email,
+                    password: uuidv4(),
+                    isEntrepreneur: false,
+                }
+
+                await api.post("/users", data);
+            }
 
             if (!displayName || !email || !photoURL) {
                 throw new Error("Missing information from Google Account.");
@@ -73,7 +95,13 @@ function AuthContextProviderWithGoogle(props: AuthContextProviderProps) {
     }
 
     async function signOutWithGoogle() {
-        signOut(auth);
+        try {
+            await auth.signOut();
+        } catch (err) {
+            console.log(err);
+        }
+
+        console.log(auth);
     }
 
     return (
