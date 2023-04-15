@@ -15,7 +15,7 @@ interface CompanyData {
     id: string,
     name: string,
     cnpj: string,
-    category: string,
+    category_id: string,
     description: string,
     services: string[],
     physical_localization: boolean,
@@ -66,20 +66,31 @@ interface AssessmentData {
 export const BusinessEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<CompanyData>();
     const [assessments, setAssessments] = useState<AssessmentData[]>([]);
+    const [categoryName, setCategoryName] = useState<string>("");
 
     useEffect(() => {
+        async function loadCategory(category_id: string) {
+            const response = await api.get(`categories/${category_id}`);
+            setCategoryName(response.data.name);
+        }
+
         api
             .get('/companies/me')
-            .then(response => setCompany(response.data))
-            .catch(error => console.log("Ocorreu um erro ao realizar a requisição"))
-    }, []);
+            .then(response => {
+                setCompany(response.data);
+                loadCategory(response.data.category_id);
+            })
+            .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error))
+    }, [setCompany]);
 
     useEffect(() => {
         api.get<AssessmentData[]>(`/assessments/company/${company?.id}`)
             .then(response => setAssessments(response.data))
             .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error)
             );
-    })
+    }, [company?.id, setAssessments]);
+
+
 
     return (
         <div className="flex flex-row">
@@ -132,7 +143,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                                 <span className="font-inter font-medium">
                                     Categoria
                                 </span>
-                                <p className="font-inter text-sm text-justify">{company.category}</p>
+                                <p className="font-inter text-sm text-justify">{categoryName}</p>
                             </div>
 
                             {company?.services.length !== 0 && (
@@ -140,9 +151,15 @@ export const BusinessEntrepreneur: React.FC = () => {
                                     <span className="font-inter font-medium">
                                         Serviços
                                     </span>
-                                    <p className="font-inter text-sm text-justify">
-                                        {company?.services.map(service => service)}
-                                    </p>
+                                    <div className="flex flex-row gap-4">
+                                        {
+                                            company.services.map((service) => (
+                                                <p key={service} className="font-inter text-sm text-justify">
+                                                    {service}
+                                                </p>
+                                            ))
+                                        }
+                                    </div>
                                 </div>
                             )}
 
@@ -212,10 +229,12 @@ export const BusinessEntrepreneur: React.FC = () => {
                                             Endereço
                                         </span>
                                         <p className="font-inter text-sm text-justify">
-                                            {company.Address.street}, {" "}
-                                            {company.Address.number} - {company.Address.district}, {" "}
-                                            {company.Address.city} - {company.Address.state}, {" "}
-                                            {formatCEP(company.Address.cep)}
+                                            {company.Address.street && company.Address.street}  {" "}
+                                            {company.Address.district && company.Address.district} {" "}
+                                            {company.Address.number && company.Address.number}
+                                            {company.Address.cep && formatCEP(company.Address.cep)}
+                                            {company.Address.city} -
+                                            {company.Address.state}
                                         </p>
                                     </div>
                                 )
@@ -250,7 +269,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                                     <span className="font-inter font-medium text-sm">Avaliações</span>
                                     <p className="font-inter font-light text-sm">{assessments.length} avaliações recebidas</p>
                                     {assessments.map(assessment => (
-                                        <div className="flex flex-row items-center gap-3">
+                                        <div key={assessment.id} className="flex flex-row items-center gap-3">
                                             <Assessments key={assessment.id} data={assessment} />
                                         </div>
                                     ))}
