@@ -67,7 +67,7 @@ interface ICategories {
     name: string;
 }
 
-interface UpdateBusinessEntrepreneurFormData {
+interface UpdateCompanyFormData {
     id: string;
     name: string;
     cnpj: string;
@@ -100,6 +100,7 @@ interface UpdateBusinessEntrepreneurFormData {
     ]
 }
 
+
 export const BusinessEdit: React.FC = () => {
     const params = useParams();
     const [company, setCompany] = useState({} as CompanyData);
@@ -108,7 +109,7 @@ export const BusinessEdit: React.FC = () => {
 
     const [hasPhysicalLocation, setHasPhysicalLocation] = useState<boolean>(false);
     const [selectedState, setSelectedState] = useState('');
-    const [images, setImages] = useState<File[]>([]);
+    const [imagesCompany, setImagesCompany] = useState(new FormData());
     const [cep, setCEP] = useState('');
     const [categories, setCategories] = useState<ICategories[]>([]);
     const [tags, setTags] = useState<string[]>([]);
@@ -129,7 +130,17 @@ export const BusinessEdit: React.FC = () => {
             .then(response => setCategories(response.data))
             .catch(error => console.log("Ocorreu um erro ao realizar requição", error)
             );
-    }, [setCategories]);
+    }, []);
+
+    const loadImages = useCallback(() => {
+        const images = company.ImageCompany?.map((image) => {
+            return image.image_url
+        });
+
+        if (images) {
+            setPreviewImages(images);
+        }
+    }, [previewImages]);
 
     const loadTags = useCallback(async () => {
         company.services && setTags(company.services);
@@ -144,8 +155,9 @@ export const BusinessEdit: React.FC = () => {
 
         loadCategories();
         loadTags();
+        loadImages();
 
-    }, [params.id, loadCategories, loadTags, company]);
+    }, [params.id]);
 
     useEffect(() => {
         if (cep.length === 8) {
@@ -158,11 +170,11 @@ export const BusinessEdit: React.FC = () => {
 
     useEffect(() => {
         company.physical_localization ? setHasPhysicalLocation(true) : setHasPhysicalLocation(false);
-    }, [company.physical_localization, setHasPhysicalLocation])
+    }, [company.physical_localization]);
 
     const setPhysicalLocation = useCallback(() => {
         setHasPhysicalLocation(!hasPhysicalLocation);
-    }, [setHasPhysicalLocation]);
+    }, []);
 
     function addNewScheduleItem() {
         setScheduleItems([
@@ -175,11 +187,6 @@ export const BusinessEdit: React.FC = () => {
             }
         ])
     }
-
-    function removeScheduleItem() {
-        console.log('Removing schedule item');
-    }
-
 
 
     function setScheduleItemValue(position: number, field: string, value: string) {
@@ -194,22 +201,23 @@ export const BusinessEdit: React.FC = () => {
         setScheduleItems(updateScheduleItems);
     }
 
-    function handleSelectedImages(event: ChangeEvent<HTMLInputElement>) {
-        console.log("Entra");
-        if (!event.target.files) {
-            return;
-        }
+    const handleSelectedImages = useCallback(
+        (e: ChangeEvent<HTMLInputElement>) => {
 
-        const selectedImages = Array.from(event.target.files);
+            if (e.target.files) {
+                const selectedImages = Array.from(e.target.files);
 
-        setImages(selectedImages);
+                selectedImages.map(
+                    image => imagesCompany.append("company", image)
+                );
 
-        const selectedImagesPreview = selectedImages.map(image => {
-            return URL.createObjectURL(image);
-        });
+                const selectedPreviewImages = selectedImages.map(image => {
+                    return URL.createObjectURL(image);
+                });
 
-        setPreviewImages(selectedImagesPreview);
-    }
+                setPreviewImages(selectedPreviewImages);
+            }
+        }, [imagesCompany, setPreviewImages]);
 
     const handleInputChangeTag = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
@@ -217,11 +225,11 @@ export const BusinessEdit: React.FC = () => {
 
     const addTag = useCallback((tag: string) => {
         setTags([...tags, tag]);
-    }, [setTags]);
+    }, []);
 
     const removeTag = useCallback((index: number) => {
         setTags([...tags.slice(0, index), ...tags.slice(index + 1)]);
-    }, [setTags])
+    }, [])
 
     const handleInputKeyDownTag = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
@@ -231,11 +239,11 @@ export const BusinessEdit: React.FC = () => {
         } else if (event.key === "Backspace" && inputValue === "") {
             removeTag(tags.length - 1);
         }
-    }, [addTag, setInputValue, removeTag]);
+    }, []);
 
 
     const handleSubmit = useCallback(
-        async (data: UpdateBusinessEntrepreneurFormData) => {
+        async (data: UpdateCompanyFormData) => {
             try {
                 formRef.current?.setErrors({});
 
@@ -259,15 +267,19 @@ export const BusinessEdit: React.FC = () => {
                     email: data.contact.email,
                     website: data.contact.website,
                     physical_localization: hasPhysicalLocation,
-                    cep: data.Address.cep,
+                    cep: hasPhysicalLocation ? data.Address.cep : "",
                 }
 
-                await api.put(`/companies/${params.id}`, companyData);
+                const response = await api.put(`/companies/${params.id}`, companyData);
 
-                if (company?.ImageCompany && company.ImageCompany.length > 0) {
-                    //
-                } else {
-                    await api.post(`/companies/images/${company.id}`, images);
+                if (response.status === 200) {
+                    if (company?.ImageCompany && company.ImageCompany.length > 0) {
+                        // update images
+                    } else {
+                        if (imagesCompany) {
+                            await api.post(`/companies/images/${response.data.id}`, imagesCompany);
+                        }
+                    }
                 }
 
                 toast.success('Empresa atualizada com sucesso');
@@ -285,7 +297,7 @@ export const BusinessEdit: React.FC = () => {
 
                 toast.error("Erro ao cadastrar empresa");
             }
-        }, [toast, navigate, params.id, images, company, hasPhysicalLocation]);
+        }, []);
 
     return (
         <div className="flex flex-row">
