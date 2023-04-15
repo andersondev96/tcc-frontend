@@ -75,7 +75,14 @@ export const SignUp: React.FC = () => {
                     name: Yup.string().required("Nome obrigatório"),
                     email: Yup.string()
                         .email("Digite um e-mail válido")
-                        .required("E-mail obrigatório"),
+                        .required("E-mail obrigatório")
+                        .test("email", "E-mail já está sendo utilizado", async (value) => {
+                            const response = await api.get(`/users/email?email=${value}`);
+                            if (response.data) {
+                                return false;
+                            }
+                            return true;
+                        }),
                     password: Yup.string()
                         .required()
                         .min(8, "A senha deve possuir no mínimo 8 dígitos"),
@@ -85,16 +92,11 @@ export const SignUp: React.FC = () => {
                     abortEarly: false,
                 });
 
-                console.log(data);
-
                 if (selectedType === "venda") {
                     data.isEntrepreneur = true;
                 }
 
-                console.log(data.isEntrepreneur);
-                console.log(data);
-
-                await api.post("/users", data);
+                const response = await api.post("/users", data);
 
                 navigate("/login");
 
@@ -104,10 +106,10 @@ export const SignUp: React.FC = () => {
                     const errors = getValidationErrors(err);
 
                     formRef.current?.setErrors(errors);
+                    const errorMessage = err.inner[0].message;
 
                     return;
                 }
-
                 toast.error("Erro ao cadastrar usuário");
             }
         },
