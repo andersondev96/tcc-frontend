@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
@@ -12,6 +12,7 @@ import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
 import { FcGoogle } from "react-icons/fc";
 import { Input } from "../components/Form/Input";
+import { ModalContainer } from "../components/ModalContainer";
 import api from "../services/api";
 import getValidationErrors from "../utils/getValidateErrors";
 
@@ -32,13 +33,20 @@ interface LocationState {
 }
 
 export const SignIn: React.FC = () => {
-    const [redirectTo, setRedirectTo] = useState(null);
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
-    const location = useLocation();
+    const [modalForgotPassword, setModalForgotPassword] = useState(false);
 
     const { user, signInWithGoogle } = useAuthGoogle();
     const { signIn } = useAuth();
+
+    function openModalForgotPassword() {
+        setModalForgotPassword(true);
+    }
+
+    function closeModalForgotPassword() {
+        setModalForgotPassword(false);
+    }
 
     async function handleGoogleSignIn() {
         try {
@@ -144,9 +152,12 @@ export const SignIn: React.FC = () => {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-start">
                                     <div className="flex items-center h-5">
-                                        <a href="#" className="text-sm font-medium text-blue-600 hover:underline">
+                                        <span
+                                            className="text-sm font-medium text-blue-600 hover:underline"
+                                            onClick={openModalForgotPassword}
+                                        >
                                             Esqueceu a senha?
-                                        </a>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -173,6 +184,13 @@ export const SignIn: React.FC = () => {
                     </div>
                 </div>
             </div>
+            <ModalContainer
+                title="Recuperar senha"
+                isOpen={modalForgotPassword}
+                onRequestClose={closeModalForgotPassword}
+            >
+
+            </ModalContainer>
         </div>
     );
 };
