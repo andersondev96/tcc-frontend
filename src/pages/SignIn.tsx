@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import * as Yup from "yup";
@@ -11,7 +11,6 @@ import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
 import { FcGoogle } from "react-icons/fc";
 import { Input } from "../components/Form/Input";
-import { ModalContainer } from "../components/ModalContainer";
 import getValidationErrors from "../utils/getValidateErrors";
 
 interface SignInFormData {
@@ -26,18 +25,9 @@ interface LocationState {
 export const SignIn: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
-    const [modalForgotPassword, setModalForgotPassword] = useState(false);
 
-    const { user, signInWithGoogle } = useAuthGoogle();
+    const { signInWithGoogle } = useAuthGoogle();
     const { signIn } = useAuth();
-
-    function openModalForgotPassword() {
-        setModalForgotPassword(true);
-    }
-
-    function closeModalForgotPassword() {
-        setModalForgotPassword(false);
-    }
 
     const handleGoogleSignIn = useCallback(async () => {
         try {
@@ -120,12 +110,9 @@ export const SignIn: React.FC = () => {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-start">
                                     <div className="flex items-center h-5">
-                                        <span
-                                            className="text-sm font-medium text-blue-600 hover:underline"
-                                            onClick={openModalForgotPassword}
-                                        >
+                                        <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:underline">
                                             Esqueceu a senha?
-                                        </span>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -152,13 +139,6 @@ export const SignIn: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <ModalContainer
-                title="Recuperar senha"
-                isOpen={modalForgotPassword}
-                onRequestClose={closeModalForgotPassword}
-            >
-
-            </ModalContainer>
         </div>
     );
 };

@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 
 
 import { RequireAuth } from '../hooks/RequireAuth';
+import { ForgotPassword } from '../pages/ForgotPassword';
 import { SignIn } from "../pages/SignIn";
 import { SignUp } from "../pages/SignUp";
 import { Budget } from "../pages/client/Budget";
@@ -33,6 +34,7 @@ export const Router: React.FC = () => {
         <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<SignIn />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/register" element={<SignUp />} />
             <Route path="/business/:id" element={<Business />} />
             <Route path="/services/:company_id" element={<Service />} />
