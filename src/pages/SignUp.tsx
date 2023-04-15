@@ -5,6 +5,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
 
 import { Input } from "../components/Form/Input";
@@ -32,11 +33,37 @@ export const SignUp: React.FC = () => {
     }, [setSelectedType]);
 
     async function handleGoogleSignIn() {
-        if (!user) {
+        try {
             await signInWithGoogle();
+            console.log(user);
+
+            if (user) {
+                console.log(user.email);
+                const response = await api.get("users/email", {
+                    params: {
+                        email: user.email
+                    }
+                });
+
+                if (!response.data) {
+                    const data: SignUpFormData = {
+                        name: user.name,
+                        email: user.email,
+                        password: uuidv4(),
+                        isEntrepreneur: false,
+                    }
+
+                    await api.post("/users", data);
+
+                }
+
+                navigate("/");
+
+            }
+        } catch (err) {
+            console.log(err);
         }
 
-        navigate("/");
     }
 
     const handleSubmit = useCallback(

@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
 
 import { useAuth } from "../contexts/AuthContext";
@@ -11,7 +12,15 @@ import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
 import { FcGoogle } from "react-icons/fc";
 import { Input } from "../components/Form/Input";
+import api from "../services/api";
 import getValidationErrors from "../utils/getValidateErrors";
+
+interface SignUpFormData {
+    name: string;
+    email: string;
+    password: string;
+    isEntrepreneur: boolean;
+}
 
 interface SignInFormData {
     email: string;
@@ -32,11 +41,35 @@ export const SignIn: React.FC = () => {
     const { signIn } = useAuth();
 
     async function handleGoogleSignIn() {
-        if (!user) {
+        try {
             await signInWithGoogle();
+
+            if (user) {
+                const response = await api.get("users/email", {
+                    params: {
+                        email: user.email
+                    }
+                });
+
+                if (!response.data) {
+                    const data: SignUpFormData = {
+                        name: user.name,
+                        email: user.email,
+                        password: uuidv4(),
+                        isEntrepreneur: false,
+                    }
+
+                    await api.post("/users", data);
+
+                }
+
+                navigate("/");
+
+            }
+        } catch (err) {
+            console.log(err);
         }
 
-        navigate("/");
     }
 
     const handleSubmit = useCallback(
