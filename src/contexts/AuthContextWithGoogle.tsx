@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import api from "../services/api";
@@ -96,12 +96,10 @@ function AuthContextProviderWithGoogle(props: AuthContextProviderProps) {
 
     async function signOutWithGoogle() {
         try {
-            await auth.signOut();
+            await signOut(auth);
         } catch (err) {
             console.log(err);
         }
-
-        console.log(auth);
     }
 
     return (

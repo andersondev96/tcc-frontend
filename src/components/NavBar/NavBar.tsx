@@ -20,12 +20,13 @@ interface SettingsCompanyData {
 }
 
 export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
-    const { user, signOut, authenticated } = useAuth();
+    const { user, signOut } = useAuth();
     const { user: googleUser, signOutWithGoogle } = useAuthGoogle();
     const [isAdmin, setIsAdmin] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const company_id = localStorage.getItem('@web:company_id');
     const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
+    const [googleAuthenticated, setGoogleAuthenticated] = useState(false);
 
 
     const handleToAdmPage = useCallback(async () => {
@@ -50,8 +51,12 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                 .catch(err => console.log(err));
         }
 
+        if (googleUser) {
+            setGoogleAuthenticated(true);
+        }
+
         handleToAdmPage();
-    }, [company_id, handleToAdmPage, company_id, setSettings]);
+    }, [company_id, handleToAdmPage, company_id, setSettings, googleUser, googleAuthenticated]);
 
     function openModal() {
         setModalIsOpen(true);
@@ -61,6 +66,19 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
         setModalIsOpen(false);
     }
 
+    const logOut = useCallback(() => {
+        try {
+            if (googleUser) {
+                signOutWithGoogle();
+                signOut();
+                setGoogleAuthenticated(false);
+            } else {
+                signOut();
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }, [signOutWithGoogle, setGoogleAuthenticated, signOut]);
 
     const navigate = useNavigate();
 
@@ -99,7 +117,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                         </span>
                                     </div>
                                     <div className="hidden sm:ml-6 sm:block">
-                                        {(authenticated || googleUser) && company_id ? (
+                                        {user && company_id ? (
                                             <div className="flex space-x-4">
                                                 {navigation.map((item) => (
                                                     <Link
@@ -128,7 +146,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                     </div>
                                 </div>
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                    {authenticated || googleUser && (
+                                    {(user || googleAuthenticated) && (
                                         <button
                                             onClick={openModal}
                                             type="button"
@@ -139,7 +157,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                         </button>
                                     )}
 
-                                    {authenticated || googleUser ? (
+                                    {user || googleAuthenticated ? (
                                         <Menu as="div" className="relative ml-3">
                                             <div>
                                                 <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-5 focus:transition-shadow focus:duration-200 focus:ring-offset-2 focus:ring-offset-gray-800">
@@ -183,7 +201,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                         <span
                                                             className='block px-4 py-2 font-medium text-sm text-gray-700'
                                                         >
-                                                            {!googleUser ? user.name : googleUser?.name}
+                                                            {!googleAuthenticated ? user.name : googleUser?.name}
                                                         </span>
 
                                                     </div>
@@ -238,7 +256,7 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                     <Menu.Item>
                                                         {({ active }) => (
                                                             <span
-                                                                onClick={signOut}
+                                                                onClick={logOut}
                                                                 className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700 cursor-pointer')}
                                                             >
                                                                 Sair
