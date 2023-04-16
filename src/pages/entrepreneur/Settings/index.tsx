@@ -1,15 +1,12 @@
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
+import { AiOutlineCamera } from "react-icons/ai";
 import { toast } from "react-toastify";
 import { SideBar } from "../../../components/Sidebar";
 import api from "../../../services/api";
-import { AssessmentsStars } from "../../client/components/AssessmentsStars";
 
 interface EntrepreneurSettingsData {
     id: string;
     entrepreneur_id: string;
-    service_name_color: string;
-    service_price_color: string;
-    card_color: string;
     highlight_services_quantity: number;
     online_budget: boolean;
     online_chat: boolean;
@@ -18,49 +15,76 @@ interface EntrepreneurSettingsData {
 
 export const Settings: React.FC = () => {
     const [entrepreneurSettings, setEntrepreneurSettings] = useState<EntrepreneurSettingsData>({} as EntrepreneurSettingsData);
-    const [colorNameService, setColorNameService] = useState("");
-    const [colorPriceService, setColorPriceService] = useState("");
-    const [cardColor, setCardColor] = useState("");
-    const [quantityServices, setQuantityServices] = useState(0);
+    const [quantityServices, setQuantityServices] = useState(1);
     const [budgetActive, setBudgetActive] = useState(false);
     const [onlineChatActive, setOnlineChatActive] = useState(false);
     const [emailNotification, setEmailNotification] = useState(false);
+    const [selectImagePreview, setSelectImagePreview] = useState("");
+    const [logo, setLogo] = useState(new FormData());
 
     useEffect(() => {
-        api.get(`/entrepreneurs`).then((response) => {
-            setEntrepreneurSettings(response.data);
-        })
+        const fetchEntrepreneurSettings = async () => {
+            try {
+                api.get(`/entrepreneurs`).then((response) => {
+                    setEntrepreneurSettings(response.data);
+                });
+                setEntrepreneurSettings(entrepreneurSettings);
+                setQuantityServices(entrepreneurSettings.highlight_services_quantity);
+                setBudgetActive(entrepreneurSettings.online_budget);
+                setOnlineChatActive(entrepreneurSettings.online_chat);
+                setEmailNotification(entrepreneurSettings.email_notification);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        fetchEntrepreneurSettings();
     }, []);
+
+    const handleInputNumber = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        const inputValue = Number(event.target.value);
+        setQuantityServices(inputValue);
+    }, []);
+
+    const handleSelectedImage = useCallback(
+        (e: ChangeEvent<HTMLInputElement>) => {
+
+            if (e.target.files) {
+                const selectedImage = e.target.files[0];
+                logo.append("company_logo", selectedImage);
+
+                const selectedImagePreview = URL.createObjectURL(selectedImage);
+
+                setSelectImagePreview(selectedImagePreview);
+            }
+        }, []);
 
 
     const handleSubmit = useCallback(async (event: FormEvent) => {
-        event.preventDefault();
+        try {
+            event.preventDefault();
 
-        const data = {
-            service_name_color: colorNameService,
-            service_price_color: colorPriceService,
-            card_color: cardColor,
-            highlight_services_quantity: quantityServices,
-            online_budget: budgetActive,
-            online_chat: onlineChatActive,
-            email_notification: emailNotification
-        }
+            const data = {
+                highlight_services_quantity: quantityServices,
+                online_budget: budgetActive,
+                online_chat: onlineChatActive,
+                email_notification: emailNotification
+            }
 
-        const settings = await api.put(`/entrepreneurs/${entrepreneurSettings.entrepreneur_id}/settings`, data);
+            const settings = await api.put(`/entrepreneurs/${entrepreneurSettings.entrepreneur_id}/settings`, data);
 
-        console.log(settings);
+            if (settings.status === 201) {
+                if (!logo.entries().next().done) {
+                    await api.patch(`entrepreneurs/upload-logo/${settings.data.entrepreneur_id}`, logo);
+                }
+                toast.success("Preferências alteradas com sucesso!");
+            }
 
-        if (settings.status === 201) {
-            toast.success("Preferências alteradas com sucesso!");
-        } else {
+        } catch (err) {
             toast.error("Erro ao alterar as preferências!");
         }
 
-
     }, [
-        colorNameService,
-        colorPriceService,
-        cardColor,
         quantityServices,
         budgetActive,
         onlineChatActive,
@@ -81,99 +105,60 @@ export const Settings: React.FC = () => {
                 <form onSubmit={handleSubmit}>
                     <div className="flex flex-col px-24 sm:px-12">
                         <div>
-                            <span className=" font-semibold text-lg">
-                                Card do serviço
+                            <span className="font-semibold text-lg text-blue-600">
+                                Definir logo para a empresa
                             </span>
-                            <div className="flex flex-col sm:flex-row gap-6 sm:gap-9 mt-6">
-                                <div className="flex flex-col gap-3">
+                            <div className="flex flex-wrap -mx-3 md:mb-6">
+                                <div className="w-full px-3 mb-6 md:mb-0">
                                     <label
-                                        htmlFor="NameServiceColor"
-                                        className=" font-semibold text-sm text-blue-600"
+                                        htmlFor="company_logo"
+                                        className="flex flex-col justify-center items-center mt-4 w-44 h-44 bg-gray-200 rounded-lg border-2 border-gray-400 cursor-pointer hover:opacity-80 duration-300 transition-opacity"
                                     >
-                                        Cor do nome do serviço
-                                    </label>
-                                    <input
-                                        type="color"
-                                        value={entrepreneurSettings.service_name_color}
-                                        name="colorNameService"
-                                        onChange={e => setColorNameService(e.target.value)}
-                                        className="appearance-none w-20 h-8 border-none rounded bg-transparent cursor-pointer"
-                                    />
-                                </div>
+                                        <div className="flex flex-col justify-center items-center">
+                                            {
+                                                !selectImagePreview && (
+                                                    <AiOutlineCamera size={24} />
+                                                )
+                                            }
+                                            {
+                                                selectImagePreview &&
+                                                <img src={selectImagePreview} className="w-40 h-40 p-4 object-cover rounded-lg border-2 border-gray-400" />
 
-                                <div className="flex flex-col gap-3">
-                                    <label
-                                        htmlFor="NameServiceColor"
-                                        className=" font-semibold text-sm text-blue-600 "
-                                    >
-                                        Cor do preço do serviço
-                                    </label>
-                                    <input
-                                        type="color"
-                                        value={entrepreneurSettings.service_price_color}
-                                        name="colorPriceService"
-                                        onChange={e => setColorPriceService(e.target.value)}
-                                        className="appearance-none w-20 h-8 border-none rounded bg-transparent cursor-pointer"
-                                    />
-                                </div>
+                                            }
 
-                                <div className="flex flex-col gap-3">
-                                    <label
-                                        htmlFor="NameServiceColor"
-                                        className=" font-semibold text-sm text-blue-600 "
-                                    >
-                                        Cor do card
+                                        </div>
+                                        <input id="company_logo" name="company_logo" type="file" accept="image/*" className="hidden" onChange={handleSelectedImage} />
                                     </label>
-                                    <input
-                                        type="color"
-                                        value={entrepreneurSettings.card_color}
-                                        name="cardColor"
-                                        onChange={e => setCardColor(e.target.value)}
-                                        className="appearance-none w-20 h-8 border-none rounded bg-transparent cursor-pointer"
-                                    />
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-2 mt-9">
-                            <span className=" font-regular text-sm">
-                                Pré-visualização:
-                            </span>
-                            <div className={`"flex flex-col justify-center px-16  w-56 h-16 bg-[${entrepreneurSettings.card_color}] rounded"`}>
-                                <span className={`font-semibold text-sm text-[${entrepreneurSettings.service_name_color}]`}>
-                                    Serviço
-                                </span>
-                                <AssessmentsStars stars={5} />
-                                <strong className={`font-inter font-semibold text-xs text-[${entrepreneurSettings.service_price_color}]`}>
-                                    R$ 4,50
-                                </strong>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-2 mt-9">
-                            <label
-                                htmlFor="FeaturedServicesQuantity"
-                                className="font-semibold text-sm text-blue-600 "
-                            >
-                                Quantidade de serviços em destaque
-                            </label>
-                            <input
-                                type="number"
-                                min={1}
-                                max={5}
-                                defaultValue={entrepreneurSettings.highlight_services_quantity}
-                                onChange={e => setQuantityServices(Number(e.target.value))}
-                                className="w-16 h-10 p-2 rounded bg-gray-200 border-none font-medium text-sm text-gray-800"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-2 mt-6 sm:mt-9">
-                            <span className=" font-semibold text-lg text-blue-600">
+                        <div className="flex flex-col gap-2 mt-6">
+                            <span className="font-semibold text-lg text-blue-600">
                                 Preferências
                             </span>
-                            <div className="flex flex-row items-center gap-2">
+                            <div className="flex flex-col gap-2 mt-4">
+                                <label
+                                    htmlFor="FeaturedServicesQuantity"
+                                    className="font-semibold text-sm text-blue-600 "
+                                >
+                                    Quantidade de serviços em destaque
+                                </label>
+                                <input
+                                    type="number"
+                                    min={1}
+                                    max={5}
+                                    defaultValue={quantityServices}
+                                    onChange={handleInputNumber}
+                                    className="w-16 h-10 p-2 rounded bg-gray-200 border-none font-medium text-sm text-gray-800"
+                                />
+                            </div>
+
+                            <div className="flex flex-row items-center mt-4 gap-2">
                                 <input
                                     type="checkbox"
                                     id="budget"
-                                    defaultChecked={entrepreneurSettings.online_budget}
-                                    onChange={() => setBudgetActive(!emailNotification)}
+                                    defaultChecked={budgetActive}
+                                    onChange={() => setBudgetActive(!budgetActive)}
                                     className="rounded border-2 border-gray-900"
                                 />
                                 <label
@@ -186,7 +171,7 @@ export const Settings: React.FC = () => {
                             <div className="flex flex-row items-center gap-2">
                                 <input
                                     type="checkbox"
-                                    defaultChecked={entrepreneurSettings.online_chat}
+                                    defaultChecked={onlineChatActive}
                                     id="chat"
                                     onChange={() => setOnlineChatActive(!onlineChatActive)}
                                     className="rounded border-2 border-gray-900"
@@ -201,7 +186,7 @@ export const Settings: React.FC = () => {
                             <div className="flex flex-row items-center gap-2">
                                 <input
                                     type="checkbox"
-                                    defaultChecked={entrepreneurSettings.email_notification}
+                                    defaultChecked={emailNotification}
                                     id="email"
                                     onChange={() => setEmailNotification(!emailNotification)}
                                     className="rounded border-2 border-gray-900"
