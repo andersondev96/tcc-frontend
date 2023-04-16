@@ -1,5 +1,6 @@
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
+import { format } from "date-fns";
 import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -46,12 +47,29 @@ export const CreateProposal: React.FC = () => {
     const [file, setFile] = useState<File | null>(null);
     const [proposal, setProposal] = useState<Proposal>({} as Proposal);
     const [selectedFiles, setSelectedFiles] = useState(new FormData());
+    const [isLoading, setIsLoading] = useState(false);
+    const [date, setDate] = useState('');
     const { proposal_id } = useParams();
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         api.get(`proposals/${proposal_id}`).then(response => setProposal(response.data));
+    }, []);
+
+    function classNames(...classes: any) {
+        return classes.filter(Boolean).join(' ')
+    }
+
+
+    const handleDateChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        const selectedDate = event.target.value;
+
+        const formattedDate = format(new Date(selectedDate), "dd/MM/yyyy");
+
+        console.log(formattedDate);
+
+        setDate(formattedDate);
     }, []);
 
     const handleFileUpload = useCallback(
@@ -67,6 +85,7 @@ export const CreateProposal: React.FC = () => {
         async (data: BudgetData) => {
             try {
                 formRef.current?.setErrors({});
+                setIsLoading(true);
 
                 const schema = Yup.object().shape({
                     description: Yup.string().required("Campo obrigatório"),
@@ -105,11 +124,14 @@ export const CreateProposal: React.FC = () => {
                     console.log(errors);
 
                     formRef.current?.setErrors(errors);
+                    setIsLoading(false);
 
                     return;
                 }
 
                 toast.error("Error ao criar o orçamento");
+            } finally {
+                setIsLoading(false);
             }
         }, [proposal_id, selectedFiles, navigate, file]);
     return (
@@ -148,9 +170,13 @@ export const CreateProposal: React.FC = () => {
                                 name="files"
                                 type="file"
                                 id="files"
-                                accept="image/*,.txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                                accept="image/*,.txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx, .zip, .rar"
+                                maxLength={5242880}
                                 onChange={handleFileUpload}
                             />
+                            <span className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                Arquivos aceitos: .jpg, jpeg, png, txt, pdf, doc, docx, xls, xlsx, ppt, pptx, .zip, .rar
+                            </span>
                         </div>
                         <div className="flex flex-wrap -mx-3">
                             <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
@@ -180,9 +206,10 @@ export const CreateProposal: React.FC = () => {
                             </div>
                         </div>
 
-                        <button className="flex items-center justify-center mt-4 w-48 h-12 bg-blue-600 rounded hover:brightness-90 duration-300 transition-opacity">
+                        <button className={classNames(isLoading ? "bg-blue-200 cursor-not-allowed" : " bg-blue-600 rounded hover:brightness-90 duration-300 transition-opacity",
+                            "flex items-center justify-center mt-4 w-48 h-12")}>
                             <span className="font-medium text-gray-100">
-                                Salvar alterações
+                                {isLoading ? 'Salvando...' : 'Salvar alterações'}
                             </span>
                         </button>
                     </div>

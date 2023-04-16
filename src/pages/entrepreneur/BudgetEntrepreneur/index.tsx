@@ -60,6 +60,16 @@ export const BudgetEntrepreneur: React.FC = () => {
     const [proposals, setProposals] = useState<Proposals[]>([]);
     const [budget, setBudget] = useState<Budget>({} as Budget);
     const [name, setName] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 8;
+
+    const handlePageChange = useCallback((newPage: number) => {
+        setCurrentPage(newPage);
+    }, []);
+
+    const inicialIndice = (currentPage - 1) * itemsPerPage;
+    const finalIndice = inicialIndice * itemsPerPage;
+    const data = proposals.slice(inicialIndice, finalIndice);
 
     useEffect(() => {
         api.get(`companies/me`).then((response) => setCompany(response.data));
@@ -68,6 +78,8 @@ export const BudgetEntrepreneur: React.FC = () => {
             api.get(`proposals/company/${company.id}`).then((response) => setProposals(response.data));
         }
     }, [company.id]);
+
+
 
     const handleEditBudget = useCallback(async (proposal_id: string) => {
         const response = await api.get(`proposals/budget/${proposal_id}`);
@@ -106,7 +118,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                 <div className="flex flex-col items-center py-6 sm:py-12">
                     <h1 className="font-montserrat font-medium text-2xl">Orçamentos</h1>
                 </div>
-                <div className="flex flex-col px-12">
+                <div className="flex flex-col px-12 py-4">
                     <Search onChange={handleSearchBudgets} />
                     <div className="mt-6">
                         <Table>
@@ -127,9 +139,9 @@ export const BudgetEntrepreneur: React.FC = () => {
                                     <TableRowBody key={proposal.id}>
                                         <TableData>{format(new Date(proposal.createdAt), "dd/MM/yyyy")}</TableData>
                                         <TableData>{proposal.customer && proposal.customer.user.name}</TableData>
-                                        <TableData>{proposal.description}</TableData>
+                                        <TableData>{proposal.objective}</TableData>
                                         <TableData>{format(new Date(proposal.time), "dd/MM/yyyy")}</TableData>
-                                        <TableData>{proposal.status}</TableData>
+                                        <TableData>{proposal.status.replace(/\(.*\)/g, "").trim()}</TableData>
                                         <TableData>{format(new Date(proposal.updatedAt), "dd/MM/yyyy")}</TableData>
                                         <TableData>
                                             <div className="flex flex-row gap-2">
@@ -152,7 +164,12 @@ export const BudgetEntrepreneur: React.FC = () => {
                         </Table>
                     </div>
 
-                    <PaginationTable results={proposals.length} />
+                    <PaginationTable
+                        tot_results={data.length}
+                        items_per_page={itemsPerPage}
+                        current_page={currentPage}
+                        onPageChange={handlePageChange}
+                    />
                 </div>
             </div>
         </div>
