@@ -56,11 +56,13 @@ export const EditServicesEntrepreneur: React.FC = () => {
     }, [params.id, setCompany, setService]);
 
     useEffect(() => {
-        api.get(`/categories/list-subcategories/${company.category_id}`)
-            .then(response => {
-                setSubcategories(response.data);
-            })
-            .catch(error => console.log("Ocorreu um erro na solicitação", error));
+        if (company.category_id) {
+            api.get(`/categories/list-subcategories/${company.category_id}`)
+                .then(response => {
+                    setSubcategories(response.data);
+                })
+                .catch(error => console.log("Ocorreu um erro na solicitação", error));
+        }
 
     }, [company.category_id, setSubcategories]);
 

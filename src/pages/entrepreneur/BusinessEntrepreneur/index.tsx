@@ -84,11 +84,13 @@ export const BusinessEntrepreneur: React.FC = () => {
     }, [setCompany]);
 
     useEffect(() => {
-        api.get<AssessmentData[]>(`/assessments/company/${company?.id}`)
-            .then(response => setAssessments(response.data))
-            .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error)
-            );
-    }, [company?.id, setAssessments]);
+        if (company) {
+            api.get<AssessmentData[]>(`/assessments/company/${company?.id}`)
+                .then(response => setAssessments(response.data))
+                .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error)
+                );
+        }
+    }, [company?.id]);
 
 
 

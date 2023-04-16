@@ -44,9 +44,11 @@ export const CreateServicesEntrepreneur: React.FC = () => {
         api.get('/companies/me')
             .then(response => setCompany(response.data))
 
-        api.get(`/categories/list-subcategories/${company.category_id}`).then(response => {
-            setSubcategories(response.data);
-        });
+        if (company.category_id) {
+            api.get(`/categories/list-subcategories/${company.category_id}`).then(response => {
+                setSubcategories(response.data);
+            });
+        }
     }, [company.category_id]);
 
     function handleSetHighlight() {
@@ -55,7 +57,6 @@ export const CreateServicesEntrepreneur: React.FC = () => {
 
     const handleSelectedImage = useCallback(
         (e: ChangeEvent<HTMLInputElement>) => {
-            // const formData = new FormData();
 
             if (e.target.files) {
                 const selectedImage = e.target.files[0];
@@ -93,8 +94,6 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                 };
 
                 const response = await api.post(`/services/${company.id}`, service);
-
-                console.log(response);
 
                 if (response.status === 201) {
                     if (!imageService.entries().next().done) {

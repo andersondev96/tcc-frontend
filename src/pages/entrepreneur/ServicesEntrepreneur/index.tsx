@@ -68,10 +68,12 @@ export const ServicesEntrepreneur: React.FC = () => {
             .then(response => setCompany(response.data))
             .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error));
 
-        api
-            .get<ServiceData[]>(`/services/company/${company.id}`)
-            .then(response => setServices(response.data))
-            .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error));
+        if (company.id) {
+            api
+                .get<ServiceData[]>(`/services/company/${company.id}`)
+                .then(response => setServices(response.data))
+                .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error));
+        }
     }, [company.id]);
 
     const searchService = useCallback(
