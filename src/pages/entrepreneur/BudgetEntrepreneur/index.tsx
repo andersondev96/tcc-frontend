@@ -64,33 +64,38 @@ export const BudgetEntrepreneur: React.FC = () => {
     useEffect(() => {
         api.get(`companies/me`).then((response) => setCompany(response.data));
 
-        api.get(`proposals/company/${company.id}`).then((response) => setProposals(response.data));
+        if (company.id) {
+            api.get(`proposals/company/${company.id}`).then((response) => setProposals(response.data));
+        }
     }, [company.id]);
 
-    const handleEditBudget = useCallback((proposal_id: string) => {
-        api.get(`proposals/budget/${proposal_id}`).then((response) => setBudget(response.data));
+    const handleEditBudget = useCallback(async (proposal_id: string) => {
+        const response = await api.get(`proposals/budget/${proposal_id}`);
 
-        if (budget) {
+        if (response.data) {
+            setBudget(response.data);
             navigate(`/admin/budget/edit-proposal/${proposal_id}`);
         } else {
             navigate(`/admin/budget/create-proposal/${proposal_id}`);
         }
-    }, [budget, navigate]);
+    }, [navigate]);
 
 
     const handleSearchBudgets = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
         const name = event.target.value;
         setName(name);
 
-        if (!name) {
-            api.get(`proposals/company/${company.id}`).then((response) => setProposals(response.data));
-        } else {
-            api.get(`proposals/filter/${company.id}`, {
-                params: {
-                    name
-                }
-            })
-                .then((response) => setProposals(response.data));
+        if (company.id) {
+            if (!name) {
+                api.get(`proposals/company/${company.id}`).then((response) => setProposals(response.data));
+            } else {
+                api.get(`proposals/filter/${company.id}`, {
+                    params: {
+                        name
+                    }
+                })
+                    .then((response) => setProposals(response.data));
+            }
         }
     }, [company?.id, setProposals]);
 
@@ -139,7 +144,9 @@ export const BudgetEntrepreneur: React.FC = () => {
                                         </TableData>
                                     </TableRowBody>
                                 )) : (
-                                    <p className="px-4">Nenhuma proposta encontrada</p>
+                                    <TableRowBody>
+                                        <TableData>Nenhuma proposta encontrada</TableData>
+                                    </TableRowBody>
                                 )}
                             </TableBody>
                         </Table>

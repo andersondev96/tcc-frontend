@@ -54,15 +54,16 @@ export const EditProposal: React.FC = () => {
         api.get(`proposals/${proposal_id}`).then(response => setProposal(response.data));
 
         api.get(`proposals/budget/${proposal_id}`).then(response => {
-            const data = response.data;
-            const date = new Date(data.delivery_date);
-            date.setUTCHours(date.getUTCHours() - 3);
-            const formattedDate = date.toISOString().substring(0, 10);
-            data.delivery_date = formattedDate;
-            setBudget(data);
+            if (response.data) {
+                const data = response.data;
+                const date = new Date(data.delivery_date);
+                date.setUTCHours(date.getUTCHours() - 3);
+                const formattedDate = date.toISOString().substring(0, 10);
+                data.delivery_date = formattedDate;
+                setBudget(data);
+            }
         });
 
-        console.log(budget);
 
     }, [proposal_id, setBudget]);
 
@@ -112,7 +113,7 @@ export const EditProposal: React.FC = () => {
 
                 toast.success("Orçamento atualizado com sucesso!");
 
-                navigate(`/admin/budget`);
+                navigate(`/admin/budget/details/${proposal.id}`);
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
                     const errors = getValidationErrors(err);
@@ -155,14 +156,13 @@ export const EditProposal: React.FC = () => {
                             <label
                                 htmlFor="files"
                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                                Adicionar anexos
+                                Adicionar anexo
                             </label>
                             <input
                                 className="relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-neutral-700 outline-none transition duration-300 ease-in-out file:-mx-3 file:-my-1.5 file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-1.5 file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[margin-inline-end:0.75rem] file:[border-inline-end-width:1px] hover:file:bg-neutral-200 focus:border-primary focus:bg-white focus:text-neutral-700 focus:shadow-[0_0_0_1px] focus:shadow-primary focus:outline-none"
                                 name="files"
                                 type="file"
                                 id="files"
-                                multiple
                                 accept="image/*,.txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
                                 onChange={handleSelectFiles}
                             />

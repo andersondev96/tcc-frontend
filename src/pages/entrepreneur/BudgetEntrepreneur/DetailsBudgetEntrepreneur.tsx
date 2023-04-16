@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { SideBar } from "../../../components/Sidebar";
 import api from "../../../services/api";
@@ -51,6 +51,12 @@ export const DetailsBudgetEntrepreneur: React.FC = () => {
         api.get(`proposals/budget/${proposal_id}`).then(response => setBudget(response.data));
 
     }, [proposal_id]);
+
+    const handleDownloadFile = useCallback(async (file_url: string) => {
+        const file = await api.get(`/budgets/${file_url}`);
+
+        return file.data;
+    }, []);
 
     return (
         <div className="flex flex-row">
@@ -163,9 +169,11 @@ export const DetailsBudgetEntrepreneur: React.FC = () => {
                                             Anexos
                                         </span>
                                         {budget.files && budget.files.map(file => (
-                                            <p key={file} className="font-light text-xs text-blue-700 sm:text-sm text-justify">
-                                                {file}
-                                            </p>
+                                            <a key={file} target="__blank" href={`http://localhost:3333/budgets/${file}`}>
+                                                <p className="font-light text-xs text-blue-700 sm:text-sm text-justify">
+                                                    {file}
+                                                </p>
+                                            </a>
                                         ))}
                                     </div>
                                 </div>

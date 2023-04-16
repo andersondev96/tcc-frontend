@@ -27,7 +27,7 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
     }
 
     return (
-        <div className={`mx-auto max-w-7xl block`}>
+        <div className={`mx-auto max-w-7xl block z-20`}>
             <div className="w-12 sm:w-60 h-full bg-gray-800 shadow-md fixed ">
                 <div className="flex flex-col flex-1 items-center mt-8 justify-center sm:items-stretch sm:justify-start">
                     <div className="hidden sm:flex ml-6 flex-shrink-0 items-center">
