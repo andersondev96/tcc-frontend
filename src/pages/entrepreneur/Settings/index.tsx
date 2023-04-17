@@ -11,28 +11,27 @@ interface EntrepreneurSettingsData {
     online_budget: boolean;
     online_chat: boolean;
     email_notification: boolean;
+    company_logo: string;
 }
 
 export const Settings: React.FC = () => {
     const [entrepreneurSettings, setEntrepreneurSettings] = useState<EntrepreneurSettingsData>({} as EntrepreneurSettingsData);
     const [quantityServices, setQuantityServices] = useState(1);
-    const [budgetActive, setBudgetActive] = useState(false);
-    const [onlineChatActive, setOnlineChatActive] = useState(false);
+    const [onlineBudget, setOnlineBudget] = useState(false);
+    const [onlineChat, setOnlineChat] = useState(false);
     const [emailNotification, setEmailNotification] = useState(false);
     const [selectImagePreview, setSelectImagePreview] = useState("");
     const [logo, setLogo] = useState(new FormData());
+
 
     useEffect(() => {
         const fetchEntrepreneurSettings = async () => {
             try {
                 api.get(`/entrepreneurs`).then((response) => {
-                    setEntrepreneurSettings(response.data);
+                    if (response.data) {
+                        setEntrepreneurSettings(response.data);
+                    }
                 });
-                setEntrepreneurSettings(entrepreneurSettings);
-                setQuantityServices(entrepreneurSettings.highlight_services_quantity);
-                setBudgetActive(entrepreneurSettings.online_budget);
-                setOnlineChatActive(entrepreneurSettings.online_chat);
-                setEmailNotification(entrepreneurSettings.email_notification);
             } catch (error) {
                 console.log(error);
             }
@@ -45,6 +44,17 @@ export const Settings: React.FC = () => {
         const inputValue = Number(event.target.value);
         setQuantityServices(inputValue);
     }, []);
+
+    const handleCheckBox = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        const { id } = event.target;
+        if (id === "budget") {
+            setOnlineBudget(!onlineBudget);
+        } else if (id === "chat") {
+            setOnlineChat(!onlineChat);
+        } else {
+            setEmailNotification(!emailNotification);
+        }
+    }, [onlineBudget, onlineChat, emailNotification]);
 
     const handleSelectedImage = useCallback(
         (e: ChangeEvent<HTMLInputElement>) => {
@@ -66,8 +76,8 @@ export const Settings: React.FC = () => {
 
             const data = {
                 highlight_services_quantity: quantityServices,
-                online_budget: budgetActive,
-                online_chat: onlineChatActive,
+                online_budget: onlineBudget,
+                online_chat: onlineChat,
                 email_notification: emailNotification
             }
 
@@ -86,8 +96,8 @@ export const Settings: React.FC = () => {
 
     }, [
         quantityServices,
-        budgetActive,
-        onlineChatActive,
+        onlineBudget,
+        onlineChat,
         emailNotification,
         entrepreneurSettings.entrepreneur_id,
         toast
@@ -115,14 +125,13 @@ export const Settings: React.FC = () => {
                                         className="flex flex-col justify-center items-center mt-4 w-44 h-44 bg-gray-200 rounded-lg border-2 border-gray-400 cursor-pointer hover:opacity-80 duration-300 transition-opacity"
                                     >
                                         <div className="flex flex-col justify-center items-center">
+
                                             {
-                                                !selectImagePreview && (
-                                                    <AiOutlineCamera size={24} />
-                                                )
-                                            }
-                                            {
-                                                selectImagePreview &&
-                                                <img src={selectImagePreview} className="w-40 h-40 p-4 object-cover rounded-lg border-2 border-gray-400" />
+                                                selectImagePreview ? (
+                                                    <img src={selectImagePreview} className="w-40 h-40 p-4 object-cover rounded-lg border-2 border-gray-400" />
+                                                ) : !selectImagePreview && entrepreneurSettings.company_logo ? (
+                                                    <img src={`http://localhost:3333/company_logo/${entrepreneurSettings.company_logo}`} className="w-40 h-40 p-4 object-cover rounded-lg border-2 border-gray-400" />
+                                                ) : <AiOutlineCamera size={24} />
 
                                             }
 
@@ -147,7 +156,7 @@ export const Settings: React.FC = () => {
                                     type="number"
                                     min={1}
                                     max={5}
-                                    defaultValue={quantityServices}
+                                    defaultValue={entrepreneurSettings.highlight_services_quantity}
                                     onChange={handleInputNumber}
                                     className="w-16 h-10 p-2 rounded bg-gray-200 border-none font-medium text-sm text-gray-800"
                                 />
@@ -157,8 +166,8 @@ export const Settings: React.FC = () => {
                                 <input
                                     type="checkbox"
                                     id="budget"
-                                    defaultChecked={budgetActive}
-                                    onChange={() => setBudgetActive(!budgetActive)}
+                                    defaultChecked={entrepreneurSettings.online_budget}
+                                    onChange={handleCheckBox}
                                     className="rounded border-2 border-gray-900"
                                 />
                                 <label
@@ -171,9 +180,9 @@ export const Settings: React.FC = () => {
                             <div className="flex flex-row items-center gap-2">
                                 <input
                                     type="checkbox"
-                                    defaultChecked={onlineChatActive}
                                     id="chat"
-                                    onChange={() => setOnlineChatActive(!onlineChatActive)}
+                                    defaultChecked={entrepreneurSettings.online_chat}
+                                    onChange={handleCheckBox}
                                     className="rounded border-2 border-gray-900"
                                 />
                                 <label
@@ -186,9 +195,9 @@ export const Settings: React.FC = () => {
                             <div className="flex flex-row items-center gap-2">
                                 <input
                                     type="checkbox"
-                                    defaultChecked={emailNotification}
                                     id="email"
-                                    onChange={() => setEmailNotification(!emailNotification)}
+                                    defaultChecked={entrepreneurSettings.email_notification}
+                                    onChange={handleCheckBox}
                                     className="rounded border-2 border-gray-900"
                                 />
                                 <label
