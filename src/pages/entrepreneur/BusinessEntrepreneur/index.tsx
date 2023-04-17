@@ -67,6 +67,7 @@ export const BusinessEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<CompanyData>();
     const [assessments, setAssessments] = useState<AssessmentData[]>([]);
     const [categoryName, setCategoryName] = useState<string>("");
+    const [logo, setLogo] = useState("");
 
     useEffect(() => {
         async function loadCategory(category_id: string) {
@@ -81,7 +82,14 @@ export const BusinessEntrepreneur: React.FC = () => {
                 loadCategory(response.data.category_id);
             })
             .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error))
-    }, [setCompany]);
+
+        api.get("/entrepreneurs")
+            .then(response => {
+                if (response.data && response.data.company_logo) {
+                    setLogo(response.data.company_logo);
+                }
+            })
+    }, [setCompany, setLogo]);
 
     useEffect(() => {
         if (company) {
@@ -111,14 +119,13 @@ export const BusinessEntrepreneur: React.FC = () => {
                 ) : (
                     <div>
                         <div className="flex flex-row items-center gap-6 sm:gap-12 px-24 py-6 sm:py-12">
-                            {
-                                company.ImageCompany && company.ImageCompany.length > 0 &&
-                                <img
-                                    src={company.ImageCompany ? company.ImageCompany[0].image_url : ''}
-                                    alt=""
-                                    className="w-12 sm:w-16 min-h-12 sm:h-16 object-fill rounded-full"
-                                />
-                            }
+
+                            <img
+                                src={logo && `http://localhost:3333/company_logo/${logo}`}
+                                alt=""
+                                className="w-12 sm:w-16 min-h-12 sm:h-16 object-fill rounded-full"
+                            />
+
                             <span className="font-inter font-bold text-lg sm:text-2xl text-gray-800">
                                 {company.name}
                             </span>
