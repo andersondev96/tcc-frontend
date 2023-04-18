@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
     MapContainer,
     Marker,
@@ -50,7 +50,7 @@ export const Map: React.FC = () => {
         api.get(`/companies`).then((response) => setCompanies(response.data));
     }, []);
 
-    function setLocalization() {
+    const setLocalization = useCallback(() => {
         if (coords[0] === 0 && coords[1] === 0) {
             navigator.geolocation.getCurrentPosition((position) => {
                 setLatitude(position.coords.latitude);
@@ -60,9 +60,9 @@ export const Map: React.FC = () => {
             setLatitude(coords[0]);
             setLongitude(coords[1]);
         }
-    }
+    }, [coords, setLatitude, setLongitude]);
 
-    function SetViewOnClick({ animateRef }: any) {
+    const SetViewOnClick = useCallback(({ animateRef }: any) => {
         const map = useMapEvent("click", (e) => {
             map.setView([latitude, longitude], map.getZoom(), {
                 animate: animateRef.current || false,
@@ -70,7 +70,7 @@ export const Map: React.FC = () => {
         });
 
         return null;
-    }
+    }, [latitude, longitude, animateRef]);
 
     useEffect(() => {
         setLocalization();
@@ -88,7 +88,7 @@ export const Map: React.FC = () => {
                     url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${import.meta.env.VITE_ACCESS_TOKEN_MAP_BOX
                         }`}
                 />
-                {companies && companies.map(company => company.Address && (
+                {companies.map(company => company.Address && (
                     <div key={company.id}>
                         <Marker
                             position={[company.Address.latitude, company.Address.longitude]}>
