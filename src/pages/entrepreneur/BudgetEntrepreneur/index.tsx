@@ -141,7 +141,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                                         <TableData>{proposal.customer && proposal.customer.user.name}</TableData>
                                         <TableData>{proposal.objective}</TableData>
                                         <TableData>{format(new Date(proposal.time), "dd/MM/yyyy")}</TableData>
-                                        <TableData>{proposal.status.replace(/\(.*\)/g, "").trim()}</TableData>
+                                        <TableData>{proposal.status && proposal.status.replace(/\(.*\)/g, "").trim()}</TableData>
                                         <TableData>{format(new Date(proposal.updatedAt), "dd/MM/yyyy")}</TableData>
                                         <TableData>
                                             <div className="flex flex-row gap-2">

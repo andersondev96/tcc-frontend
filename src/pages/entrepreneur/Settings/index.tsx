@@ -27,8 +27,13 @@ export const Settings: React.FC = () => {
     useEffect(() => {
         const fetchEntrepreneurSettings = async () => {
             try {
-                api.get(`/entrepreneurs`).then((response) => {
+                api.get<EntrepreneurSettingsData>(`/entrepreneurs`).then((response) => {
                     if (response.data) {
+                        setQuantityServices(response.data.highlight_services_quantity);
+                        setOnlineBudget(response.data.online_budget);
+                        setOnlineChat(response.data.online_chat);
+                        setEmailNotification(response.data.email_notification);
+
                         setEntrepreneurSettings(response.data);
                     }
                 });
@@ -157,6 +162,7 @@ export const Settings: React.FC = () => {
                                     min={1}
                                     max={5}
                                     defaultValue={entrepreneurSettings.highlight_services_quantity}
+                                    value={quantityServices}
                                     onChange={handleInputNumber}
                                     className="w-16 h-10 p-2 rounded bg-gray-200 border-none font-medium text-sm text-gray-800"
                                 />
@@ -167,6 +173,7 @@ export const Settings: React.FC = () => {
                                     type="checkbox"
                                     id="budget"
                                     defaultChecked={entrepreneurSettings.online_budget}
+                                    checked={onlineBudget}
                                     onChange={handleCheckBox}
                                     className="rounded border-2 border-gray-900"
                                 />
@@ -182,6 +189,7 @@ export const Settings: React.FC = () => {
                                     type="checkbox"
                                     id="chat"
                                     defaultChecked={entrepreneurSettings.online_chat}
+                                    checked={onlineChat}
                                     onChange={handleCheckBox}
                                     className="rounded border-2 border-gray-900"
                                 />
@@ -197,6 +205,7 @@ export const Settings: React.FC = () => {
                                     type="checkbox"
                                     id="email"
                                     defaultChecked={entrepreneurSettings.email_notification}
+                                    checked={emailNotification}
                                     onChange={handleCheckBox}
                                     className="rounded border-2 border-gray-900"
                                 />
