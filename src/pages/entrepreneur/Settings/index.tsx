@@ -1,8 +1,11 @@
 import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
+import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { SideBar } from "../../../components/Sidebar";
 import api from "../../../services/api";
+import { DeleteAccountModal } from "../components/DeleteAccountModal";
 
 interface EntrepreneurSettingsData {
     id: string;
@@ -15,6 +18,7 @@ interface EntrepreneurSettingsData {
 }
 
 export const Settings: React.FC = () => {
+    const navigate = useNavigate();
     const [entrepreneurSettings, setEntrepreneurSettings] = useState<EntrepreneurSettingsData>({} as EntrepreneurSettingsData);
     const [quantityServices, setQuantityServices] = useState(1);
     const [onlineBudget, setOnlineBudget] = useState(false);
@@ -22,7 +26,7 @@ export const Settings: React.FC = () => {
     const [emailNotification, setEmailNotification] = useState(false);
     const [selectImagePreview, setSelectImagePreview] = useState("");
     const [logo, setLogo] = useState(new FormData());
-
+    const [modalDelete, setModalDelete] = useState(false);
 
     useEffect(() => {
         const fetchEntrepreneurSettings = async () => {
@@ -74,6 +78,23 @@ export const Settings: React.FC = () => {
             }
         }, []);
 
+    const handleOpenModalDelete = useCallback(() => {
+        setModalDelete(true);
+    }, []);
+
+    const handleCloseModalDelete = useCallback(() => {
+        setModalDelete(false);
+    }, []);
+
+    const handleDeleteAccount = useCallback(async () => {
+        try {
+            await api.delete('/users');
+            navigate('/login');
+        } catch (err) {
+            toast.error("Ocorreu um erro ao tentar excluir a sua conta, tente novamente!");
+        }
+    }, []);
+
 
     const handleSubmit = useCallback(async (event: FormEvent) => {
         try {
@@ -107,6 +128,18 @@ export const Settings: React.FC = () => {
         entrepreneurSettings.entrepreneur_id,
         toast
     ]);
+
+    const currentStyles = {
+        content: {
+            width: "780px",
+            height: "310px",
+            margin: "auto",
+            marginLeft: "450px",
+            borderRadius: "4px",
+            padding: "0",
+            background: "#FFFFFF",
+        },
+    };
 
     return (
         <div className="flex flex-row">
@@ -224,16 +257,29 @@ export const Settings: React.FC = () => {
                                     Salvar alterações
                                 </span>
                             </button>
-                            <span className="flex flex-row sm:justify-end justify-start py-4">
-                                <a href="" className="font-semibold text-sm text-red-500">
-                                    Excluir conta
-                                </a>
-                            </span>
                         </div>
                     </div>
                 </form>
 
+                <button onClick={handleOpenModalDelete} className="flex flex-row mb-12 sm:mr-24 sm:justify-end justify-start">
+                    <span className="font-semibold text-sm text-red-500">
+                        Excluir conta
+                    </span>
+                </button>
+
             </div>
+
+            <Modal
+                isOpen={modalDelete}
+                onRequestClose={handleCloseModalDelete}
+                style={currentStyles}
+
+            >
+                <DeleteAccountModal
+                    removeAccount={handleDeleteAccount}
+                    onCancel={handleCloseModalDelete}
+                />
+            </Modal>
         </div>
     );
 };
