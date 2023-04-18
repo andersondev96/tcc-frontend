@@ -35,7 +35,7 @@ export const CardFavorites: React.FC<CardFavoritesProps> = (
             }
         } else {
             const service = await api.get(`/services/${id}`);
-            if (service.status === 201) {
+            if (service.status === 200) {
                 if (favorite) {
                     api.patch(`/services/favorites/unfavorite/${id}`).then(
                         () => setFavorite(false)
@@ -43,7 +43,7 @@ export const CardFavorites: React.FC<CardFavoritesProps> = (
                 }
             }
         }
-    }, [setFavorite]);
+    }, [setFavorite, favorite]);
 
     const verifyIsFavorited = useCallback(() => {
         api.get(`users/favorite/${id}`).then((response) => {
