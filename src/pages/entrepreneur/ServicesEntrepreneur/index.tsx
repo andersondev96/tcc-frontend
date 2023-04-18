@@ -120,7 +120,8 @@ export const ServicesEntrepreneur: React.FC = () => {
                     {
                         services.length > 0 && services ? (
                             <>
-                                <p className="font-mono text-sm mt-4">Exibindo {services.length} resultados {name && `para a busca "${name}"`}</p>
+                                <p className="font-mono text-sm mt-4">
+                                    {`Exibindo ${services.length} ${services.length > 1 ? ("resultados") : ("resultado")} ${name && `para a busca "${name}"`}`}</p>
                                 <div className="grid grid-cols-1 sm:grid-cols-5 gap-12 mt-8">
                                     {
                                         services.map(service => (
@@ -134,7 +135,13 @@ export const ServicesEntrepreneur: React.FC = () => {
 
                                 </div>
                             </>
-                        ) : <p className="font-mono text-sm mt-12">Nenhum resultado exibido para a busca "{name}"</p>
+                        ) : (
+                            name ? (
+                                <p className="font-mono text-sm mt-12">Nenhum resultado exibido para a busca "{name}"</p>
+                            ) : (
+                                <p className="font-mono text-sm mt-12">Nenhum resultado a ser exibido "{name}"</p>
+                            )
+                        )
                     }
                 </div>
             </div>

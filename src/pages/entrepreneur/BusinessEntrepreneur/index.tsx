@@ -120,11 +120,13 @@ export const BusinessEntrepreneur: React.FC = () => {
                     <div>
                         <div className="flex flex-row items-center gap-6 sm:gap-12 px-24 py-6 sm:py-12">
 
-                            <img
-                                src={logo && `http://localhost:3333/company_logo/${logo}`}
-                                alt=""
-                                className="w-12 sm:w-16 min-h-12 sm:h-16 object-fill rounded-full"
-                            />
+                            {logo && (
+                                <img
+                                    src={`http://localhost:3333/company_logo/${logo}`}
+                                    alt=""
+                                    className="w-12 sm:w-16 min-h-12 sm:h-16 object-fill rounded-full"
+                                />
+                            )}
 
                             <span className="font-inter font-bold text-lg sm:text-2xl text-gray-800">
                                 {company.name}

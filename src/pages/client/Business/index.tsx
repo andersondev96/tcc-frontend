@@ -6,6 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import { NavBar } from "../../../components/NavBar/NavBar";
 import { useAuth } from '../../../contexts/AuthContext';
 import api from "../../../services/api";
+import formatCEP from '../../../utils/formatCEP';
 import formatTelephone from '../../../utils/formatTelephone';
 import { Assessments } from "../components/Assessments";
 import { AssessmentsForm } from "../components/AssessmentsForm";
@@ -77,7 +78,9 @@ export const Business: React.FC = () => {
 
         api.get<Company>(`companies/${params.id}`)
             .then(response => {
-                setCompany(response.data);
+                const services = [response.data.services.join(", ")];
+                const modifiedCompany = { ...response.data, services };
+                setCompany(modifiedCompany);
                 localStorage.setItem('@web:company_id', response.data.id);
             });
 
@@ -140,12 +143,12 @@ export const Business: React.FC = () => {
                             <Paragraph
                                 title="Endereço"
                                 text={`
-                                    ${company.Address.street && company.Address.street, ' '}  
-                                    ${company.Address.district && company.Address.district, ' '}
-                                    ${company.Address.number && company.Address.number, ' '}
-                                    ${company.Address.cep && company.Address.cep, ' '}
-                                    ${company.Address.city} - 
-                                    ${company.Address.state}`
+                                ${company.Address.street && company.Address.street}  ${" "}
+                                ${company.Address.district && company.Address.district} ${" "}
+                                ${company.Address.number && company.Address.number}
+                                ${company.Address.cep && formatCEP(company.Address.cep)}
+                                ${company.Address.city} -
+                                ${company.Address.state}`
                                 }
                             />
                         )

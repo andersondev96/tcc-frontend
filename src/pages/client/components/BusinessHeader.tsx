@@ -114,7 +114,7 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
                                 : NoImageImg
                         }
                         alt="Coffee"
-                        className="h-[6.25rem] w-[6.25rem] mobile:h-[3.125rem] mobile:w-[3.125rem] object-fill rounded-full"
+                        className="h-12 w-12 sm:h-24 sm:w-24 object-fill rounded-full"
                     />
                 </div>
                 <div className="flex flex-col w-full">
