@@ -109,7 +109,7 @@ export const ServicesEntrepreneur: React.FC = () => {
                 <div className="flex flex-col px-16 py-2 sm:py-6">
                     <div className="flex flex-col gap-4 justify-between sm:flex-row items-start sm:items-center">
                         <Link to="/admin/services/create">
-                            <button className="w-36 h-10 bg-indigo-400 rounded font-semibold text-sm text-white hover:brightness-90 transition-opacity duration-300">
+                            <button className="w-36 h-10 bg-blue-600 rounded font-semibold text-sm text-white hover:brightness-90 transition-opacity duration-300">
                                 Adicionar serviço
                             </button>
                         </Link>
@@ -122,7 +122,7 @@ export const ServicesEntrepreneur: React.FC = () => {
                             <>
                                 <p className="font-mono text-sm mt-4">
                                     {`Exibindo ${services.length} ${services.length > 1 ? ("resultados") : ("resultado")} ${name && `para a busca "${name}"`}`}</p>
-                                <div className="grid grid-cols-1 sm:grid-cols-5 gap-12 mt-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-5 justify-items-center gap-4 sm:gap-8 mt-8">
                                     {
                                         services.map(service => (
                                             <ServiceCard

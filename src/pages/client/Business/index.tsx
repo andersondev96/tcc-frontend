@@ -145,7 +145,7 @@ export const Business: React.FC = () => {
                                 text={`
                                 ${company.Address.street && company.Address.street}  ${" "}
                                 ${company.Address.district && company.Address.district} ${" "}
-                                ${company.Address.number && company.Address.number}
+                                ${company.Address.number ? company.Address.number : ''}
                                 ${company.Address.cep && formatCEP(company.Address.cep)}
                                 ${company.Address.city} -
                                 ${company.Address.state}`
