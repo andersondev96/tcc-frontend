@@ -37,6 +37,17 @@ export const Budget: React.FC = () => {
     const navigate = useNavigate();
     const [customer, setCustomer] = useState<Customer>({} as Customer);
     const [proposals, setProposals] = useState<Proposal[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 1;
+
+    const handlePageChange = useCallback((newPage: number) => {
+        setCurrentPage(newPage);
+    }, []);
+
+    const inicialIndice = (currentPage - 1) * itemsPerPage;
+    const finalIndice = inicialIndice * itemsPerPage;
+    const data = proposals.slice(inicialIndice, finalIndice);
+
 
     useEffect(() => {
         api.get(`/customers/my-customer`).then(response => setCustomer(response.data));
@@ -49,6 +60,7 @@ export const Budget: React.FC = () => {
     const handleSearch = useCallback(() => {
 
     }, []);
+
     return (
         <div className="flex flex-col">
             <NavBar />
@@ -98,7 +110,12 @@ export const Budget: React.FC = () => {
                                 </TableBody>
                             </Table>
                         </div>
-                        <PaginationTable results={proposals.length} />
+                        <PaginationTable
+                            tot_results={data.length}
+                            items_per_page={itemsPerPage}
+                            current_page={currentPage}
+                            onPageChange={handlePageChange}
+                        />
                     </div>
                 </div>
             </div>
