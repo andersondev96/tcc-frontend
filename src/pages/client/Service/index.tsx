@@ -40,70 +40,81 @@ export const Service: React.FC = () => {
     const [servicesByCategory, setServicesByCategory] = useState<CategoryServiceData>({});
 
     const loadCompany = useCallback(async () => {
-        await api.get<CompanyData>(`/companies/${company_id}`)
-            .then(response => setCompany(response.data))
-            .catch(error => console.log(error));
+        if (company_id) {
+            await api.get<CompanyData>(`/companies/${company_id}`)
+                .then(response => setCompany(response.data))
+                .catch(error => console.log(error));
+        }
     }, [company_id]);
 
     const searchService = useCallback(
         async (event: ChangeEvent<HTMLInputElement>) => {
-            const name = event.target.value;
+            if (company_id) {
+                const name = event.target.value;
 
-            if (!name) {
-                api.get<ServiceData[]>(`/services/company/${company_id}`)
-                    .then(response => setServices(response.data));
-            } else {
-                api.get<ServiceData[]>(`/services/company/${company_id}`, {
-                    params: {
-                        name
-                    }
-                })
-                    .then(response => setServices(response.data));
+                if (!name) {
+                    api.get<ServiceData[]>(`/services/company/${company_id}`)
+                        .then(response => setServices(response.data));
+                } else {
+                    api.get<ServiceData[]>(`/services/company/${company_id}`, {
+                        params: {
+                            name
+                        }
+                    })
+                        .then(response => setServices(response.data));
+                }
             }
         }, [company_id, services]);
 
 
     const loadingHighlightService = useCallback(async () => {
-        await api.get<ServiceData[]>(`/services/company/${company_id}`, {
-            params: {
-                highlight_service: true
-            }
-        })
-            .then(response => setHightLightServices(response.data))
-            .catch(error => console.log(error));
-    }, []);
+        if (company_id) {
+            await api.get<ServiceData[]>(`/services/company/${company_id}`, {
+                params: {
+                    highlight_service: true
+                }
+            })
+                .then(response => setHightLightServices(response.data))
+                .catch(error => console.log(error));
+        }
+    }, [company_id]);
 
     const loadingCategories = useCallback(async () => {
-        api.get(`/categories/list-subcategories/${company.category_id}`)
-            .then(response => setCategories(response.data))
-            .catch(error => console.log(error));
+        if (company.category_id) {
+            api.get(`/categories/list-subcategories/${company.category_id}`)
+                .then(response => setCategories(response.data))
+                .catch(error => console.log(error));
+        }
     }, [company.category_id]);
 
     useEffect(() => {
-        api.get<ServiceData[]>(`/services/company/${company_id}`)
-            .then(response => setServices(response.data))
-            .catch(error => console.log(error));
+        if (company_id) {
+            api.get<ServiceData[]>(`/services/company/${company_id}`)
+                .then(response => setServices(response.data))
+                .catch(error => console.log(error));
 
-        loadCompany();
-        loadingCategories();
-        loadingHighlightService();
+            loadCompany();
+            loadingCategories();
+            loadingHighlightService();
+        }
     }, [company_id, loadCompany, loadingCategories, loadingHighlightService]);
 
     useEffect(() => {
-        const groupServices = services.reduce<CategoryServiceData>(
-            (acc, service) => {
-                const category = service.category;
-                if (acc[category]) {
-                    acc[category].push(service);
-                } else {
-                    acc[category] = [service];
-                }
-                console.log(acc);
-                return acc;
-            },
-            {}
-        );
-        setServicesByCategory(groupServices);
+        if (services) {
+            const groupServices = services.reduce<CategoryServiceData>(
+                (acc, service) => {
+                    const category = service.category;
+                    if (acc[category]) {
+                        acc[category].push(service);
+                    } else {
+                        acc[category] = [service];
+                    }
+                    return acc;
+                },
+                {}
+            );
+            setServicesByCategory(groupServices);
+        }
     }, [services]);
 
     return (
@@ -121,7 +132,7 @@ export const Service: React.FC = () => {
                             <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {
                                     hightLightServices.map(hightLightService => (
-                                        <Card service={hightLightService}
+                                        <Card key={hightLightService.id} service={hightLightService}
                                         />
                                     ))
                                 }
@@ -134,7 +145,7 @@ export const Service: React.FC = () => {
                     categories ? (
                         categories.map(category => (
                             servicesByCategory[category] && (
-                                <div key={category} className="mt-8 flex flex-col font-montserrat font-semibold text-xl">
+                                <div className="mt-8 flex flex-col font-montserrat font-semibold text-xl" key={category}>
                                     <span>{category}</span>
                                     <p className="font-light text-sm">{servicesByCategory[category].length} itens</p>
                                     <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
