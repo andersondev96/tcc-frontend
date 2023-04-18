@@ -72,13 +72,18 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
     const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
 
     useEffect(() => {
-        api.get<Category>(`/categories/${company.category_id}`)
-            .then((response) => setCategory(response.data))
-            .catch(err => console.log(err));
+        if (company.category_id) {
+            api.get<Category>(`/categories/${company.category_id}`)
+                .then((response) => setCategory(response.data))
+                .catch(err => console.log(err));
 
-        api.get(`/entrepreneurs/${company.id}`)
-            .then((response) => setSettings(response.data))
-            .catch(err => console.log(err));
+        }
+
+        if (company.id) {
+            api.get(`/entrepreneurs/${company.id}`)
+                .then((response) => setSettings(response.data))
+                .catch(err => console.log(err));
+        }
 
     }, [company.category_id, company.id]);
 

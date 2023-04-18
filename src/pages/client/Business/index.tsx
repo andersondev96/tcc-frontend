@@ -1,4 +1,3 @@
-import { getDay, isWithinInterval } from 'date-fns';
 import { BusinessHeader } from '../components/BusinessHeader';
 import { Paragraph } from "../components/Paragraph";
 
@@ -88,42 +87,27 @@ export const Business: React.FC = () => {
             })
     }, [params.id]);
 
-    const verifyCompanyIsOpen = useCallback(() => {
-        const today = getDay(new Date());
-        const schedule = company.Schedule && company.Schedule.find(s => s.weekday === weekdays[today]);
-
-        if (!schedule) {
-            return false;
-        }
-
-        const openingTime = new Date(`1970-01-01 ${schedule.opening_time}`);
-        const closingTime = new Date(`1970-01-01 ${schedule.closing_time}`);
-        const now = new Date();
-
-        if (isWithinInterval(now, { start: openingTime, end: closingTime })) {
-            return true;
-        } else {
-            return false;
-        }
-    }, []);
-
     const verifyCompanyIsFavorited = useCallback(() => {
-        api.get(`users/favorite/${company.id}`).then((response) => {
-            if (response.data.length > 0) {
-                setCompanyFavorited(true);
-            }
-        })
+        if (company.id) {
+            api.get(`users/favorite/${company.id}`).then((response) => {
+                if (response.data.length > 0) {
+                    setCompanyFavorited(true);
+                }
+            })
+        }
     }, [company.id, setCompanyFavorited]);
 
     const handleFavoriteCompany = useCallback(async () => {
-        if (!companyFavorited) {
-            await api.patch(`/companies/favorites/${company.id}`);
-            setCompanyFavorited(true);
-        } else {
-            await api.patch(`/companies/favorites/unfavorite/${company.id}`);
-            setCompanyFavorited(false);
+        if (company.id) {
+            if (!companyFavorited) {
+                await api.patch(`/companies/favorites/${company.id}`);
+                setCompanyFavorited(true);
+            } else {
+                await api.patch(`/companies/favorites/unfavorite/${company.id}`);
+                setCompanyFavorited(false);
+            }
         }
-    }, [company, setCompanyFavorited, companyFavorited]);
+    }, [company.id, setCompanyFavorited, companyFavorited]);
 
     const handleAddAssessments = useCallback((newAssessment: Assessment) => {
         setAssessments((prevAssessments) => [...prevAssessments, newAssessment]);
