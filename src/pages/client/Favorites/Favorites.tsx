@@ -15,7 +15,6 @@ interface IService {
     id: string;
     name: string;
     image_url: string;
-    company: string;
     favorites: number;
 }
 interface IFavoritesProps {
@@ -29,6 +28,7 @@ export const Favorites: React.FC = () => {
 
     useEffect(() => {
         api.get(`/users/favorites`).then((response) => {
+            console.log(response.data);
             const { companies, services } = response.data;
             setFavorites({ companies, services });
         })
@@ -51,7 +51,7 @@ export const Favorites: React.FC = () => {
                         </div>
                         <div className="flex gap-7 flex-col sm:flex-row">
                             {
-                                favorites.companies.map((company) => company && (
+                                favorites.companies.length > 0 ? favorites.companies.map((company) => company && (
 
                                     <CardFavorites
                                         key={company.id}
@@ -60,7 +60,9 @@ export const Favorites: React.FC = () => {
                                         image={company.image}
                                         description={company.name}
                                     />
-                                ))
+                                )) : (
+                                    <span className="font-light text-gray-800">Nenhum negócio adicionado aos favoritos</span>
+                                )
                             }
                         </div>
                     </div>
@@ -71,7 +73,7 @@ export const Favorites: React.FC = () => {
                         </div>
                         <div className="flex gap-7 flex-col sm:flex-row">
                             {
-                                favorites.services.map((service) => service && (
+                                favorites.services.length > 0 ? favorites.services.map((service) => service && (
                                     <>
                                         <CardFavorites
                                             key={service.id}
@@ -79,10 +81,11 @@ export const Favorites: React.FC = () => {
                                             type="service"
                                             image={`http://localhost:3333/service/${service.image_url}`}
                                             description={service.name}
-                                            businessName={service.company}
                                         />
                                     </>
-                                ))
+                                )) : (
+                                    <span className="font-light text-gray-800">Nenhum serviço adicionado aos favoritos</span>
+                                )
                             }
                         </div>
                     </div>
