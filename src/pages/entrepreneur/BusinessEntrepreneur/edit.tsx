@@ -252,7 +252,7 @@ export const BusinessEdit: React.FC = () => {
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
-                    cnpj: Yup.string().min(11, 'O campo deve possuir 11 caracteres').required('CNPJ obrigatório'),
+                    // cnpj: Yup.string().min(11, 'O campo deve possuir 11 caracteres').nullable().optional(),
                     category_id: Yup.string().required('Categoria obrigatório'),
                 });
 

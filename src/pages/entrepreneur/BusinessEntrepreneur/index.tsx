@@ -143,12 +143,14 @@ export const BusinessEntrepreneur: React.FC = () => {
                                 </p>
                             </div>
 
-                            <div className="flex flex-col gap-1">
-                                <span className="font-inter font-medium">
-                                    CNPJ
-                                </span>
-                                <p className="font-inter text-sm text-justify">{formatCPFandCNPJ(company.cnpj)}</p>
-                            </div>
+                            {company.cnpj && (
+                                <div className="flex flex-col gap-1">
+                                    <span className="font-inter font-medium">
+                                        CNPJ
+                                    </span>
+                                    <p className="font-inter text-sm text-justify">{formatCPFandCNPJ(company.cnpj)}</p>
+                                </div>
+                            )}
 
                             <div className="flex flex-col gap-1">
                                 <span className="font-inter font-medium">
@@ -243,8 +245,8 @@ export const BusinessEntrepreneur: React.FC = () => {
                                             {company.Address.street && company.Address.street}  {" "}
                                             {company.Address.district && company.Address.district} {" "}
                                             {company.Address.number && company.Address.number} {" "}
-                                            {company.Address.cep && formatCEP(company.Address.cep)}
-                                            {company.Address.city} -
+                                            {company.Address.cep && formatCEP(company.Address.cep)} {" "}
+                                            {company.Address.city} - {" "}
                                             {company.Address.state}
                                         </p>
                                     </div>
