@@ -242,7 +242,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                                         <p className="font-inter text-sm text-justify">
                                             {company.Address.street && company.Address.street}  {" "}
                                             {company.Address.district && company.Address.district} {" "}
-                                            {company.Address.number && company.Address.number}
+                                            {company.Address.number && company.Address.number} {" "}
                                             {company.Address.cep && formatCEP(company.Address.cep)}
                                             {company.Address.city} -
                                             {company.Address.state}

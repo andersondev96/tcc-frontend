@@ -116,6 +116,7 @@ export const BusinessEdit: React.FC = () => {
     const [inputValue, setInputValue] = useState("");
     const [address, setAddress] = useState<Address>({});
     const [previewImages, setPreviewImages] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [scheduleItems, setScheduleItems] = useState([
         {
             weekday: '',
@@ -149,6 +150,7 @@ export const BusinessEdit: React.FC = () => {
     useEffect(() => {
         api.get<CompanyData>(`companies/${params.id}`)
             .then(response => {
+                setHasPhysicalLocation(response.data.physical_localization);
                 setCompany(response.data);
             })
             .catch(error => console.log("Ocorreu um erro ao realizar a rerização", error));
@@ -157,7 +159,7 @@ export const BusinessEdit: React.FC = () => {
         loadTags();
         loadImages();
 
-    }, [params.id]);
+    }, [params.id, setHasPhysicalLocation]);
 
     useEffect(() => {
         if (cep.length === 8) {
@@ -168,13 +170,13 @@ export const BusinessEdit: React.FC = () => {
         }
     }, [cep]);
 
-    useEffect(() => {
-        company.physical_localization ? setHasPhysicalLocation(true) : setHasPhysicalLocation(false);
-    }, [company.physical_localization]);
+    function classNames(...classes: any) {
+        return classes.filter(Boolean).join(' ')
+    }
 
     const setPhysicalLocation = useCallback(() => {
         setHasPhysicalLocation(!hasPhysicalLocation);
-    }, []);
+    }, [hasPhysicalLocation]);
 
     function addNewScheduleItem() {
         setScheduleItems([
@@ -246,6 +248,7 @@ export const BusinessEdit: React.FC = () => {
         async (data: UpdateCompanyFormData) => {
             try {
                 formRef.current?.setErrors({});
+                setIsLoading(true);
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
@@ -268,6 +271,11 @@ export const BusinessEdit: React.FC = () => {
                     website: data.contact.website,
                     physical_localization: hasPhysicalLocation,
                     cep: hasPhysicalLocation ? data.Address.cep : "",
+                    street: data.Address.street,
+                    district: data.Address.district,
+                    number: Number(data.Address.number),
+                    state: data.Address.state,
+                    city: data.Address.city,
                 }
 
                 const response = await api.put(`/companies/${params.id}`, companyData);
@@ -291,13 +299,16 @@ export const BusinessEdit: React.FC = () => {
                     const errors = getValidationErrors(err);
 
                     formRef.current?.setErrors(errors);
+                    setIsLoading(false);
 
                     return;
                 }
 
                 toast.error("Erro ao cadastrar empresa");
+            } finally {
+                setIsLoading(false);
             }
-        }, []);
+        }, [hasPhysicalLocation]);
 
     return (
         <div className="flex flex-row">
@@ -517,7 +528,7 @@ export const BusinessEdit: React.FC = () => {
                                     </div>
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="street"
+                                            name="Address.street"
                                             label="Endereço"
                                             defaultValue={address.localidade || ''}
                                             placeholder="Digite a rua"
@@ -526,7 +537,7 @@ export const BusinessEdit: React.FC = () => {
                                     </div>
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="district"
+                                            name="Address.district"
                                             label="Bairro"
                                             defaultValue={address.bairro || ''}
                                             placeholder="Digite o bairro"
@@ -546,7 +557,7 @@ export const BusinessEdit: React.FC = () => {
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <div className="relative">
                                             <Select
-                                                name="state"
+                                                name="Address.state"
                                                 label="Estado"
                                                 value={address.uf || selectedState}
                                                 onChange={(e) => setSelectedState(e.target.value)}
@@ -586,7 +597,7 @@ export const BusinessEdit: React.FC = () => {
                                     </div>
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="city"
+                                            name="Address.city"
                                             label="Cidade"
                                             placeholder="Digite a cidade"
                                             defaultValue={address.localidade || ''}
@@ -623,8 +634,14 @@ export const BusinessEdit: React.FC = () => {
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                                <button type="submit" className="bg-sky-500 text-white active:bg-sky-600 font-bold uppercase text-xs px-6 py-3 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
-                                    Salvar
+                                <button
+                                    type="submit"
+                                    className={classNames(
+                                        isLoading ?
+                                            "bg-blue-200 cursor-not-allowed"
+                                            : "bg-sky-500 text-white active:bg-sky-600 hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150",
+                                        "font-bold uppercase text-xs px-6 py-3 rounded shadow mr-1 mb-1")}>
+                                    {isLoading ? "Salvando..." : "Salvar"}
                                 </button>
                             </div>
                         </div>
