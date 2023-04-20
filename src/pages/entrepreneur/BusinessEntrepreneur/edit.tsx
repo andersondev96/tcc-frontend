@@ -22,6 +22,7 @@ interface IScheduleItem {
 }
 
 interface Address {
+    cep?: string;
     logradouro?: string;
     bairro?: string;
     localidade?: string;
@@ -126,82 +127,78 @@ export const BusinessEdit: React.FC = () => {
         }
     ]);
 
-    const loadCategories = useCallback(async () => {
-        api.get<ICategories[]>("/categories")
-            .then(response => setCategories(response.data))
-            .catch(error => console.log("Ocorreu um erro ao realizar requição", error)
-            );
-    }, []);
-
-    const loadImages = useCallback(() => {
-        const images = company.ImageCompany?.map((image) => {
-            return image.image_url
-        });
-
-        if (images) {
-            setPreviewImages(images);
-        }
-    }, [previewImages]);
-
-    const loadTags = useCallback(async () => {
-        company.services && setTags(company.services);
-    }, [company.services]);
-
     useEffect(() => {
-        api.get<CompanyData>(`companies/${params.id}`)
-            .then(response => {
+        async function fetchCompany() {
+            try {
+                const response = await api.get<CompanyData>(`companies/${params.id}`);
                 setHasPhysicalLocation(response.data.physical_localization);
                 setCompany(response.data);
-            })
-            .catch(error => console.log("Ocorreu um erro ao realizar a rerização", error));
+                setAddress({
+                    cep: response.data.Address.cep,
+                    logradouro: response.data.Address.street,
+                    bairro: response.data.Address.district,
+                    uf: response.data.Address.state,
+                    localidade: response.data.Address.city
+                });
+            } catch (err) {
+                console.log("Ocorreu um erro ao realizar a requisição", err);
+            }
+        }
 
-        loadCategories();
-        loadTags();
-        loadImages();
-
-    }, [params.id, setHasPhysicalLocation]);
+        fetchCompany();
+    }, [params.id, setHasPhysicalLocation, setCompany, setAddress]);
 
     useEffect(() => {
-        if (cep.length === 8) {
-            fetch(`https://viacep.com.br/ws/${cep}/json`)
-                .then(response => response.json())
-                .then(data => setAddress(data as Address))
-                .catch(error => console.error(error))
+        async function fetchCategories() {
+            try {
+                const response = await api.get<ICategories[]>("/categories");
+                setCategories(response.data);
+            } catch (err) {
+                console.log("Ocorreu um erro ao realizar a requisição: ", err);
+            }
         }
-    }, [cep]);
 
-    function classNames(...classes: any) {
-        return classes.filter(Boolean).join(' ')
-    }
+        fetchCategories();
+    }, [setCategories]);
 
-    const setPhysicalLocation = useCallback(() => {
+    useEffect(() => {
+        async function fetchTags() {
+            try {
+                if (!company.services) {
+                    return;
+                }
+
+                setTags(company.services);
+            } catch (err) {
+                console.log("Ocorreu um erro ao realizar a requisição: ", err);
+            }
+        }
+
+        fetchTags();
+    }, [company.services, setTags]);
+
+    useEffect(() => {
+        try {
+            if (!company || !company.ImageCompany) {
+                return;
+            }
+
+            const images = company.ImageCompany.map((image) => image.image_url);
+
+            setPreviewImages(images);
+
+        } catch (err) {
+            console.log("Ocorreu um erro ao realizar a requisição: ", err);
+        }
+    }, [company, setPreviewImages])
+
+    const tooglePhysicalLocation = useCallback(() => {
         setHasPhysicalLocation(!hasPhysicalLocation);
-    }, [hasPhysicalLocation]);
 
-    function addNewScheduleItem() {
-        setScheduleItems([
-            ...scheduleItems,
-            {
-                weekday: '',
-                opening_time: '',
-                closing_time: '',
-                lunch_time: '',
-            }
-        ])
-    }
-
-
-    function setScheduleItemValue(position: number, field: string, value: string) {
-        const updateScheduleItems = scheduleItems.map((scheduleItem, index) => {
-            if (index === position) {
-                return { ...scheduleItem, [field]: value };
-            }
-
-            return scheduleItem;
-        });
-
-        setScheduleItems(updateScheduleItems);
-    }
+        if (!hasPhysicalLocation) {
+            setAddress({});
+        }
+    }, [setHasPhysicalLocation, hasPhysicalLocation, setAddress]);
 
     const handleSelectedImages = useCallback(
         (e: ChangeEvent<HTMLInputElement>) => {
@@ -219,7 +216,7 @@ export const BusinessEdit: React.FC = () => {
 
                 setPreviewImages(selectedPreviewImages);
             }
-        }, [imagesCompany, setPreviewImages]);
+        }, [imagesCompany, previewImages, setPreviewImages]);
 
     const handleInputChangeTag = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
@@ -243,7 +240,6 @@ export const BusinessEdit: React.FC = () => {
         }
     }, []);
 
-
     const handleSubmit = useCallback(
         async (data: UpdateCompanyFormData) => {
             try {
@@ -252,7 +248,7 @@ export const BusinessEdit: React.FC = () => {
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
-                    // cnpj: Yup.string().min(11, 'O campo deve possuir 11 caracteres').nullable().optional(),
+                    //cnpj: Yup.string().min(11, 'O campo deve possuir 11 caracteres').nullable().optional(),
                     category_id: Yup.string().required('Categoria obrigatório'),
                 });
 
@@ -270,12 +266,14 @@ export const BusinessEdit: React.FC = () => {
                     email: data.contact.email,
                     website: data.contact.website,
                     physical_localization: hasPhysicalLocation,
-                    cep: hasPhysicalLocation ? data.Address.cep : "",
-                    street: data.Address.street,
-                    district: data.Address.district,
-                    number: Number(data.Address.number),
-                    state: data.Address.state,
-                    city: data.Address.city,
+                    ...(hasPhysicalLocation && {
+                        cep: data.Address.cep,
+                        street: data.Address.street,
+                        district: data.Address.district,
+                        number: Number(data.Address.number),
+                        state: data.Address.state,
+                        city: data.Address.city,
+                    })
                 }
 
                 const response = await api.put(`/companies/${params.id}`, companyData);
@@ -309,6 +307,34 @@ export const BusinessEdit: React.FC = () => {
                 setIsLoading(false);
             }
         }, [hasPhysicalLocation]);
+
+    function classNames(...classes: any) {
+        return classes.filter(Boolean).join(' ')
+    }
+
+    function addNewScheduleItem() {
+        setScheduleItems([
+            ...scheduleItems,
+            {
+                weekday: '',
+                opening_time: '',
+                closing_time: '',
+                lunch_time: '',
+            }
+        ])
+    }
+
+    function setScheduleItemValue(position: number, field: string, value: string) {
+        const updateScheduleItems = scheduleItems.map((scheduleItem, index) => {
+            if (index === position) {
+                return { ...scheduleItem, [field]: value };
+            }
+
+            return scheduleItem;
+        });
+
+        setScheduleItems(updateScheduleItems);
+    }
 
     return (
         <div className="flex flex-row">
@@ -505,7 +531,7 @@ export const BusinessEdit: React.FC = () => {
                                     className="h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
                                     type="checkbox"
                                     defaultChecked={company.physical_localization}
-                                    onChange={setPhysicalLocation}
+                                    onChange={tooglePhysicalLocation}
                                 />
                                 <label
                                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-1"
@@ -530,7 +556,6 @@ export const BusinessEdit: React.FC = () => {
                                         <Input
                                             name="Address.street"
                                             label="Endereço"
-                                            defaultValue={address.localidade || ''}
                                             placeholder="Digite a rua"
                                         />
 
@@ -539,7 +564,6 @@ export const BusinessEdit: React.FC = () => {
                                         <Input
                                             name="Address.district"
                                             label="Bairro"
-                                            defaultValue={address.bairro || ''}
                                             placeholder="Digite o bairro"
                                         />
 
@@ -559,7 +583,6 @@ export const BusinessEdit: React.FC = () => {
                                             <Select
                                                 name="Address.state"
                                                 label="Estado"
-                                                value={address.uf || selectedState}
                                                 onChange={(e) => setSelectedState(e.target.value)}
                                                 options={[
                                                     { value: 'AC', label: 'Acre' },
@@ -600,7 +623,6 @@ export const BusinessEdit: React.FC = () => {
                                             name="Address.city"
                                             label="Cidade"
                                             placeholder="Digite a cidade"
-                                            defaultValue={address.localidade || ''}
                                         />
                                     </div>
                                 </div>
