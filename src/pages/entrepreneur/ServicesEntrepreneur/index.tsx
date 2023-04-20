@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { BiHelpCircle } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
@@ -61,6 +62,7 @@ export const ServicesEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<CompanyData>({} as CompanyData);
     const [services, setServices] = useState<ServiceData[]>([]);
     const [name, setName] = useState("");
+    const [showInfoUploadXLSX, setShowInfoUploadXLSX] = useState(false);
 
     useEffect(() => {
         api
@@ -114,6 +116,28 @@ export const ServicesEntrepreneur: React.FC = () => {
                             </button>
                         </Link>
                         <Search onChange={searchService} />
+                    </div>
+                    <div className="flex flex-row">
+                        <span className="font-light gray-600">ou adicionar lista com serviços</span>
+
+                        <div className="flex flex-col">
+                            <BiHelpCircle
+                                onClick={() => setShowInfoUploadXLSX(!showInfoUploadXLSX)}
+                                className="text-blue-800 ml-2 cursor-pointer" size={18} />
+                            {
+                                showInfoUploadXLSX && (
+                                    <div className="flex flex-col mt-2">
+                                        <span className="text-sm">Para adicionar uma lista comn vários serviços, faça download desse .csv e depois faça upload do arquivo aqui na página</span>
+                                        <a
+                                            href="../../../assets/services.xlsx"
+                                            target="_blank"
+                                            className="text-sm text-gray-800 hover:underline hover:cursor-pointer hover:text-blue-800">
+                                            Template lista de serviços
+                                        </a>
+                                    </div>
+                                )
+                            }
+                        </div>
                     </div>
 
 
