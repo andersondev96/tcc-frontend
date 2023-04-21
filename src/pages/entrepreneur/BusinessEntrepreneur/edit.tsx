@@ -248,16 +248,35 @@ export const BusinessEdit: React.FC = () => {
         }
     }, [addTag, inputValue, removeTag, tags.length]);
 
+    const cnpjValidation = useCallback((isRequired: boolean) => {
+        if (isRequired) {
+            return Yup.number()
+                .required('CNPJ obrigatório')
+                .integer()
+                .positive()
+                .typeError("Digite apenas números")
+                .test('len',
+                    'O campo deve possuir 14 digitos',
+                    val => val ? val.toString().length === 14 : true
+                )
+        } else {
+            return Yup.string().nullable().notRequired();
+        }
+    }, []);
+
     const handleSubmit = useCallback(
         async (data: UpdateCompanyFormData) => {
             try {
                 formRef.current?.setErrors({});
                 setIsLoading(true);
 
+                const hasCNPJ = Boolean(data.cnpj && data.cnpj.length > 0);
+
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
-                    //cnpj: Yup.string().min(11, 'O campo deve possuir 11 caracteres').nullable().optional(),
                     category_id: Yup.string().required('Categoria obrigatório'),
+                    cnpj: cnpjValidation(hasCNPJ),
+
                 });
 
                 await schema.validate(data, {

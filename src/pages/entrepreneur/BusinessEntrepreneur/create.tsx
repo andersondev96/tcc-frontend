@@ -170,22 +170,32 @@ export const BusinessCreate: React.FC = () => {
             }
         }, [imagesCompany, setPreviewImages]);
 
+    const cnpjValidation = useCallback((isRequired: boolean) => {
+        if (isRequired) {
+            return Yup.number()
+                .required('CNPJ obrigatório')
+                .integer()
+                .positive()
+                .typeError("Digite apenas números")
+                .test('len',
+                    'O campo deve possuir 14 digitos',
+                    val => val ? val.toString().length === 14 : true
+                )
+        } else {
+            return Yup.string().nullable().notRequired();
+        }
+    }, []);
+
     const handleSubmit = useCallback(
         async (data: CreateBusinessEntrepreneurFormData) => {
             try {
                 formRef.current?.setErrors({});
 
+                const hasCNPJ = Boolean(data.cnpj && data.cnpj.length > 0);
+
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
-                    cnpj: Yup.number()
-                        .required('CNPJ obrigatório')
-                        .integer()
-                        .positive()
-                        .typeError("Digite apenas números")
-                        .test('len',
-                            'O campo deve possuir 14 digitos',
-                            val => val ? val.toString().length === 14 : true
-                        ),
+                    cnpj: cnpjValidation(hasCNPJ),
                     category_id: Yup.string().required('Categoria obrigatório'),
                     telephone: Yup.number()
                         .required('Telefone obrigatório')
