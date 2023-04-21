@@ -167,6 +167,8 @@ export const EditServicesEntrepreneur: React.FC = () => {
                                     name="description"
                                     label="Descrição do produto ou serviço"
                                     placeholder="Adicione detalhes sobre o seu produto ou serviço"
+                                    idTooltip="tooltip-description-service"
+                                    tooltipText="Descreva as especificações de seu serviço, fornecendo detalhes para o cliente"
                                 />
                             </div>
                         </div>
@@ -176,6 +178,8 @@ export const EditServicesEntrepreneur: React.FC = () => {
                                 <Select
                                     name="category"
                                     label="Categoria do produto/serviço"
+                                    idTooltip="tooltip-category-service"
+                                    tooltipText="Escolha a categoria que seu serviço se encaixa"
                                     value={service.category}
                                     options={subcategories.map(subcategory => ({
                                         value: subcategory, label: subcategory
