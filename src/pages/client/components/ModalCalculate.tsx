@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Tooltip } from "../../../components/Tooltip";
 import api from "../../../services/api";
 
 interface ModalCalculateProps {
@@ -70,15 +71,21 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
                                 name="time"
                                 type="date"
                                 onChange={handleInputChange}
-                                className="h-10 p-2 bg-gray-300 rounded border-none font-montserrat font-light text-sm"
+                                className="h-10 p-2 bg-gray-300 rounded border-none font-montserrat font-light text-sm mt-2"
                             />
 
                         </div>
 
                         <div className="flex flex-col w-3/4 gap-2">
-                            <label htmlFor="objective" className="font-montserrat font-semibold text-sm text-indigo-600 outline-0 focus:border-indigo-600">
-                                Objetivo do serviço
-                            </label>
+                            <div className="flex flex-row gap-1 items-center">
+                                <label htmlFor="objective" className="font-montserrat font-semibold text-sm text-indigo-600 outline-0 focus:border-indigo-600 mb-2">
+                                    Objetivo do serviço
+                                </label>
+                                <Tooltip
+                                    idElement="tooltip-objective"
+                                    text="Escreva de forma simples o objetivo do serviço"
+                                />
+                            </div>
                             <input
                                 name="objective"
                                 onChange={handleInputChange}
@@ -89,9 +96,15 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
                     </div>
 
                     <div className="flex flex-col mt-4 gap-2">
-                        <label htmlFor="description" className="font-montserrat font-semibold text-sm text-indigo-600 outline-0 focus:border-indigo-600">
-                            Informe detalhadamente sobre o serviço
-                        </label>
+                        <div className="flex flex-row gap-1 items-center">
+                            <label htmlFor="description" className="font-montserrat font-semibold text-sm text-indigo-600 outline-0 focus:border-indigo-600 mb-2">
+                                Informe detalhadamente sobre o serviço
+                            </label>
+                            <Tooltip
+                                idElement="tooltip-details"
+                                text="Forneça todos os detalhes necessários para o empreendedor elaborar o orçamento"
+                            />
+                        </div>
                         <textarea
                             name="description"
                             placeholder="Escreva o objetivo do serviço"

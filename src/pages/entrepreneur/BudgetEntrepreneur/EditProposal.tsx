@@ -150,6 +150,8 @@ export const EditProposal: React.FC = () => {
                                 name="description"
                                 label="Descrição sobre a proposta oferecida"
                                 placeholder="Escreva aqui a descrição da proposta oferecida"
+                                idTooltip="tooltip-description-proposal"
+                                tooltipText="Forneça as principais informações sobre a proposta oferecida ao cliente"
                             />
                         </div>
                         <div className="flex flex-col gap-2">
