@@ -425,6 +425,7 @@ export const BusinessEdit: React.FC = () => {
                                     name="cnpj"
                                     label="CNPJ"
                                     placeholder="XX. XXX. XXX/0001-XX"
+                                    tooltipText="O CNPJ não é obrigatório e só será visível para o empreendedor"
                                 />
                             </div>
                         </div>
