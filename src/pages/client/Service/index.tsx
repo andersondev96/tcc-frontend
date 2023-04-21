@@ -21,6 +21,7 @@ interface ServiceData {
     image_url: string;
     price: number;
     company_id: string;
+    highlight_service: boolean;
 }
 
 interface Category {
@@ -68,14 +69,18 @@ export const Service: React.FC = () => {
 
 
     const loadingHighlightService = useCallback(async () => {
-        if (company_id) {
-            await api.get<ServiceData[]>(`/services/company/${company_id}`, {
-                params: {
-                    highlight_service: true
-                }
-            })
-                .then(response => setHightLightServices(response.data))
-                .catch(error => console.log(error));
+        try {
+            if (company_id && services) {
+                await api.get<ServiceData[]>(`/services/company/${company_id}`).then(response => {
+                    if (response.data) {
+                        const highlightServices = response.data.filter(service => service.highlight_service);
+                        setHightLightServices(highlightServices);
+                    }
+                });
+            }
+
+        } catch (err) {
+            console.log(err);
         }
     }, [company_id]);
 
@@ -97,7 +102,7 @@ export const Service: React.FC = () => {
             loadingCategories();
             loadingHighlightService();
         }
-    }, [company_id, loadCompany, loadingCategories, loadingHighlightService]);
+    }, [company_id, loadCompany, loadingCategories, loadingHighlightService, setServices]);
 
     useEffect(() => {
         if (services) {
@@ -132,8 +137,7 @@ export const Service: React.FC = () => {
                             <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {
                                     hightLightServices.map(hightLightService => (
-                                        <Card key={hightLightService.id} service={hightLightService}
-                                        />
+                                        <Card key={hightLightService.id} service={hightLightService} highlight />
                                     ))
                                 }
                             </div>
