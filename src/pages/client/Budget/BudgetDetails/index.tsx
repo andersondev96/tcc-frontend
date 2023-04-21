@@ -60,18 +60,22 @@ export const BudgetDetails: React.FC = () => {
     }, [proposal_id]);
 
     const handleResponseProposal = useCallback((status: string) => {
-        console.log(status);
-        api.patch(`/proposals/response/${proposal_id}`, {
-            status
-        }).then(
-            (response) => {
-                if (response.data.status === "Proposal accepted") {
-                    toast.success("Proposta aceita, aguarde o contato do vendedor!")
-                } else {
-                    toast.error("Proposta recusada");
+        try {
+            api.patch(`/proposals/response/${proposal_id}`, {
+                status
+            }).then(
+                (response) => {
+                    console.log(response.data.status)
+                    if (response.data.status === "Proposta aceita") {
+                        toast.success("Proposta aceita, aguarde o contato do vendedor!")
+                    } else {
+                        toast.error("Proposta recusada");
+                    }
                 }
-            }
-        )
+            )
+        } catch (err) {
+            console.log(err);
+        }
     }, [proposal_id, toast]);
 
     return (
