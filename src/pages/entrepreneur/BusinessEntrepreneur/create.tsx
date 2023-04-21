@@ -10,6 +10,7 @@ import { Select } from "../../../components/Form/Select";
 import { TagInput } from "../../../components/Form/TagInput";
 import { TextArea } from "../../../components/Form/TextArea";
 import { SideBar } from "../../../components/Sidebar";
+import { Tooltip } from "../../../components/Tooltip";
 import api from "../../../services/api";
 import getValidationErrors from "../../../utils/getValidateErrors";
 
@@ -270,7 +271,7 @@ export const BusinessCreate: React.FC = () => {
             <SideBar pageActive="empresa" />
             <div className="flex flex-col w-full items-center px-24 md:ml-64 mt-6 md:mt-16">
                 <div className="flex flex-col md:w-full">
-                    <span className="font-bold text-xl md:text-2xl mb-8 mb:mb-12">Cadatrar empresa</span>
+                    <span className="font-bold text-xl md:text-2xl mb-8 mb:mb-12">Cadatrar MEI</span>
                     <Form
                         ref={formRef}
                         onSubmit={handleSubmit}
@@ -279,8 +280,8 @@ export const BusinessCreate: React.FC = () => {
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Input
                                     name="name"
-                                    label="Nome da empresa"
-                                    placeholder="Nome da empresa"
+                                    label="Nome do MEI"
+                                    placeholder="Digite o nome do MEI"
 
                                 />
                             </div>
@@ -289,6 +290,8 @@ export const BusinessCreate: React.FC = () => {
                                     name="cnpj"
                                     label="CNPJ"
                                     placeholder="XX. XXX. XXX/0001-XX"
+                                    idTooltip="tooltip-cnpj"
+                                    tooltipText="O CNPJ não é obrigatório e só será visível para o empreendedor"
                                 />
                             </div>
                         </div>
@@ -300,6 +303,8 @@ export const BusinessCreate: React.FC = () => {
                                 <Select
                                     name="category_id"
                                     label="Categoria"
+                                    idTooltip="tooltip-category"
+                                    tooltipText="Selecione a categoria do seu MEI nesta lista. Esta categoria ajudará o cliente a identificar qual é a sua especialidade"
                                     options={categories.map(category => ({
                                         value: category.id, label: category.name
                                     }))}
@@ -313,6 +318,8 @@ export const BusinessCreate: React.FC = () => {
                                         label="Serviços"
                                         placeholder="Serviços oferecidos"
                                         value={inputValue}
+                                        idTooltip="tooltip-tag"
+                                        tooltipText="Digite os 5 serviços principais do seu negócio separados por vírula e tecle ENTER"
                                         inputChanges={handleInputChangeTag}
                                         inputKeydown={handleInputKeyDownTag}
                                     />
@@ -341,6 +348,8 @@ export const BusinessCreate: React.FC = () => {
                                     name="description"
                                     label="Descrição"
                                     placeholder="Descrição da empresa"
+                                    idTooltip="tooltip-description"
+                                    tooltipText="Digite uma descrição sobre o seu MEI, fique a vontade para incluir todos os detalhes necessários"
                                 />
                             </div>
                         </div>
@@ -557,32 +566,35 @@ export const BusinessCreate: React.FC = () => {
                             </Fragment>
                         )}
 
-                        <div className="flex flex-wrap -mx-3 md:mb-6">
-                            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-1"
-                                    htmlFor="images">
-                                    Adicionar imagens
-                                </label>
 
-                                <div className="flex flex-row gap-6 py-3">
-                                    {previewImages.map(image => {
-                                        return (
-                                            <img key={image} src={image} alt="" className="flex w-16 h-16 rounded border border-1 border-gray-400" />
-                                        )
-                                    })}
+                        <div className="flex flex-row gap-1 items-center">
+                            <label
+                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-1"
+                                htmlFor="images">
+                                Adicionar imagens
+                            </label>
+                            <Tooltip
+                                idElement="tooltip-images"
+                                text="Selecione todas as imagens de uma única só vez"
+                            />
+                        </div>
 
-                                    <div className="w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300 relative">
-                                        <input type="file" multiple id="image[]" accept="image/*" className="cursor-pointer relative block opacity-0 w-full h-full z-20" onChange={handleSelectedImages} />
-                                        <div className="text-center absolute p-5 top-0 right-0 left-0 m-auto">
-                                            <AiOutlineCamera size={24} />
-                                        </div>
-                                    </div>
+                        <div className="flex flex-row gap-6 py-3">
+                            {previewImages.map(image => {
+                                return (
+                                    <img key={image} src={image} alt="" className="flex w-16 h-16 rounded border border-1 border-gray-400" />
+                                )
+                            })}
+
+                            <div className="w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300 relative">
+                                <input type="file" multiple id="image[]" accept="image/*" className="cursor-pointer relative block opacity-0 w-full h-full z-20" onChange={handleSelectedImages} />
+                                <div className="text-center absolute p-5 top-0 right-0 left-0 m-auto">
+                                    <AiOutlineCamera size={24} />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap -mx-3 md:mb-6">
+                        <div className="flex flex-wrap -mx-3 md:mb-6 mt-4">
                             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                                 <button type="submit" className="bg-sky-500 text-white active:bg-sky-600 font-bold uppercase text-xs px-6 py-3 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
                                     Salvar

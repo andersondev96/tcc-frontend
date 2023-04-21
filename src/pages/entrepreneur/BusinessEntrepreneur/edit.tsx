@@ -10,6 +10,7 @@ import { Select } from "../../../components/Form/Select";
 import { TagInput } from "../../../components/Form/TagInput";
 import { TextArea } from "../../../components/Form/TextArea";
 import { SideBar } from "../../../components/Sidebar";
+import { Tooltip } from "../../../components/Tooltip";
 import api from "../../../services/api";
 import getValidationErrors from "../../../utils/getValidateErrors";
 import { PreviousPageButton } from "../../client/components/PreviousPageButton";
@@ -699,32 +700,38 @@ export const BusinessEdit: React.FC = () => {
                             </Fragment>
                         )}
 
-                        <div className="flex flex-wrap -mx-3 md:mb-6">
-                            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                                <label
-                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-1"
-                                    htmlFor="images">
-                                    Adicionar imagens
-                                </label>
 
-                                <div className="flex flex-row gap-6 py-3">
-                                    {previewImages.map(image => {
-                                        return (
-                                            <img key={image} src={image} alt="" className="flex w-16 h-16 rounded border border-1 border-gray-400" />
-                                        )
-                                    })}
 
-                                    <div className="w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300 relative">
-                                        <input type="file" multiple id="image[]" accept="image/*" className="cursor-pointer relative block opacity-0 w-full h-full z-20" onChange={handleSelectedImages} />
-                                        <div className="text-center absolute p-5 top-0 right-0 left-0 m-auto">
-                                            <AiOutlineCamera size={24} />
-                                        </div>
-                                    </div>
+                        <div className="flex flex-row gap-1 items-center">
+                            <label
+                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-1"
+                                htmlFor="images">
+                                Adicionar imagens
+                            </label>
+                            <Tooltip
+                                idElement="tooltip-images"
+                                text="Selecione todas as imagens de uma única só vez"
+                            />
+                        </div>
+
+                        <div className="flex flex-row gap-6 py-3">
+                            {previewImages.map(image => {
+                                return (
+                                    <img key={image} src={image} alt="" className="flex w-16 h-16 rounded border border-1 border-gray-400" />
+                                )
+                            })}
+
+                            <div className="w-16 h-16 rounded bg-gray-300 opacity-60 border-2 border-dashed border-gray-400 cursor-pointer hover:opacity-100 transition-opacity duration-300 relative">
+                                <input type="file" multiple id="image[]" accept="image/*" className="cursor-pointer relative block opacity-0 w-full h-full z-20" onChange={handleSelectedImages} />
+                                <div className="text-center absolute p-5 top-0 right-0 left-0 m-auto">
+                                    <AiOutlineCamera size={24} />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap -mx-3 md:mb-6">
+
+
+                        <div className="flex flex-wrap -mx-3 md:mb-6 mt-4">
                             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                                 <button
                                     type="submit"
