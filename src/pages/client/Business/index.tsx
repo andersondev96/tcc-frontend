@@ -133,10 +133,23 @@ export const Business: React.FC = () => {
                         text={company.description}
                     />
 
-                    <Paragraph
-                        title="Serviços oferecidos"
-                        text={company.services}
-                    />
+                    {
+                        company.services && company.services.length > 0 && (
+                            <div className="flex flex-col">
+                                <span className="font-inter font-semibold text-gray-700 mb-2">Serviços oferecidos</span>
+                                {company.services.map(service => (
+                                    <div key={service}>
+                                        {service.split(",").map((word, index) => (
+                                            <p key={index}
+                                                className="bg-gray-200 border border-blue-600 text-gray-700 rounded-full py-1 px-3 inline-block mr-2 mb-2">
+                                                {word}
+                                            </p>
+                                        ))}
+                                    </div>
+                                ))}
+                            </div>
+                        )
+                    }
 
                     {
                         company.Address && (
