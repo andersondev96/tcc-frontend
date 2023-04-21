@@ -1,15 +1,20 @@
 import { useField } from "@unform/core";
 import { TextareaHTMLAttributes, useCallback, useEffect, useRef, useState } from "react";
+import { Tooltip } from "../../Tooltip";
 
 interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
     name: string;
     label: string;
+    idTooltip?: string | undefined;
+    tooltipText?: string;
     placeholder: string;
 }
 
 export const TextArea: React.FC<TextAreaProps> = ({
     name,
     label,
+    idTooltip = undefined,
+    tooltipText,
     placeholder,
     ...rest
 }) => {
@@ -40,11 +45,15 @@ export const TextArea: React.FC<TextAreaProps> = ({
 
     return (
         <>
-            <label
-                htmlFor={name}
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                {label}
-            </label>
+            <div className="flex flex-row gap-1 items-center">
+                <label
+                    htmlFor={name}
+                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                    {label}
+                </label>
+                {idTooltip && tooltipText && <Tooltip idElement={idTooltip} text={tooltipText} />}
+            </div>
+
             <textarea
                 id={name}
                 name={name}

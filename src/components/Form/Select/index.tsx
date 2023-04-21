@@ -1,8 +1,11 @@
 import { useField } from "@unform/core";
 import { SelectHTMLAttributes, useCallback, useEffect, useRef, useState } from "react";
+import { Tooltip } from "../../Tooltip";
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
     name: string;
     label: string;
+    idTooltip?: string;
+    tooltipText?: string;
     options: Array<{
         value: string;
         label: string;
@@ -12,6 +15,8 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 export const Select: React.FC<SelectProps> = ({
     name,
     label,
+    idTooltip = undefined,
+    tooltipText,
     options,
     ...rest
 }) => {
@@ -42,12 +47,17 @@ export const Select: React.FC<SelectProps> = ({
 
     return (
         <>
-            <label
-                htmlFor={name}
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            >
-                {label}
-            </label>
+            <div className="flex flex-row gap-1 items-center">
+                <label
+                    htmlFor={name}
+                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                >
+                    {label}
+                </label>
+                {
+                    idTooltip && tooltipText && <Tooltip idElement={idTooltip} text={tooltipText} />
+                }
+            </div>
             <div className="relative">
                 <select
                     id={name}

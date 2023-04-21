@@ -1,11 +1,14 @@
 import { useField } from "@unform/core";
 import { ChangeEvent, InputHTMLAttributes, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Tooltip } from "../../Tooltip";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     name: string;
     label: string;
     value: string;
     placeholder?: string;
+    idTooltip?: string | undefined;
+    tooltipText?: string;
     inputChanges: (event: ChangeEvent<HTMLInputElement>) => void;
     inputKeydown: (event: KeyboardEvent<HTMLInputElement>) => void;
 }
@@ -15,6 +18,8 @@ export const TagInput: React.FC<InputProps> = ({
     label,
     value,
     placeholder,
+    idTooltip = undefined,
+    tooltipText,
     inputChanges,
     inputKeydown,
     ...rest
@@ -48,12 +53,15 @@ export const TagInput: React.FC<InputProps> = ({
     return (
 
         <>
-            <label
-                htmlFor={name}
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            >
-                {label}
-            </label>
+            <div className="flex flex-row gap-1 items-center">
+                <label
+                    htmlFor={name}
+                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                >
+                    {label}
+                </label>
+                {idTooltip && tooltipText && <Tooltip idElement={idTooltip} text={tooltipText} />}
+            </div>
 
 
             <input

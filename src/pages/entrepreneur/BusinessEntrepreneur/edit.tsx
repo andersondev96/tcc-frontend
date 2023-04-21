@@ -404,7 +404,7 @@ export const BusinessEdit: React.FC = () => {
             <div className="flex flex-col w-full items-center px-24 md:ml-64 mt-6 md:mt-16">
                 <div className="flex flex-col md:w-full">
                     <PreviousPageButton />
-                    <span className="font-bold text-xl mt-8 md:text-2xl mb-8 mb:mb-12">Editar empresa</span>
+                    <span className="font-bold text-xl mt-8 md:text-2xl mb-8 mb:mb-12">Editar MEI</span>
                     <Form
                         ref={formRef}
                         onSubmit={handleSubmit}
@@ -415,8 +415,8 @@ export const BusinessEdit: React.FC = () => {
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Input
                                     name="name"
-                                    label="Nome da empresa"
-                                    placeholder="Nome da empresa"
+                                    label="Nome do MEI"
+                                    placeholder="Digite o nome do MEI"
 
                                 />
                             </div>
@@ -425,6 +425,7 @@ export const BusinessEdit: React.FC = () => {
                                     name="cnpj"
                                     label="CNPJ"
                                     placeholder="XX. XXX. XXX/0001-XX"
+                                    idTooltip="tooltip-cnpj"
                                     tooltipText="O CNPJ não é obrigatório e só será visível para o empreendedor"
                                 />
                             </div>
@@ -436,6 +437,8 @@ export const BusinessEdit: React.FC = () => {
                                 <Select
                                     name="category_id"
                                     label="Categoria"
+                                    idTooltip="tooltip-category"
+                                    tooltipText="Selecione a categoria do seu MEI nesta lista. Esta categoria ajudará o cliente a identificar qual é a sua especialidade"
                                     value={company.category_id}
                                     options={categories.map(category => ({
                                         value: category.id, label: category.name
@@ -450,6 +453,8 @@ export const BusinessEdit: React.FC = () => {
                                         label="Serviços"
                                         placeholder="Serviços oferecidos"
                                         value={inputValue}
+                                        idTooltip="tooltip-tag"
+                                        tooltipText="Digite os 5 serviços principais do seu negócio separados por vírula e tecle ENTER"
                                         inputChanges={handleInputChangeTag}
                                         inputKeydown={handleInputKeyDownTag}
                                     />
@@ -478,6 +483,8 @@ export const BusinessEdit: React.FC = () => {
                                     name="description"
                                     label="Descrição"
                                     placeholder="Descrição da empresa"
+                                    idTooltip="tooltip-description"
+                                    tooltipText="Digite uma descrição sobre o seu MEI, fique a vontade para incluir todos os detalhes necessários"
                                 />
                             </div>
                         </div>
