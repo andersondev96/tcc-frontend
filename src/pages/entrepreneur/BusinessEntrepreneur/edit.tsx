@@ -248,6 +248,39 @@ export const BusinessEdit: React.FC = () => {
         }
     }, [addTag, inputValue, removeTag, tags.length]);
 
+    const handleSetCEP = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        const cep = event.target.value;
+
+        if (cep.length === 8) {
+            fetch(`https://viacep.com.br/ws/${cep}/json`)
+                .then(response => response.json())
+                .then(data => {
+                    setCompany(prevState => ({
+                        ...prevState,
+                        Address: {
+                            id: prevState.Address.id,
+                            cep: data.cep,
+                            street: data.logradouro,
+                            district: data.bairro,
+                            number: company.Address && company.Address.number,
+                            city: data.localidade,
+                            state: data.uf
+                        }
+                    }));
+                    setAddress({
+                        cep: data.cep,
+                        logradouro: data.logradouro,
+                        bairro: data.bairro,
+                        uf: data.uf,
+                        localidade: data.localidade,
+                    });
+
+                    setCEP(cep);
+                })
+                .catch(error => console.error(error))
+        }
+    }, [setCompany, setAddress, setCEP]);
+
     const cnpjValidation = useCallback((isRequired: boolean) => {
         if (isRequired) {
             return Yup.number()
@@ -559,6 +592,7 @@ export const BusinessEdit: React.FC = () => {
                                     className="h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
                                     type="checkbox"
                                     defaultChecked={company.physical_localization}
+                                    checked={hasPhysicalLocation}
                                     onChange={tooglePhysicalLocation}
                                 />
                                 <label
@@ -577,7 +611,7 @@ export const BusinessEdit: React.FC = () => {
                                             name="Address.cep"
                                             label="CEP"
                                             placeholder="XXXXX-XXX"
-                                            onChange={e => setCEP(e.target.value)}
+                                            onChange={handleSetCEP}
                                         />
                                     </div>
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
