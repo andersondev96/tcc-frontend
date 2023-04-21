@@ -167,7 +167,8 @@ export const BusinessEntrepreneur: React.FC = () => {
                                     <div className="flex flex-row gap-4">
                                         {
                                             company.services.map((service) => (
-                                                <p key={service} className="font-inter text-sm text-justify">
+                                                <p key={service}
+                                                    className="bg-gray-200 border border-blue-600 text-gray-700 rounded-full py-1 px-3">
                                                     {service}
                                                 </p>
                                             ))

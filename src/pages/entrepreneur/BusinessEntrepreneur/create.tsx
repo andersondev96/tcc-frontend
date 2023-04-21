@@ -136,7 +136,16 @@ export const BusinessCreate: React.FC = () => {
     }
 
     const addTag = (tag: string) => {
-        setTags([...tags, tag]);
+        const tagsValues = [...new Set(tag.split(",").map((t) => t.trim()))];
+        console.log(tagsValues);
+        const newTags = tagsValues.filter((t) => !tags.includes(t));
+
+        if (tags.length + newTags.length > 5) {
+            const trucatedTags = newTags.slice(0, 5 - tags.length);
+            setTags([...tags, ...trucatedTags]);
+        } else {
+            setTags([...tags, ...newTags]);
+        }
     }
 
     const removeTag = (index: number) => {
@@ -300,7 +309,7 @@ export const BusinessCreate: React.FC = () => {
                                     {tags.map((tag, index) => (
                                         <div
                                             key={index}
-                                            className="bg-gray-200 text-gray-700 rounded-full py-1 px-3 m-1"
+                                            className="bg-gray-200 border border-blue-600 text-gray-700 rounded-full py-1 px-3 m-1"
                                         >
                                             {tag}
                                             <button

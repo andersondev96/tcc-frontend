@@ -223,12 +223,20 @@ export const BusinessEdit: React.FC = () => {
     }, []);
 
     const addTag = useCallback((tag: string) => {
-        setTags([...tags, tag]);
-    }, []);
+        const tagsValues = [...new Set(tag.split(",").map((t) => t.trim()))];
+        const newTags = tagsValues.filter((t) => !tags.includes(t));
+
+        if (tags.length + newTags.length > 5) {
+            const trucatedTags = newTags.slice(0, 5 - tags.length);
+            setTags([...tags, ...trucatedTags]);
+        } else {
+            setTags([...tags, ...newTags]);
+        }
+    }, [tags, setTags]);
 
     const removeTag = useCallback((index: number) => {
         setTags([...tags.slice(0, index), ...tags.slice(index + 1)]);
-    }, [])
+    }, [tags, setTags])
 
     const handleInputKeyDownTag = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
@@ -238,7 +246,7 @@ export const BusinessEdit: React.FC = () => {
         } else if (event.key === "Backspace" && inputValue === "") {
             removeTag(tags.length - 1);
         }
-    }, []);
+    }, [addTag, inputValue, removeTag, tags.length]);
 
     const handleSubmit = useCallback(
         async (data: UpdateCompanyFormData) => {
@@ -260,6 +268,7 @@ export const BusinessEdit: React.FC = () => {
                     name: data.name,
                     cnpj: data.cnpj,
                     category_id: data.category_id,
+                    services: tags,
                     description: data.description,
                     telephone: data.contact.telephone,
                     whatsapp: data.contact.whatsapp,
@@ -306,7 +315,7 @@ export const BusinessEdit: React.FC = () => {
             } finally {
                 setIsLoading(false);
             }
-        }, [hasPhysicalLocation]);
+        }, [hasPhysicalLocation, tags]);
 
     function classNames(...classes: any) {
         return classes.filter(Boolean).join(' ')
@@ -394,7 +403,7 @@ export const BusinessEdit: React.FC = () => {
                                     {tags.map((tag, index) => (
                                         <div
                                             key={index}
-                                            className="bg-gray-200 text-gray-700 rounded-full py-1 px-3 m-1"
+                                            className="bg-gray-200 border border-blue-600 text-gray-700 rounded-full py-1 px-3 m-1"
                                         >
                                             {tag}
                                             <button
