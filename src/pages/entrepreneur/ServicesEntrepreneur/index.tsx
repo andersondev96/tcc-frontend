@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { BiHelpCircle } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
 import api from "../../../services/api";
@@ -63,6 +64,7 @@ export const ServicesEntrepreneur: React.FC = () => {
     const [services, setServices] = useState<ServiceData[]>([]);
     const [name, setName] = useState("");
     const [showInfoUploadXLSX, setShowInfoUploadXLSX] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
 
     useEffect(() => {
         api
@@ -77,6 +79,37 @@ export const ServicesEntrepreneur: React.FC = () => {
                 .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error));
         }
     }, [company.id]);
+
+    const handleReadXlsFiles = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+        try {
+            if (e.target.files) {
+                const selectedFile = e.target.files[0];
+
+                if (selectedFile) {
+                    setFile(selectedFile);
+
+                    if (company.id) {
+                        const formData = new FormData();
+                        formData.append('file', selectedFile);
+
+                        const response = await api.post(`/services/import/${company.id}`, formData);
+
+                        if (response.status === 200) {
+                            const servicesUpdated = await api.get<ServiceData[]>(`/services/company/${company.id}`);
+
+                            if (servicesUpdated.data) {
+                                setServices(servicesUpdated.data);
+                            }
+
+                            toast.success("Serviços importados com sucesso!");
+                        }
+                    }
+                }
+            }
+        } catch (err) {
+            toast.error("Erro ao realizar a importação dos serviços");
+        }
+    }, [setFile, company.id, setServices, services, toast]);
 
     const searchService = useCallback(
         async (event: ChangeEvent<HTMLInputElement>) => {
@@ -118,7 +151,17 @@ export const ServicesEntrepreneur: React.FC = () => {
                         <Search onChange={searchService} />
                     </div>
                     <div className="flex flex-row">
-                        <span className="font-light gray-600">ou adicionar lista com serviços</span>
+                        <label htmlFor="services">
+                            <span className="font-light text-gray-600 hover:cursor-pointer hover:underline hover:text-blue-600">ou adicionar lista com serviços</span>
+                            <input
+                                id="services"
+                                name="file"
+                                type="file"
+                                accept=".xls,.xlsx,.ods,.csv"
+                                className="absolute hidden"
+                                onChange={handleReadXlsFiles}
+                            />
+                        </label>
 
                         <div className="flex flex-col">
                             <BiHelpCircle
