@@ -94,12 +94,8 @@ export const ServicesEntrepreneur: React.FC = () => {
 
                         const response = await api.post(`/services/import/${company.id}`, formData);
 
-                        if (response.status === 200) {
-                            const servicesUpdated = await api.get<ServiceData[]>(`/services/company/${company.id}`);
-
-                            if (servicesUpdated.data) {
-                                setServices(servicesUpdated.data);
-                            }
+                        if (response.data) {
+                            setServices([...services, ...response.data]);
 
                             toast.success("Serviços importados com sucesso!");
                         }
