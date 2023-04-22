@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import AvatarImg from "../../../assets/user.png";
 import { AssessmentsStars } from "./AssessmentsStars";
 
@@ -6,7 +7,9 @@ interface Assessment {
     user_id: string;
     comment: string;
     stars: number;
+    createdAt: Date;
     user: {
+        name: string;
         avatar: string;
     }
 }
@@ -23,13 +26,20 @@ export const Assessments: React.FC<AssessmentsProps> = ({ data }) => {
                 <img
                     className="h-[2.625rem] w-[2.625rem] mobile:h-[1.75rem] mobile:w-[1.75rem] rounded-full"
                     src={data.user && data.user.avatar && (`http://localhost:3333/avatar/${data.user.avatar}`) || AvatarImg}
-                    alt="avatar" />
+                    alt="avatar"
+                    title={data.user && data.user.name}
+                />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
+                <div className="flex flex-row gap-4 items-center ">
+                    <span className="font-bold text-sm text-blue-800">{data.user && data.user.name}</span>
+                    <p className="font-light text-xs">{format(new Date(data.createdAt), "dd/MM/yyyy")}</p>
+                </div>
+                <span className="font-inter text-sm mobile:text-xs">{data.comment}</span>
                 <div className="flex flex-row items-center gap-[0.25rem]">
                     <AssessmentsStars stars={data.stars} />
                 </div>
-                <span className="font-inter font-medium text-sm mobile:text-xs">{data.comment}</span>
+
             </div>
         </div>
     );

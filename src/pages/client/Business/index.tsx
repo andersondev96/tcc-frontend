@@ -68,7 +68,9 @@ interface Assessment {
     user_id: string;
     comment: string;
     stars: number;
+    createdAt: Date;
     user: {
+        name: string;
         avatar: string;
     }
 }
@@ -80,6 +82,7 @@ export const Business: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
     const [assessments, setAssessments] = useState<Assessment[]>([]);
     const [showFullScreenImages, setShowFullScreenImages] = useState(false);
+    const [quantComments, setQuantComments] = useState(5);
     const weekdays = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
 
@@ -96,7 +99,7 @@ export const Business: React.FC = () => {
         api.get<Assessment[]>(`/assessments/company/${params.id}`)
             .then(response => {
                 setAssessments(response.data);
-            })
+            });
     }, [params.id]);
 
     const verifyCompanyIsFavorited = useCallback(() => {
@@ -124,7 +127,21 @@ export const Business: React.FC = () => {
 
     const handleAddAssessments = useCallback((newAssessment: Assessment) => {
         setAssessments((prevAssessments) => [...prevAssessments, newAssessment]);
-    }, []);
+    }, [setAssessments]);
+
+    const handleShowMoreComments = useCallback(() => {
+        if (quantComments <= assessments.length) {
+            const newQuantComments = quantComments + 5;
+            setQuantComments(newQuantComments);
+        }
+    }, [quantComments, assessments]);
+
+    const handleShowLessComments = useCallback(() => {
+        if (quantComments > 5) {
+            const newQuantComments = quantComments - 5;
+            setQuantComments(newQuantComments);
+        }
+    }, [quantComments, assessments]);
 
     const toggleFullscreen = useCallback(() => {
         setShowFullScreenImages(!showFullScreenImages);
@@ -262,12 +279,31 @@ export const Business: React.FC = () => {
                                             <span className="font-inter font-semibold">Avaliações</span>
                                             <p className="font-inter font-light text-xs">{assessments.length} comentário(s)</p>
                                         </div>
-                                        {assessments.slice(-5).map(assessment => (
+                                        {assessments.slice(-quantComments).map(assessment => (
                                             <Assessments
                                                 key={assessment.id}
                                                 data={assessment}
                                             />
                                         ))}
+                                        <div className="flex flex-row gap-80">
+                                            {quantComments <= assessments.length && (
+                                                <button
+                                                    onClick={handleShowMoreComments}
+                                                    className="text-sm text-blue-600 hover:underline mt-6"
+                                                >
+                                                    Exibir mais comentários
+                                                </button>
+                                            )}
+
+                                            {quantComments > 5 && (
+                                                <button
+                                                    onClick={handleShowLessComments}
+                                                    className="text-sm text-blue-600 hover:underline mt-6"
+                                                >
+                                                    Exibir menos comentários
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="flex flex-col mt-[2.25rem]">
@@ -286,6 +322,7 @@ export const Business: React.FC = () => {
                                             `http://localhost:3333/avatar/${user.avatar}`
                                         }
                                         onAddAssessment={handleAddAssessments}
+                                        setCompany={setCompany}
                                     />
                                 </div>
 
