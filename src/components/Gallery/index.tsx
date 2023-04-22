@@ -22,6 +22,16 @@ export const Gallery: React.FC<GalleryProps> = ({ images, toogleFullScreen }) =>
         toogleFullScreen();
     }, [toogleFullScreen]);
 
+    const currentStyles = {
+        content: {
+            width: '900px',
+            maxHeight: '500px',
+            margin: 'auto',
+            padding: '20px',
+            zIndex: 20,
+        }
+    }
+
     const defaultImageStyle = {
         width: "auto",
         height: "360px",
@@ -29,7 +39,7 @@ export const Gallery: React.FC<GalleryProps> = ({ images, toogleFullScreen }) =>
     };
 
     return (
-        <Modal isOpen={showModal} onRequestClose={toogleModal} >
+        <Modal isOpen={showModal} onRequestClose={toogleModal} style={currentStyles} >
             <ImageGallery
                 items={images}
                 showPlayButton={false}
@@ -39,6 +49,7 @@ export const Gallery: React.FC<GalleryProps> = ({ images, toogleFullScreen }) =>
                 slideDuration={550}
                 slideInterval={3000}
                 showBullets={true}
+                thumbnailPosition="bottom"
                 startIndex={0}
                 renderItem={(item) => {
                     return (
@@ -47,6 +58,17 @@ export const Gallery: React.FC<GalleryProps> = ({ images, toogleFullScreen }) =>
                             alt={item.description}
                             style={defaultImageStyle}
                         />
+                    )
+                }}
+                renderThumbInner={(item) => {
+                    return (
+                        <div
+                            style={{
+                                backgroundImage: `url(${item.thumbnail})`,
+                                backgroundSize: 'cover',
+                                width: 'auto',
+                                height: '50px'
+                            }} />
                     )
                 }}
             />

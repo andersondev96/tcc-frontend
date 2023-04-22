@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FiEdit2 } from "react-icons/fi";
 import { GoLinkExternal } from "react-icons/go";
 import { Link } from "react-router-dom";
@@ -9,8 +9,21 @@ import formatTelephone from "../../../utils/formatTelephone";
 import { Assessments } from "../../client/components/Assessments";
 import { Pictures } from "../../client/components/Pictures";
 
+import { Gallery } from "../../../components/Gallery";
 import api from "../../../services/api";
 
+interface ImageCompany {
+    id: string,
+    title: string,
+    image_name: string,
+    image_url: string,
+}
+
+interface PictureProps {
+    original: string;
+    thumbnail: string;
+    description: string;
+}
 interface CompanyData {
     id: string,
     name: string,
@@ -42,14 +55,7 @@ interface CompanyData {
             lunch_time: string,
         }
     ],
-    ImageCompany?: [
-        {
-            id: string,
-            title: string,
-            image_name: string,
-            image_url: string,
-        }
-    ]
+    ImageCompany?: ImageCompany[];
     user_id: string
 }
 
@@ -67,6 +73,7 @@ export const BusinessEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<CompanyData>();
     const [assessments, setAssessments] = useState<AssessmentData[]>([]);
     const [categoryName, setCategoryName] = useState<string>("");
+    const [showFullScreenImages, setShowFullScreenImages] = useState(false);
     const [logo, setLogo] = useState("");
 
     useEffect(() => {
@@ -90,6 +97,18 @@ export const BusinessEntrepreneur: React.FC = () => {
                 }
             })
     }, [setCompany, setLogo]);
+
+    const toggleFullscreen = useCallback(() => {
+        setShowFullScreenImages(!showFullScreenImages);
+    }, [showFullScreenImages]);
+
+    const convertToPictureProps = useCallback((imageCompany: ImageCompany): PictureProps => {
+        return {
+            original: imageCompany.image_url,
+            thumbnail: imageCompany.image_url,
+            description: ''
+        }
+    }, []);
 
     useEffect(() => {
         if (company) {
@@ -283,7 +302,9 @@ export const BusinessEntrepreneur: React.FC = () => {
                                         <span className="py-3 border-b border-black font-inter font-medium">
                                             Imagens
                                         </span>
-                                        <div className="grid grid-cols-2 mt-4 sm:flex sm:flex-row gap-5">
+                                        <div
+                                            onClick={toggleFullscreen}
+                                            className="grid grid-cols-2 mt-4 sm:flex sm:flex-row gap-5 hover:cursor-pointer">
                                             {
                                                 company.ImageCompany &&
                                                 company.ImageCompany.map((img) => (
@@ -294,6 +315,13 @@ export const BusinessEntrepreneur: React.FC = () => {
                                                     />
                                                 ))}
                                         </div>
+                                        {
+                                            showFullScreenImages && (
+                                                <Gallery
+                                                    images={company.ImageCompany.map(convertToPictureProps)}
+                                                    toogleFullScreen={toggleFullscreen} />
+                                            )
+                                        }
                                     </div>
                                 )
                             }
