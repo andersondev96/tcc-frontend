@@ -41,6 +41,7 @@ export const CreateServicesEntrepreneur: React.FC = () => {
     const [selectImagePreview, setSelectImagePreview] = useState("");
     const formRef = useRef<FormHandles>(null);
     const [imageService, setImageService] = useState(new FormData());
+    const [errorMessage, setErrorMessage] = useState("");
 
     const navigate = useNavigate();
 
@@ -102,7 +103,7 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                     });
 
                     if (limitHightLightServices && quantHighlightServices && quantHighlightServices >= limitHightLightServices) {
-                        toast.error("Você não pode colocar mais serviços em destaque, ajuste o seu limite ou remova serviços em destaque.");
+                        setErrorMessage("Você não pode colocar mais serviços em destaque, ajuste o seu limite ou remova serviços em destaque.");
                         return;
                     }
                 }
@@ -118,13 +119,12 @@ export const CreateServicesEntrepreneur: React.FC = () => {
 
                 const response = await api.post(`/services/${company.id}`, service);
 
-                console.log(response);
-
                 if (response.status === 201) {
                     if (!imageService.entries().next().done) {
                         await api.patch(`services/service/${response.data.id}`, imageService);
                     }
 
+                    setErrorMessage("");
                     toast.success("Serviço adicionado com sucesso!")
 
                     navigate('/admin/services');
@@ -250,6 +250,10 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                                     Colocar produto/serviço em destaque
                                 </label>
                             </div>
+
+                            {errorMessage && (
+                                <span className="font-medium text-sm text-red-600 mt-2">{errorMessage}</span>
+                            )}
 
                         </div>
 

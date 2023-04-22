@@ -41,6 +41,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
     const [highlight, setHighlight] = useState<boolean>(false);
     const [selectImagePreview, setSelectImagePreview] = useState("");
     const [imageService, setImageService] = useState(new FormData());
+    const [errorMessage, setErrorMessage] = useState("");
 
     const formRef = useRef<FormHandles>(null);
 
@@ -119,7 +120,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
                     });
 
                     if (limitHightLightServices && quantHighlightServices && quantHighlightServices >= limitHightLightServices) {
-                        toast.error("Você não pode colocar mais serviços em destaque, ajuste o seu limite ou remova serviços em destaque.");
+                        setErrorMessage("Você não pode colocar mais serviços em destaque, ajuste o seu limite ou remova serviços em destaque.");
                         return;
                     }
                 }
@@ -141,6 +142,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
                         await api.patch(`services/service/${params.id}`, imageService);
                     }
 
+                    setErrorMessage("");
                     toast.success("Serviço atualizado com sucesso!");
 
                     navigate('/admin/services');
@@ -267,6 +269,10 @@ export const EditServicesEntrepreneur: React.FC = () => {
                                     Colocar produto/serviço em destaque
                                 </label>
                             </div>
+
+                            {errorMessage && (
+                                <span className="font-medium text-sm text-red-600 mt-2">{errorMessage}</span>
+                            )}
 
                         </div>
 

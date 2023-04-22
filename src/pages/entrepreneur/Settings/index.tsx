@@ -17,6 +17,14 @@ interface EntrepreneurSettingsData {
     company_logo: string;
 }
 
+interface CompanyData {
+    id: string;
+}
+
+interface ServiceData {
+    highlight_service: string;
+}
+
 export const Settings: React.FC = () => {
     const navigate = useNavigate();
     const [entrepreneurSettings, setEntrepreneurSettings] = useState<EntrepreneurSettingsData>({} as EntrepreneurSettingsData);
@@ -27,6 +35,7 @@ export const Settings: React.FC = () => {
     const [selectImagePreview, setSelectImagePreview] = useState("");
     const [logo, setLogo] = useState(new FormData());
     const [modalDelete, setModalDelete] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         const fetchEntrepreneurSettings = async () => {
@@ -107,12 +116,31 @@ export const Settings: React.FC = () => {
                 email_notification: emailNotification
             }
 
+            if (entrepreneurSettings && data.highlight_services_quantity < entrepreneurSettings.highlight_services_quantity) {
+                const company = await api.get<CompanyData>('/companies/me');
+
+                if (company.data) {
+                    const company_id = company.data.id;
+                    const services = await api.get<ServiceData[]>(`/services/company/${company_id}`);
+
+                    if (services.data) {
+                        const quantHighlightServices = services.data.filter(service => service.highlight_service).length;
+
+                        if (data.highlight_services_quantity < quantHighlightServices) {
+                            setErrorMessage("Você não pode diminuir o limite, pois há mais serviços em destaque do que o limite definido.");
+                            return;
+                        }
+                    }
+                }
+            }
+
             const settings = await api.put(`/entrepreneurs/${entrepreneurSettings.entrepreneur_id}/settings`, data);
 
             if (settings.status === 201) {
                 if (!logo.entries().next().done) {
                     await api.patch(`entrepreneurs/upload-logo/${settings.data.entrepreneur_id}`, logo);
                 }
+                setErrorMessage("");
                 toast.success("Preferências alteradas com sucesso!");
             }
 
@@ -126,6 +154,7 @@ export const Settings: React.FC = () => {
         onlineChat,
         emailNotification,
         entrepreneurSettings.entrepreneur_id,
+        setErrorMessage,
         toast
     ]);
 
@@ -193,7 +222,7 @@ export const Settings: React.FC = () => {
                                 <input
                                     type="number"
                                     min={1}
-                                    max={5}
+                                    max={4}
                                     defaultValue={entrepreneurSettings.highlight_services_quantity}
                                     value={quantityServices}
                                     onChange={handleInputNumber}
@@ -249,10 +278,14 @@ export const Settings: React.FC = () => {
                                     Permitir notificações por e-mail
                                 </label>
                             </div>
+
+                            {errorMessage && (
+                                <span className="font-medium text-sm text-red-600 mt-2">{errorMessage}</span>
+                            )}
                         </div>
 
                         <div className="flex flex-col">
-                            <button className="flex items-center justify-center mt-8 sm:mt-12 w-48 h-12 bg-blue-600 rounded hover:brightness-90 duration-300 transition-opacity">
+                            <button className="flex items-center justify-center mt-6 sm:mt-12 w-48 h-12 bg-blue-600 rounded hover:brightness-90 duration-300 transition-opacity">
                                 <span className="font-medium text-gray-100">
                                     Salvar alterações
                                 </span>
@@ -261,7 +294,7 @@ export const Settings: React.FC = () => {
                     </div>
                 </form>
 
-                <button onClick={handleOpenModalDelete} className="flex flex-row mb-12 sm:mr-24 sm:justify-end justify-start">
+                <button onClick={handleOpenModalDelete} className="flex flex-row mb-14 sm:mr-24 sm:justify-end justify-start">
                     <span className="font-semibold text-sm text-red-500">
                         Excluir conta
                     </span>
