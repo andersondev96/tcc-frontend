@@ -3,6 +3,7 @@ import { Paragraph } from "../components/Paragraph";
 
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Gallery } from '../../../components/Gallery';
 import { NavBar } from "../../../components/NavBar/NavBar";
 import { useAuth } from '../../../contexts/AuthContext';
 import api from "../../../services/api";
@@ -42,6 +43,12 @@ interface ImageCompany {
     image_url: string;
 }
 
+interface PictureProps {
+    original: string;
+    thumbnail: string;
+    description: string;
+}
+
 interface Company {
     id: string;
     name: string;
@@ -72,6 +79,7 @@ export const Business: React.FC = () => {
     const [companyFavorited, setCompanyFavorited] = useState(false);
     const [company, setCompany] = useState<Company>({} as Company);
     const [assessments, setAssessments] = useState<Assessment[]>([]);
+    const [showFullScreenImages, setShowFullScreenImages] = useState(false);
     const weekdays = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
 
@@ -113,8 +121,21 @@ export const Business: React.FC = () => {
         }
     }, [company.id, setCompanyFavorited, companyFavorited]);
 
+
     const handleAddAssessments = useCallback((newAssessment: Assessment) => {
         setAssessments((prevAssessments) => [...prevAssessments, newAssessment]);
+    }, []);
+
+    const toggleFullscreen = useCallback(() => {
+        setShowFullScreenImages(!showFullScreenImages);
+    }, [showFullScreenImages]);
+
+    const convertToPictureProps = useCallback((imageCompany: ImageCompany): PictureProps => {
+        return {
+            original: imageCompany.image_url,
+            thumbnail: imageCompany.image_url,
+            description: ''
+        }
     }, []);
 
     useEffect(() => {
@@ -209,11 +230,20 @@ export const Business: React.FC = () => {
                         company.ImageCompany && company.ImageCompany.length > 0 && (
                             <div className="flex flex-col gap-2">
                                 <span className="font-inter font-semibold text-gray-700">Fotos</span>
-                                <div className="flex flex-row mobile:grid mobile:grid-cols-2 gap-[1.25rem]">
+                                <div
+                                    onClick={toggleFullscreen}
+                                    className="flex flex-row mobile:grid mobile:grid-cols-2 gap-[1.25rem] hover:cursor-pointer">
                                     {company.ImageCompany.map(img => (
                                         <Pictures key={img.id} image={img.image_url} description={company.name} />
                                     ))}
                                 </div>
+                                {
+                                    showFullScreenImages && (
+                                        <Gallery
+                                            images={company.ImageCompany.map(convertToPictureProps)}
+                                            toogleFullScreen={toggleFullscreen} />
+                                    )
+                                }
                             </div>
                         )
                     }
