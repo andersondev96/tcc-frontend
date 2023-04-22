@@ -17,6 +17,7 @@ interface ServiceProps {
     favorites: number;
     image_url: string;
     price: number;
+    highlight_service: boolean;
     company_id: string;
 }
 
@@ -105,7 +106,7 @@ export const Card: React.FC<CardProps> = ({ service, highlight = false }) => {
                     onRequestClose={closeModal}
                 >
 
-                    <ModalService service={service} />
+                    <ModalService serviceData={service} />
 
                 </ModalContainer>
             </div>

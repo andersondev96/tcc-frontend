@@ -9,15 +9,17 @@ import { useAuth } from "../../../contexts/AuthContext";
 import api from "../../../services/api";
 import { ModalCalculate } from './ModalCalculate';
 
-interface ServiceProps {
+interface Service {
     id: string;
     name: string;
     category: string;
     description: string;
     stars: number;
+    favorites: number;
     image_url: string;
     price: number;
     company_id: string;
+    highlight_service: boolean;
 }
 
 interface Assessment {
@@ -25,7 +27,9 @@ interface Assessment {
     user_id: string;
     comment: string;
     stars: number;
+    createdAt: Date;
     user: {
+        name: string;
         avatar: string;
     }
 }
@@ -38,27 +42,36 @@ interface SettingsCompanyData {
 }
 
 interface ModalServiceProps {
-    service: ServiceProps;
+    serviceData: Service;
 }
 
-export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
+export const ModalService: React.FC<ModalServiceProps> = ({ serviceData }) => {
     const { user } = useAuth();
     const [serviceFavorited, setServiceFavorited] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [assessments, setAssessments] = useState<Assessment[]>([]);
     const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
+    const [quantComments, setQuantComments] = useState(3);
+    const [service, setService] = useState<Service>({} as Service);
 
 
     useEffect(() => {
-        api.get<Assessment[]>(`/assessments/service/${service.id}`)
-            .then(response => {
-                setAssessments(response.data);
-            })
+        if (service.id) {
+            api.get<Assessment[]>(`/assessments/service/${service.id}`)
+                .then(response => {
+                    setAssessments(response.data);
+                })
+        }
 
-        api.get(`/entrepreneurs/${service.company_id}`)
-            .then((response) => setSettings(response.data))
-            .catch(err => console.log(err));
-    }, [service.id, service.company_id]);
+        if (service.company_id) {
+            api.get(`/entrepreneurs/${service.company_id}`)
+                .then((response) => setSettings(response.data))
+                .catch(err => console.log(err));
+        }
+
+        setService(serviceData);
+
+    }, [service.id, service.company_id, setService]);
 
     function openModal() {
         setModalIsOpen(true);
@@ -69,11 +82,13 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
     }
 
     const verifyServiceIsFavorited = useCallback(() => {
-        api.get(`users/favorite/${service.id}`).then((response) => {
-            if (response.data.length > 0) {
-                setServiceFavorited(true);
-            }
-        })
+        if (service) {
+            api.get(`users/favorite/${service.id}`).then((response) => {
+                if (response.data.length > 0) {
+                    setServiceFavorited(true);
+                }
+            })
+        }
     }, [service.id, setServiceFavorited]);
 
     const handleFavoriteService = useCallback(async () => {
@@ -90,6 +105,20 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
         setAssessments((prevAssessments) => [...prevAssessments, newAssessment]);
     }, []);
 
+    const handleShowMoreComments = useCallback(() => {
+        if (quantComments < assessments.length) {
+            const newQuantComments = quantComments + 3;
+            setQuantComments(newQuantComments);
+        }
+    }, [quantComments, assessments]);
+
+    const handleShowLessComments = useCallback(() => {
+        if (quantComments > 3) {
+            const newQuantComments = quantComments - 3;
+            setQuantComments(newQuantComments);
+        }
+    }, [quantComments, assessments]);
+
     useEffect(() => {
         verifyServiceIsFavorited();
     }, [verifyServiceIsFavorited])
@@ -102,7 +131,7 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
                     <span className="font-light text-xs">{service.category}</span>
                     <AssessmentsStars stars={service.stars} />
                     <span className="font-inter font-semibold text-amber-900 text-lg">
-                        {service.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                        {service.price && service.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </span>
                 </div>
             </div>
@@ -135,12 +164,31 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
                             <span className="font-inter font-semibold">Avaliações</span>
                             <p className="font-inter font-light text-xs">{assessments.length} comentário(s)</p>
                         </div>
-                        {assessments.slice(-3).map(assessment => (
+                        {assessments.slice(-quantComments).map(assessment => (
                             <Assessments
                                 key={assessment.id}
                                 data={assessment}
                             />
                         ))}
+                        <div className="flex flex-row gap-80">
+                            {quantComments < assessments.length && (
+                                <button
+                                    onClick={handleShowMoreComments}
+                                    className="text-sm text-blue-600 hover:underline mt-6"
+                                >
+                                    Exibir mais comentários
+                                </button>
+                            )}
+
+                            {quantComments > 3 && (
+                                <button
+                                    onClick={handleShowLessComments}
+                                    className="text-sm text-blue-600 hover:underline mt-6"
+                                >
+                                    Exibir menos comentários
+                                </button>
+                            )}
+                        </div>
                     </div>
                 ) : (
                     <div className="flex flex-col mt-[2.25rem]">
@@ -159,6 +207,7 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
                             `http://localhost:3333/avatar/${user.avatar}`
                         }
                         onAddAssessment={handleAddAssessments}
+                        setService={setService}
                     />
                 </div>
             </div>

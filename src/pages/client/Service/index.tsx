@@ -134,7 +134,7 @@ export const Service: React.FC = () => {
                     hightLightServices && (
                         <div className="mt-11 flex flex-col font-montserrat font-semibold text-xl">
                             <span>Em destaque</span>
-                            <div className="mt-3 grid grid-cols-1 sm:grid-cols-4 gap-4">
+                            <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {
                                     hightLightServices.map(hightLightService => (
                                         <Card key={hightLightService.id} service={hightLightService} highlight />
@@ -152,8 +152,8 @@ export const Service: React.FC = () => {
                                 <div className="mt-8 flex flex-col font-montserrat font-semibold text-xl" key={category}>
                                     <span>{category}</span>
                                     <p className="font-light text-sm">{servicesByCategory[category].length} itens</p>
-                                    <div className="mt-3 grid grid-cols-1 sm:grid-cols-4 gap-12">
-                                        {servicesByCategory[category].map((service) => (
+                                    <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        {services.map((service) => (
                                             <div key={service.id}>
                                                 <Card service={service} />
                                             </div>

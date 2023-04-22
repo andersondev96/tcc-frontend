@@ -119,6 +119,7 @@ export const BusinessEdit: React.FC = () => {
     const [address, setAddress] = useState<Address>({});
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [category, setCategory] = useState("");
     const [scheduleItems, setScheduleItems] = useState([
         {
             weekday: '',
@@ -150,6 +151,20 @@ export const BusinessEdit: React.FC = () => {
     }, [params.id, setHasPhysicalLocation, setCompany, setAddress]);
 
     useEffect(() => {
+        async function fetchCategoryByCompany() {
+            try {
+                if (company.category_id) {
+                    const response = await api.get(`/categories/${company.category_id}`);
+
+                    if (response.data) {
+                        setCategory(response.data.id);
+                    }
+                }
+            } catch (err) {
+                console.log("Ocorreu um erro ao realizar a requisição");
+            }
+        }
+
         async function fetchCategories() {
             try {
                 const response = await api.get<ICategories[]>("/categories");
@@ -159,8 +174,9 @@ export const BusinessEdit: React.FC = () => {
             }
         }
 
+        fetchCategoryByCompany();
         fetchCategories();
-    }, [setCategories]);
+    }, [company.category_id, setCategory, setCategories]);
 
     useEffect(() => {
         async function fetchTags() {
@@ -436,11 +452,11 @@ export const BusinessEdit: React.FC = () => {
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Select
-                                    name="category_id"
+                                    name="category"
                                     label="Categoria"
                                     idTooltip="tooltip-category"
+                                    value={category}
                                     tooltipText="Selecione a categoria do seu MEI nesta lista. Esta categoria ajudará o cliente a identificar qual é a sua especialidade"
-                                    value={company.category_id}
                                     options={categories.map(category => ({
                                         value: category.id, label: category.name
                                     }))}

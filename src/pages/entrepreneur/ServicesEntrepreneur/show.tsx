@@ -8,7 +8,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../../services/api";
 import { Assessments } from "../../client/components/Assessments";
-import { AssessmentsStars } from "../../client/components/AssessmentsStars";
 import { PreviousPageButton } from "../../client/components/PreviousPageButton";
 
 interface ServiceData {
@@ -26,7 +25,9 @@ interface AssessmentsData {
     user_id: string;
     comment: string;
     stars: number;
+    createdAt: Date;
     user: {
+        name: string;
         avatar: string;
     }
 }
@@ -35,6 +36,7 @@ export const ShowServicesEntrepreneur: React.FC = () => {
     const { id } = useParams();
     const [service, setService] = useState<ServiceData>({} as ServiceData);
     const [assessments, setAssessments] = useState<AssessmentsData[]>([]);
+    const [quantComments, setQuantComments] = useState(5);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -50,6 +52,20 @@ export const ShowServicesEntrepreneur: React.FC = () => {
         toast.success("Serviço excluído com sucesso!");
         navigate('/admin/services');
     }, [service.id, toast, navigate]);
+
+    const handleShowMoreComments = useCallback(() => {
+        if (quantComments < assessments.length) {
+            const newQuantComments = quantComments + 5;
+            setQuantComments(newQuantComments);
+        }
+    }, [quantComments, assessments]);
+
+    const handleShowLessComments = useCallback(() => {
+        if (quantComments > 5) {
+            const newQuantComments = quantComments - 5;
+            setQuantComments(newQuantComments);
+        }
+    }, [quantComments, assessments]);
 
     return (
         <div className="flex flex-row">
@@ -94,18 +110,30 @@ export const ShowServicesEntrepreneur: React.FC = () => {
                         <div className="flex flex-col mt-8 sm:mt-10 gap-1">
                             <span className="font-inter font-medium text-sm">Avaliações</span>
                             <p className="font-inter font-light text-sm">{assessments.length} avaliações recebidas</p>
-                            {assessments.map(assessment => (
-                                <div className="flex flex-row items-center gap-3">
-                                    <AssessmentsStars stars={assessment.stars} mode="view" />
-                                    <span
-                                        className="font-inter font-semibold text-xs text-gray-700"
-                                    >
-                                        {assessment.stars}
-                                    </span>
+                            {assessments.slice(-quantComments).map(assessment => (
+                                <div className="flex flex-col gap-3">
                                     <Assessments data={assessment} />
-                                    <span className="mt-4 font-inter font-medium text-sm text-blue-600">Veja todos os comentários</span>
                                 </div>
                             ))}
+                            <div className="flex flex-row gap-80">
+                                {quantComments < assessments.length && (
+                                    <button
+                                        onClick={handleShowMoreComments}
+                                        className="text-sm text-blue-600 hover:underline mt-6"
+                                    >
+                                        Exibir mais comentários
+                                    </button>
+                                )}
+
+                                {quantComments > 5 && (
+                                    <button
+                                        onClick={handleShowLessComments}
+                                        className="text-sm text-blue-600 hover:underline mt-6"
+                                    >
+                                        Exibir menos comentários
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     ) : (
                         <div className="flex flex-col mt-[2.25rem]">
