@@ -30,6 +30,10 @@ interface Company {
     category_id: string;
 }
 
+interface EntrepreneurSettingsData {
+    highlight_services_quantity: number;
+}
+
 export const CreateServicesEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
     const [subcategories, setSubcategories] = useState([]);
@@ -84,6 +88,25 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                     abortEarly: false,
                 });
 
+                if (highlight) {
+                    const limitHightLightServices = await api.get<EntrepreneurSettingsData>(`/entrepreneurs`).then(response => {
+                        if (response.data) {
+                            return response.data.highlight_services_quantity;
+                        }
+                    });
+
+                    const quantHighlightServices = await api.get<ServiceData[]>(`/services/company/${company.id}`).then(response => {
+                        if (response.data) {
+                            return response.data.filter(service => service.highlight_service).length;
+                        }
+                    });
+
+                    if (limitHightLightServices && quantHighlightServices && quantHighlightServices >= limitHightLightServices) {
+                        toast.error("Você não pode colocar mais serviços em destaque, ajuste o seu limite ou remova serviços em destaque.");
+                        return;
+                    }
+                }
+
                 const service = {
                     name: data.name,
                     description: data.description,
@@ -94,6 +117,8 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                 };
 
                 const response = await api.post(`/services/${company.id}`, service);
+
+                console.log(response);
 
                 if (response.status === 201) {
                     if (!imageService.entries().next().done) {

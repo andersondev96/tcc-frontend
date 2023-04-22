@@ -170,7 +170,7 @@ export const ServicesEntrepreneur: React.FC = () => {
                             {
                                 showInfoUploadXLSX && (
                                     <div className="flex flex-col mt-2">
-                                        <span className="text-sm">Para adicionar uma lista comn vários serviços, faça download desse .csv e depois faça upload do arquivo aqui na página</span>
+                                        <span className="text-sm">Para adicionar uma lista com vários serviços, faça download desse .csv e depois faça upload do arquivo aqui na página</span>
                                         <a
                                             href="https://github.com/andersondev96/tcc-frontend/blob/1b5ca2b6376d48f800ce6e27a144b5fac6b3b3cf/src/assets/services.xlsx"
                                             target="_blank"
