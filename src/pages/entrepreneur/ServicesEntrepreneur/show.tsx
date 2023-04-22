@@ -56,10 +56,7 @@ export const ShowServicesEntrepreneur: React.FC = () => {
             <SideBar pageActive="servicos" />
             <div className="flex flex-col w-full sm:ml-64 p-8">
                 <PreviousPageButton />
-                <div className="flex flex-row items-center gap-6 sm:gap-12 px-24 py-12  border-gray-300">
-                    {service.image_url && (
-                        <img src={service.image_url} alt="" className="w-12 h-12 sm:w-16 sm:h-16 object-fill rounded-full" />
-                    )}
+                <div className="flex flex-row items-center gap-6 sm:gap-12 px-24 pt-12  border-gray-300">
                     <div className="flex flex-col gap-1">
                         <span className="font-inter font-bold text-2xl text-gray-800">{service.name}</span>
                         <span className="font-inter font-light text-sm">{service.category}</span>
@@ -84,6 +81,14 @@ export const ShowServicesEntrepreneur: React.FC = () => {
                             {service.price ? service.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Preço indisponível'}
                         </p>
                     </div>
+
+                    {service.image_url && (
+                        <div className="flex flex-col gap-1">
+                            <span className="font-inter font-medium text-base">Imagem</span>
+                            <img src={service.image_url} alt={service.name} className="w-24 h-24 sm:w-60 sm:h-48 object-fill rounded mt-2" />
+                        </div>
+                    )}
+
 
                     {assessments.length > 0 ? (
                         <div className="flex flex-col mt-8 sm:mt-10 gap-1">

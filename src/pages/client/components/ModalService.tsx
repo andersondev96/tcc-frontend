@@ -60,8 +60,6 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
             .catch(err => console.log(err));
     }, [service.id, service.company_id]);
 
-    const IMAGE_DEFAULT = "https://images.unsplash.com/photo-1600456899121-68eda5705257?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1557&q=80";
-
     function openModal() {
         setModalIsOpen(true);
     }
@@ -98,8 +96,7 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
 
     return (
         <div className="py-16 px-12">
-            <div className="flex flex-row items-center gap-12 h-32">
-                <img src={service.image_url || IMAGE_DEFAULT} alt={service.name} className="w-20 h-20 object-fill rounded-full" />
+            <div className="flex flex-row items-center gap-12 h-32 mt-4">
                 <div className="flex flex-col gap-1">
                     <span className="font-inter font-medium text-xl">{service.name}</span>
                     <span className="font-light text-xs">{service.category}</span>
@@ -111,10 +108,18 @@ export const ModalService: React.FC<ModalServiceProps> = ({ service }) => {
             </div>
             <div className=" flex flex-col">
                 <div className="flex flex-col gap-2">
-                    <span className="font-inter font-semibold text-lg">Descrição</span>
-                    <p className="font-inter font-light text-lg">
-                        {service.description}
-                    </p>
+                    <div className="mt-2">
+                        <span className="font-inter font-semibold text-lg">Descrição</span>
+                        <p className="font-inter font-light text-lg">
+                            {service.description}
+                        </p>
+                    </div>
+                    {service.image_url && (
+                        <div className="mt-2">
+                            <span className="font-inter font-semibold text-lg">Imagem</span>
+                            <img src={service.image_url} alt={service.name} className="w-24 h-24 sm:w-56 sm:h-44 object-fill rounded mt-2" />
+                        </div>
+                    )}
                     <div className="mt-6 flex flex-row gap-[2.75rem]">
                         <ButtonAction
                             type="favorite"
