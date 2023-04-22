@@ -64,7 +64,9 @@ interface AssessmentData {
     user_id: string;
     comment: string;
     stars: number;
+    createdAt: Date;
     user: {
+        name: string;
         avatar: string;
     }
 }
@@ -75,6 +77,7 @@ export const BusinessEntrepreneur: React.FC = () => {
     const [categoryName, setCategoryName] = useState<string>("");
     const [showFullScreenImages, setShowFullScreenImages] = useState(false);
     const [logo, setLogo] = useState("");
+    const [quantComments, setQuantComments] = useState(5);
 
     useEffect(() => {
         async function loadCategory(category_id: string) {
@@ -109,6 +112,20 @@ export const BusinessEntrepreneur: React.FC = () => {
             description: ''
         }
     }, []);
+
+    const handleShowMoreComments = useCallback(() => {
+        if (quantComments <= assessments.length) {
+            const newQuantComments = quantComments + 5;
+            setQuantComments(newQuantComments);
+        }
+    }, [quantComments, assessments]);
+
+    const handleShowLessComments = useCallback(() => {
+        if (quantComments > 5) {
+            const newQuantComments = quantComments - 5;
+            setQuantComments(newQuantComments);
+        }
+    }, [quantComments, assessments]);
 
     useEffect(() => {
         if (company) {
@@ -331,11 +348,30 @@ export const BusinessEntrepreneur: React.FC = () => {
                                 <div className="flex flex-col mt-8 sm:mt-10 gap-1">
                                     <span className="font-inter font-medium text-sm">Avaliações</span>
                                     <p className="font-inter font-light text-sm">{assessments.length} avaliações recebidas</p>
-                                    {assessments.map(assessment => (
+                                    {assessments.slice(-quantComments).map(assessment => (
                                         <div key={assessment.id} className="flex flex-row items-center gap-3">
                                             <Assessments key={assessment.id} data={assessment} />
                                         </div>
                                     ))}
+                                    <div className="flex flex-row gap-80">
+                                        {quantComments <= assessments.length && (
+                                            <button
+                                                onClick={handleShowMoreComments}
+                                                className="text-sm text-blue-600 hover:underline mt-6"
+                                            >
+                                                Exibir mais comentários
+                                            </button>
+                                        )}
+
+                                        {quantComments > 5 && (
+                                            <button
+                                                onClick={handleShowLessComments}
+                                                className="text-sm text-blue-600 hover:underline mt-6"
+                                            >
+                                                Exibir menos comentários
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="flex flex-col mt-[2.25rem]">
