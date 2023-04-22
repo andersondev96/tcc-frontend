@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 
 import { RequireAuth } from '../hooks/RequireAuth';
@@ -210,6 +210,9 @@ export const Router: React.FC = () => {
                     </RequireAuth>
                 }
             />
+
+            <Route path="*" element={<Home />} />
+            <Route path="/*" element={<Navigate to="/" />} />
         </Routes>
     );
 };
