@@ -103,7 +103,9 @@ export const EditServicesEntrepreneur: React.FC = () => {
                     abortEarly: false,
                 });
 
-                if (highlight) {
+
+
+                if (highlight && highlight !== service.highlight_service) {
                     const limitHightLightServices = await api.get<EntrepreneurSettingsData>(`/entrepreneurs`).then(response => {
                         if (response.data) {
                             return response.data.highlight_services_quantity;
@@ -122,7 +124,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
                     }
                 }
 
-                const service = {
+                const serviceData = {
                     name: data.name,
                     description: data.description,
                     price: data.price,
@@ -130,7 +132,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
                     highlight_service: highlight,
                 };
 
-                const response = await api.put(`/services/${params.id}`, service);
+                const response = await api.put(`/services/${params.id}`, serviceData);
 
                 console.log(response);
 
