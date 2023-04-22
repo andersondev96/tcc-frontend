@@ -237,21 +237,42 @@ export const BusinessEntrepreneur: React.FC = () => {
                             }
 
                             {
-                                company.Address && (
+                                company.Address && company.physical_localization ? (
                                     <div className="flex flex-col gap-1">
                                         <span className="font-inter font-medium">
-                                            Endereço
+                                            Localização
                                         </span>
-                                        <p className="font-inter text-sm text-justify">
+                                        <a
+                                            href={`https://www.google.com/maps/search/${company.Address.cep}/@-19.5406953,-43.4148527,11z/data=!3m1!4b1`}
+                                            target="_blank"
+                                            className="font-inter text-sm text-justify cursor-pointer hover:underline hover:text-blue-600">
                                             {company.Address.street && company.Address.street}  {" "}
                                             {company.Address.district && company.Address.district} {" "}
                                             {company.Address.number && company.Address.number} {" "}
                                             {company.Address.cep && formatCEP(company.Address.cep)} {" "}
                                             {company.Address.city} - {" "}
                                             {company.Address.state}
-                                        </p>
+                                        </a>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col gap-1">
+                                        <span className="font-inter font-medium">
+                                            Localização
+                                        </span>
+                                        <a
+                                            href={company.Address && `https://www.google.com/maps/search/${company.Address.cep || company.Address.city}/@-19.5406953,-43.4148527,11z/data=!3m1!4b1`}
+                                            target="_blank"
+                                            className="font-inter text-sm text-justify hover:underline hover:text-blue-600">
+                                            {company.Address && (
+                                                <p>
+                                                    {company.Address.city} - {company.Address.state}
+                                                </p>
+                                            )}
+                                        </a>
                                     </div>
                                 )
+
+
                             }
 
 

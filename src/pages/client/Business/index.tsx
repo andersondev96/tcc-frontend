@@ -50,6 +50,7 @@ interface Company {
     services: string[];
     stars: number;
     contact: IContact;
+    physical_localization: boolean;
     ImageCompany: ImageCompany[];
     Address: IAddress;
     Schedule: ISchedules[];
@@ -152,7 +153,7 @@ export const Business: React.FC = () => {
                     }
 
                     {
-                        company.Address && (
+                        company.Address && company.physical_localization ? (
                             <Paragraph
                                 title="Endereço"
                                 text={`
@@ -163,7 +164,19 @@ export const Business: React.FC = () => {
                                 ${company.Address.city} -
                                 ${company.Address.state}`
                                 }
+                                link={`https://www.google.com/maps/search/${company.Address.cep}/@-19.5406953,-43.4148527,11z/data=!3m1!4b1`}
                             />
+                        ) : (
+                            company.Address && (
+                                <Paragraph
+                                    title="Endereço"
+                                    text={`
+                                ${company.Address.city} -
+                                ${company.Address.state}`
+                                    }
+                                    link={`https://www.google.com/maps/search/${company.Address.cep || company.Address.city}/@-19.5406953,-43.4148527,11z/data=!3m1!4b1`}
+                                />
+                            )
                         )
                     }
 
