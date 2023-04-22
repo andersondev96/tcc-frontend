@@ -88,8 +88,10 @@ export const BusinessEntrepreneur: React.FC = () => {
         api
             .get('/companies/me')
             .then(response => {
-                setCompany(response.data);
-                loadCategory(response.data.category_id);
+                if (response.data) {
+                    setCompany(response.data);
+                    loadCategory(response.data.category_id);
+                }
             })
             .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error))
 
