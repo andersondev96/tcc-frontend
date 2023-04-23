@@ -125,8 +125,12 @@ export const Business: React.FC = () => {
     }, [company.id, setCompanyFavorited, companyFavorited]);
 
 
-    const handleAddAssessments = useCallback((newAssessment: Assessment) => {
+    const handleAddAssessments = useCallback(async (newAssessment: Assessment) => {
         setAssessments((prevAssessments) => [...prevAssessments, newAssessment]);
+        await api.get<Assessment[]>(`/assessments/company/${params.id}`)
+            .then(response => {
+                setAssessments(response.data);
+            });
     }, [setAssessments]);
 
     const handleShowMoreComments = useCallback(() => {
@@ -318,9 +322,7 @@ export const Business: React.FC = () => {
                                     <AssessmentsForm
                                         table_id={company.id}
                                         assessment_type="company"
-                                        avatar_url={user.avatar &&
-                                            `http://localhost:3333/avatar/${user.avatar}`
-                                        }
+                                        user={user}
                                         onAddAssessment={handleAddAssessments}
                                         setCompany={setCompany}
                                     />

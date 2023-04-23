@@ -16,6 +16,12 @@ interface Assessment {
     }
 }
 
+interface User {
+    id: string;
+    name: string;
+    avatar: string;
+}
+
 interface IContact {
     telephone: string;
     whatsapp?: string;
@@ -75,14 +81,14 @@ interface Service {
 interface AssessmentFormProps {
     table_id: string;
     assessment_type: string;
-    avatar_url?: string;
+    user: User;
     onAddAssessment: (newAssessment: Assessment) => void;
     updateCompany?: (newAssessmentStars: number) => void;
     setCompany?: Dispatch<SetStateAction<Company>>;
     setService?: Dispatch<SetStateAction<Service>>;
 }
 
-export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, assessment_type, onAddAssessment, avatar_url, setCompany, setService }) => {
+export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, assessment_type, onAddAssessment, user, setCompany, setService }) => {
     const [comment, setComment] = useState("");
     const [stars, setStars] = useState(0);
     const params = useParams();
@@ -94,12 +100,19 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, asses
         if (assessment_type === "company") {
             const response = await api.post(`/assessments/company/${table_id}`, {
                 comment,
-                stars
+                stars,
             });
 
             if (response.status === 201) {
-                const newAssessment: Assessment = response.data;
+                const newAssessment: Assessment = {
+                    ...response.data,
+                    name: user.name,
+                    avatar: user.avatar,
+                };
+
                 onAddAssessment(newAssessment);
+                setComment("");
+                setStars(0);
 
                 const companyUpdated = await api.get(`/companies/${table_id}`);
 
@@ -115,8 +128,15 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, asses
             });
 
             if (response.status === 201) {
-                const newAssessment: Assessment = response.data;
+                const newAssessment: Assessment = {
+                    ...response.data,
+                    name: user.name,
+                    avatar: user.avatar,
+                };
+
                 onAddAssessment(newAssessment);
+                setComment("");
+                setStars(0);
 
                 const serviceUpdated = await api.get(`/services/${table_id}`);
 
@@ -126,8 +146,7 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, asses
             }
         }
 
-        setComment("");
-        setStars(0);
+
         setHasComment(false);
 
     }, [comment, stars, setStars, table_id, onAddAssessment, setCompany, setService]);
@@ -153,7 +172,8 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, asses
             <form className="flex flex-col gap-4" method="get" onSubmit={handleSubmit} action="">
                 <div className="flex flex-row items-center gap-6">
                     <img
-                        src={avatar_url || AvatarImg}
+                        src={user.avatar &&
+                            `http://localhost:3333/avatar/${user.avatar}` || AvatarImg}
                         alt="avatar"
                         className="w-6 h-6 sm:h-10 sm:w-10 rounded-full"
                     />

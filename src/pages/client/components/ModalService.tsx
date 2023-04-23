@@ -101,9 +101,16 @@ export const ModalService: React.FC<ModalServiceProps> = ({ serviceData }) => {
         }
     }, [serviceFavorited, setServiceFavorited, service.id]);
 
-    const handleAddAssessments = useCallback((newAssessment: Assessment) => {
+    const handleAddAssessments = useCallback(async (newAssessment: Assessment) => {
         setAssessments((prevAssessments) => [...prevAssessments, newAssessment]);
-    }, []);
+
+        if (service.id) {
+            await api.get<Assessment[]>(`/assessments/service/${service.id}`)
+                .then(response => {
+                    setAssessments(response.data);
+                });
+        }
+    }, [setAssessments, service.id]);
 
     const handleShowMoreComments = useCallback(() => {
         if (quantComments < assessments.length) {
@@ -203,9 +210,7 @@ export const ModalService: React.FC<ModalServiceProps> = ({ serviceData }) => {
                     <AssessmentsForm
                         table_id={service.id}
                         assessment_type="service"
-                        avatar_url={user.avatar &&
-                            `http://localhost:3333/avatar/${user.avatar}`
-                        }
+                        user={user}
                         onAddAssessment={handleAddAssessments}
                         setService={setService}
                     />
