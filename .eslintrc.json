@@ -13,6 +13,7 @@
     "overrides": [],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
+        "project": "./tsconfig.json",
         "ecmaFeatures": {
             "jsx": true
         },
@@ -23,7 +24,8 @@
         "react",
         "@typescript-eslint",
         "eslint-plugin-import-helpers",
-        "prettier"
+        "prettier",
+        "react-hooks"
     ],
     "rules": {
         "camelcase": "off",
@@ -94,6 +96,8 @@
             }
         ],
         "react/react-in-jsx-scope": "off",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
         "no-use-before-define": "off",
         "@typescript-eslint/no-use-before-define": [
             "error"
