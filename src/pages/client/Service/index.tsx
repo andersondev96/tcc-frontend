@@ -153,7 +153,7 @@ export const Service: React.FC = () => {
                                     <span>{category}</span>
                                     <p className="font-light text-sm">{servicesByCategory[category].length} itens</p>
                                     <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        {services.map((service) => (
+                                        {servicesByCategory[category].map((service) => (
                                             <div key={service.id}>
                                                 <Card service={service} />
                                             </div>

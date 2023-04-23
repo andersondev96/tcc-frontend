@@ -39,6 +39,10 @@ interface CompanyData {
     services: string[],
     physical_localization: boolean,
     Schedule: IScheduleItem[],
+    category: {
+        id: string;
+        name: string;
+    },
     contact: {
         telephone: string,
         whatsapp: string,
@@ -73,7 +77,10 @@ interface UpdateCompanyFormData {
     id: string;
     name: string;
     cnpj: string;
-    category_id: string;
+    category: {
+        id: string;
+        name: string;
+    },
     description: string;
     services: string[];
     physical_localization: boolean;
@@ -135,6 +142,7 @@ export const BusinessEdit: React.FC = () => {
                 const response = await api.get<CompanyData>(`companies/${params.id}`);
                 setHasPhysicalLocation(response.data.physical_localization);
                 setCompany(response.data);
+
                 setAddress({
                     cep: response.data.Address.cep,
                     logradouro: response.data.Address.street,
@@ -154,10 +162,20 @@ export const BusinessEdit: React.FC = () => {
         async function fetchCategoryByCompany() {
             try {
                 if (company.category_id) {
-                    const response = await api.get(`/categories/${company.category_id}`);
+                    const response = await api.get<ICategories>(`/categories/${company.category_id}`);
 
                     if (response.data) {
                         setCategory(response.data.id);
+                        if (category) {
+                            const newCompany = {
+                                ...company, category: {
+                                    id: response.data.id,
+                                    name: response.data.name,
+                                }
+                            }
+
+                            setCompany(newCompany);
+                        }
                     }
                 }
             } catch (err) {
@@ -176,7 +194,7 @@ export const BusinessEdit: React.FC = () => {
 
         fetchCategoryByCompany();
         fetchCategories();
-    }, [company.category_id, setCategory, setCategories]);
+    }, [company.category_id, setCategory, setCategories, setCompany, category]);
 
     useEffect(() => {
         async function fetchTags() {
@@ -324,11 +342,9 @@ export const BusinessEdit: React.FC = () => {
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
-                    category_id: Yup.string().required('Categoria obrigatório'),
                     cnpj: cnpjValidation(hasCNPJ),
 
                 });
-
                 await schema.validate(data, {
                     abortEarly: false,
                 });
@@ -336,7 +352,7 @@ export const BusinessEdit: React.FC = () => {
                 const companyData = {
                     name: data.name,
                     cnpj: data.cnpj,
-                    category_id: data.category_id,
+                    category_id: data.category.id,
                     services: tags,
                     description: data.description,
                     telephone: data.contact.telephone,
@@ -451,17 +467,20 @@ export const BusinessEdit: React.FC = () => {
 
                         <div className="flex flex-wrap -mx-3 md:mb-6">
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                                <Select
-                                    name="category"
-                                    label="Categoria"
-                                    idTooltip="tooltip-category"
-                                    value={category}
-                                    tooltipText="Selecione a categoria do seu MEI nesta lista. Esta categoria ajudará o cliente a identificar qual é a sua especialidade"
-                                    options={categories.map(category => ({
-                                        value: category.id, label: category.name
-                                    }))}
-                                    placeholder="Selecione uma opção"
-                                />
+                                {
+                                    company.category && (
+                                        <Select
+                                            name="category.id"
+                                            label="Categoria"
+                                            idTooltip="tooltip-category"
+                                            tooltipText="Selecione a categoria do seu MEI nesta lista. Esta categoria ajudará o cliente a identificar qual é a sua especialidade"
+                                            options={categories.map(category => ({
+                                                value: category.id, label: category.name
+                                            }))}
+                                            placeholder="Selecione uma opção"
+                                        />
+                                    )
+                                }
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <div className="flex flex-wrap rounded-lg">
