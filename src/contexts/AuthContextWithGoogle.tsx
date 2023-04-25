@@ -1,37 +1,46 @@
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { ReactNode, createContext, useContext, useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+    ReactNode,
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
+
 import api from "../services/api";
 import { auth } from "../services/firebase";
 
-type User = {
+interface User {
     id: string;
     name: string;
     email: string;
     avatar: string;
-};
+}
 
-type AuthContextWithGoogleType = {
+interface AuthContextWithGoogleType {
     user: User | undefined;
+    authenticated: boolean;
     signInWithGoogle: () => Promise<void>;
-    signOutWithGoogle: () => Promise<void>;
-};
+    signOutWithGoogle: () => void;
+}
 
-type AuthContextProviderProps = {
+interface AuthContextProviderProps {
     children: ReactNode;
-};
+}
 
-const AuthContextWithGoogle = createContext(
-    {} as AuthContextWithGoogleType
-);
+const AuthContextWithGoogle = createContext({} as AuthContextWithGoogleType);
 
-function AuthContextProviderWithGoogle(props: AuthContextProviderProps) {
+function AuthContextProviderWithGoogle(
+    props: AuthContextProviderProps
+): JSX.Element {
     const [user, setUser] = useState<User>();
+    const [authenticated, setAuthenticated] = useState(false);
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                const { uid, displayName, email, photoURL, } = user;
+            if (user != null) {
+                const { uid, displayName, email, photoURL } = user;
 
                 if (!displayName || !email || !photoURL) {
                     throw new Error("Missing information from Google Account.");
@@ -51,39 +60,32 @@ function AuthContextProviderWithGoogle(props: AuthContextProviderProps) {
         };
     }, []);
 
-    async function signInWithGoogle() {
+    async function signInWithGoogle(): Promise<void> {
         const provider = new GoogleAuthProvider();
 
         const result = await signInWithPopup(auth, provider);
 
         if (result.user) {
             const { uid, displayName, email, photoURL } = result.user;
-            const token = await result.user.getIdToken();
-
-            localStorage.setItem('@web:token', token);
-            localStorage.setItem('@web:user', JSON.stringify(result));
-
-            const response = await api.get("users/email", {
-                params: {
-                    email: email
-                }
-            });
-
-            if (!response.data) {
-
-                const data = {
-                    name: displayName,
-                    email: email,
-                    password: uuidv4(),
-                    isEntrepreneur: false,
-                }
-
-                await api.post("/users", data);
-            }
 
             if (!displayName || !email || !photoURL) {
                 throw new Error("Missing information from Google Account.");
             }
+
+            const response = await api.post("/sessions/google-auth", {
+                name: displayName,
+                email,
+                avatar: photoURL,
+            });
+
+            const { token, user } = response.data;
+
+            localStorage.setItem("@web:token", token);
+            localStorage.setItem("@web:user", JSON.stringify(user));
+
+            api.defaults.headers.authorization = `Bearer ${token}`;
+
+            setAuthenticated(true);
 
             setUser({
                 id: uid,
@@ -94,17 +96,16 @@ function AuthContextProviderWithGoogle(props: AuthContextProviderProps) {
         }
     }
 
-    async function signOutWithGoogle() {
-        try {
-            await signOut(auth);
-        } catch (err) {
-            console.log(err);
-        }
-    }
+    const signOutWithGoogle = useCallback(() => {
+        localStorage.removeItem("@web:token");
+        localStorage.removeItem("@web:user");
+
+        setAuthenticated(false);
+    }, []);
 
     return (
         <AuthContextWithGoogle.Provider
-            value={{ user, signInWithGoogle, signOutWithGoogle }}
+            value={{ user, authenticated, signInWithGoogle, signOutWithGoogle }}
         >
             {props.children}
         </AuthContextWithGoogle.Provider>
@@ -118,4 +119,3 @@ function useAuthGoogle(): AuthContextWithGoogleType {
 }
 
 export { AuthContextProviderWithGoogle, useAuthGoogle };
-

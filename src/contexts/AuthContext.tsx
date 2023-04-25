@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useCallback, useContext, useState } from "react";
+import {
+    createContext,
+    ReactNode,
+    useCallback,
+    useContext,
+    useState,
+} from "react";
 
 import api from "../services/api";
 
@@ -22,16 +28,16 @@ interface SignInCredentials {
 
 interface AuthContextData {
     user: User;
-    signIn(credentials: SignInCredentials): Promise<void>;
-    signOut(): void;
-    updateUser(user: User): void;
+    signIn: (credentials: SignInCredentials) => Promise<void>;
+    signOut: () => void;
+    updateUser: (user: User) => void;
     authenticated: boolean;
     isAdmin: boolean;
 }
 
-type AuthContextProviderProps = {
+interface AuthContextProviderProps {
     children: ReactNode;
-};
+}
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
@@ -40,7 +46,7 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
     const [isAdmin, setIsAdmin] = useState(false);
 
     const verifyUserIsAdmin = useCallback(async () => {
-        const response = await api.get('users/entrepreneur');
+        const response = await api.get("users/entrepreneur");
 
         if (response.data) {
             setIsAdmin(true);
@@ -50,8 +56,8 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
     }, [setIsAdmin]);
 
     const [data, setData] = useState<AuthState>(() => {
-        const token = localStorage.getItem('@web:token');
-        const user = localStorage.getItem('@web:user');
+        const token = localStorage.getItem("@web:token");
+        const user = localStorage.getItem("@web:user");
 
         if (token && user) {
             api.defaults.headers.authorization = `Bearer ${token}`;
@@ -63,47 +69,61 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
         return {} as AuthState;
     });
 
-    const signIn = useCallback(async ({ email, password }: SignInCredentials) => {
+    const signIn = useCallback(
+        async ({ email, password }: SignInCredentials) => {
+            const response = await api.post("/sessions", {
+                email,
+                password,
+            });
 
-        const response = await api.post('/sessions', {
-            email,
-            password
-        });
+            const { token, user } = response.data;
 
-        const { token, user } = response.data;
+            localStorage.setItem("@web:token", token);
+            localStorage.setItem("@web:user", JSON.stringify(user));
 
-        localStorage.setItem('@web:token', token);
-        localStorage.setItem('@web:user', JSON.stringify(user));
+            api.defaults.headers.authorization = `Bearer ${token}`;
 
-        api.defaults.headers.authorization = `Bearer ${token}`;
-
-        setAuthenticated(true);
-        setData({ token, user });
-    }, []);
+            setAuthenticated(true);
+            setData({ token, user });
+        },
+        []
+    );
 
     const signOut = useCallback(() => {
-        localStorage.removeItem('@web:token');
-        localStorage.removeItem('@web:user');
+        localStorage.removeItem("@web:token");
+        localStorage.removeItem("@web:user");
 
         setAuthenticated(false);
         setData({} as AuthState);
     }, []);
 
-    const updateUser = useCallback((user: User) => {
-        localStorage.setItem('@web:user', JSON.stringify(user));
+    const updateUser = useCallback(
+        (user: User) => {
+            localStorage.setItem("@web:user", JSON.stringify(user));
 
-        setData({
-            token: data.token,
-            user
-        })
-    }, [setData, data.token]);
+            setData({
+                token: data.token,
+                user,
+            });
+        },
+        [setData, data.token]
+    );
 
     return (
-        <AuthContext.Provider value={{ user: data.user, signIn, signOut, updateUser, authenticated, isAdmin }}>
+        <AuthContext.Provider
+            value={{
+                user: data.user,
+                signIn,
+                signOut,
+                updateUser,
+                authenticated,
+                isAdmin,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
-};
+}
 
 function useAuth(): AuthContextData {
     const context = useContext(AuthContext);

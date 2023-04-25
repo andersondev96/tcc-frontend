@@ -1,95 +1,85 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { ChatIcon, MenuIcon, XIcon } from '@heroicons/react/solid';
+import { ChatIcon, MenuIcon, XIcon } from "@heroicons/react/solid";
+import PropTypes from "prop-types";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import { useAuth } from "../../contexts/AuthContext";
-import { useAuthGoogle } from "../../contexts/AuthContextWithGoogle";
 import api from "../../services/api";
 import { ModalChat } from "../ModalChat";
 import { ModalContainer } from "../ModalContainer";
 
-interface NavBarProps {
+interface INavBarProps {
     pageCurrent?: string;
 }
 
-interface SettingsCompanyData {
+interface ISettingsCompanyData {
     id: string;
     entrepreneur_id: string;
     online_budget: string;
     online_chat: string;
 }
 
-export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
+export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
+    NavBar.propTypes = {
+        pageCurrent: PropTypes.string,
+    };
+
     const { user, signOut } = useAuth();
-    const { user: googleUser, signOutWithGoogle } = useAuthGoogle();
     const [isAdmin, setIsAdmin] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const company_id = localStorage.getItem('@web:company_id');
-    const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
-    const [googleAuthenticated, setGoogleAuthenticated] = useState(false);
-
+    const company_id = localStorage.getItem("@web:company_id");
+    const [settings, setSettings] = useState<ISettingsCompanyData>();
 
     const handleToAdmPage = useCallback(async () => {
-        try {
-            await api.get('/users/entrepreneur').then(response => {
+        await api
+            .get("/users/entrepreneur")
+            .then((response) => {
                 if (response.data === null) {
-                    setIsAdmin(false)
+                    setIsAdmin(false);
                 } else {
                     setIsAdmin(true);
                 }
-            });
-        } catch (err) {
-            console.log(err);
-        }
+            })
+            .catch((err) => console.error(err));
     }, [setIsAdmin]);
 
     useEffect(() => {
-
-        if (company_id) {
+        if (company_id !== null) {
             api.get(`/entrepreneurs/${company_id}`)
                 .then((response) => setSettings(response.data))
-                .catch(err => console.log(err));
+                .catch((err) => console.log(err));
         }
 
-        if (googleUser) {
-            setGoogleAuthenticated(true);
-        }
+        void handleToAdmPage();
+    }, [company_id, handleToAdmPage]);
 
-        handleToAdmPage();
-    }, [company_id, handleToAdmPage, company_id, setSettings, googleUser, googleAuthenticated]);
-
-    function openModal() {
+    function openModal(): void {
         setModalIsOpen(true);
     }
 
-    function closeModal() {
+    function closeModal(): void {
         setModalIsOpen(false);
     }
-
-    const logOut = useCallback(() => {
-        try {
-            if (googleUser) {
-                signOutWithGoogle();
-                signOut();
-                setGoogleAuthenticated(false);
-            } else {
-                signOut();
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    }, [signOutWithGoogle, setGoogleAuthenticated, signOut]);
 
     const navigate = useNavigate();
 
     const navigation = [
-        { name: 'Home', href: '/', current: pageCurrent === 'home' },
-        { name: 'Negócio', href: `/business/${company_id}`, current: pageCurrent === 'negocio' },
-        { name: 'Serviços', href: `/services/${company_id}`, current: pageCurrent === 'servicos' },
-    ]
+        { name: "Home", href: "/", current: pageCurrent === "home" },
+        {
+            name: "Negócio",
+            href: `/business/${company_id ?? ""}`,
+            current: pageCurrent === "negocio",
+        },
+        {
+            name: "Serviços",
+            href: `/services/${company_id ?? ""}`,
+            current: pageCurrent === "servicos",
+        },
+    ];
 
-    function classNames(...classes: any) {
-        return classes.filter(Boolean).join(' ')
+    function classNames(...classes: any): any {
+        return classes.filter(Boolean).join(" ");
     }
 
     return (
@@ -100,13 +90,20 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                             <div className="relative flex h-16 items-center justify-between">
                                 <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-
                                     <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                                        <span className="sr-only">Abrir menu principal</span>
+                                        <span className="sr-only">
+                                            Abrir menu principal
+                                        </span>
                                         {open ? (
-                                            <XIcon className="block h-6 w-6" aria-hidden="true" />
+                                            <XIcon
+                                                className="block h-6 w-6"
+                                                aria-hidden="true"
+                                            />
                                         ) : (
-                                            <MenuIcon className="block h-6 w-6" aria-hidden="true" />
+                                            <MenuIcon
+                                                className="block h-6 w-6"
+                                                aria-hidden="true"
+                                            />
                                         )}
                                     </Disclosure.Button>
                                 </div>
@@ -124,8 +121,10 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                         key={item.name}
                                                         to={item.href}
                                                         className={classNames(
-                                                            item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                                            'px-3 py-2 rounded-md text-sm font-medium'
+                                                            item.current
+                                                                ? "bg-gray-900 text-white"
+                                                                : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                                                            "px-3 py-2 rounded-md text-sm font-medium"
                                                         )}
                                                     >
                                                         {item.name}
@@ -137,7 +136,6 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                 <Link
                                                     to="/"
                                                     className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-
                                                 >
                                                     Home
                                                 </Link>
@@ -146,44 +144,56 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                     </div>
                                 </div>
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                    {(user || googleAuthenticated) && (
+                                    {user && (
                                         <button
                                             onClick={openModal}
                                             type="button"
                                             className="rounded full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                         >
-                                            <span className="sr-only">Ver mensagens</span>
-                                            <ChatIcon className="h-6 w-6" aria-hidden="true" />
+                                            <span className="sr-only">
+                                                Ver mensagens
+                                            </span>
+                                            <ChatIcon
+                                                className="h-6 w-6"
+                                                aria-hidden="true"
+                                            />
                                         </button>
                                     )}
 
-                                    {user || googleAuthenticated ? (
-                                        <Menu as="div" className="relative ml-3">
+                                    {user ? (
+                                        <Menu
+                                            as="div"
+                                            className="relative ml-3"
+                                        >
                                             <div>
                                                 <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-5 focus:transition-shadow focus:duration-200 focus:ring-offset-2 focus:ring-offset-gray-800">
-                                                    <span className="sr-only">Abrir menu do usuário</span>
+                                                    <span className="sr-only">
+                                                        Abrir menu do usuário
+                                                    </span>
 
                                                     <div className="flex items-center">
-                                                        {!googleUser && user.avatar && (
+                                                        {user.avatar ? (
                                                             <div className="shrink-0">
-                                                                <img src={`http://localhost:3333/avatar/${user.avatar}`} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
+                                                                <img
+                                                                    src={`http://localhost:3333/avatar/${user.avatar}`}
+                                                                    alt="Avatar"
+                                                                    className="rounded-full h-8 sm:h-10 w-8 sm:w-10"
+                                                                />
                                                             </div>
+                                                        ) : (
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                viewBox="0 0 24 24"
+                                                                fill="#9ca3af"
+                                                                className="h-8 sm:h-10 w-8 sm:w-10"
+                                                            >
+                                                                <path
+                                                                    fillRule="evenodd"
+                                                                    d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                                                                    clipRule="evenodd"
+                                                                />
+                                                            </svg>
                                                         )}
-
-                                                        {googleUser && !user && (
-                                                            <div className="shrink-0">
-                                                                <img src={googleUser?.avatar} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
-                                                            </div>
-                                                        )}
-
-                                                        {
-                                                            user && !user.avatar && (
-                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#9ca3af" className="h-8 sm:h-10 w-8 sm:w-10">
-                                                                    <path fillRule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clipRule="evenodd" />
-                                                                </svg>
-                                                            )
-                                                        }
-
                                                     </div>
                                                 </Menu.Button>
                                             </div>
@@ -198,19 +208,21 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                             >
                                                 <Menu.Items className="absolute right-0 z-40 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                     <div className="border-b border-gray-400 border-opacity-40">
-                                                        <span
-                                                            className='block px-4 py-2 font-medium text-sm text-gray-700'
-                                                        >
-                                                            {!googleAuthenticated ? user.name : googleUser?.name}
+                                                        <span className="block px-4 py-2 font-medium text-sm text-gray-700">
+                                                            {user?.name}
                                                         </span>
-
                                                     </div>
 
                                                     <Menu.Item>
                                                         {({ active }) => (
                                                             <Link
                                                                 to="/profile"
-                                                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                                className={classNames(
+                                                                    active
+                                                                        ? "bg-gray-100"
+                                                                        : "",
+                                                                    "block px-4 py-2 text-sm text-gray-700"
+                                                                )}
                                                             >
                                                                 Perfil
                                                             </Link>
@@ -221,7 +233,12 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                         {({ active }) => (
                                                             <Link
                                                                 to="/budget"
-                                                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                                className={classNames(
+                                                                    active
+                                                                        ? "bg-gray-100"
+                                                                        : "",
+                                                                    "block px-4 py-2 text-sm text-gray-700"
+                                                                )}
                                                             >
                                                                 Orçamentos
                                                             </Link>
@@ -232,7 +249,12 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                         {({ active }) => (
                                                             <Link
                                                                 to="/favorites"
-                                                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                                className={classNames(
+                                                                    active
+                                                                        ? "bg-gray-100"
+                                                                        : "",
+                                                                    "block px-4 py-2 text-sm text-gray-700"
+                                                                )}
                                                             >
                                                                 Favoritos
                                                             </Link>
@@ -244,34 +266,48 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                                             {({ active }) => (
                                                                 <Link
                                                                     to="/admin/business"
-                                                                    className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                                    className={classNames(
+                                                                        active
+                                                                            ? "bg-gray-100"
+                                                                            : "",
+                                                                        "block px-4 py-2 text-sm text-gray-700"
+                                                                    )}
                                                                 >
-                                                                    Área administrativa
+                                                                    Área
+                                                                    administrativa
                                                                 </Link>
                                                             )}
                                                         </Menu.Item>
                                                     )}
 
-
                                                     <Menu.Item>
                                                         {({ active }) => (
                                                             <span
-                                                                onClick={logOut}
-                                                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700 cursor-pointer')}
+                                                                onClick={
+                                                                    signOut
+                                                                }
+                                                                className={classNames(
+                                                                    active
+                                                                        ? "bg-gray-100"
+                                                                        : "",
+                                                                    "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                                                                )}
                                                             >
                                                                 Sair
                                                             </span>
                                                         )}
                                                     </Menu.Item>
                                                 </Menu.Items>
-
                                             </Transition>
                                         </Menu>
                                     ) : (
                                         <div className="relative ml-3">
                                             <button
-                                                onClick={() => navigate('/login')}
-                                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded-full">
+                                                onClick={() =>
+                                                    navigate("/login")
+                                                }
+                                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded-full"
+                                            >
                                                 Login
                                             </button>
                                         </div>
@@ -288,8 +324,10 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                                         as="a"
                                         href={item.href}
                                         className={classNames(
-                                            item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                            'block px-3 py-2 rounded-md text-base font-medium'
+                                            item.current
+                                                ? "bg-gray-900 text-white"
+                                                : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                                            "block px-3 py-2 rounded-md text-base font-medium"
                                         )}
                                     >
                                         {item.name}
@@ -308,5 +346,5 @@ export const NavBar: React.FC<NavBarProps> = ({ pageCurrent }) => {
                 <ModalChat />
             </ModalContainer>
         </div>
-    )
-}
+    );
+};
