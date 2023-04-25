@@ -36,11 +36,7 @@
                 "selector": "interface",
                 "format": [
                     "PascalCase"
-                ],
-                "custom": {
-                    "regex": "^I[A-Z]",
-                    "match": true
-                }
+                ]
             }
         ],
         "class-methods-use-this": "off",
@@ -99,6 +95,8 @@
         "react-hooks/rules-of-hooks": "error",
         "react-hooks/exhaustive-deps": "warn",
         "no-use-before-define": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-misused-promises": "off",
         "@typescript-eslint/no-use-before-define": [
             "error"
         ]

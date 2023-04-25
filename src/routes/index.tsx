@@ -1,12 +1,7 @@
-import React from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import React from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-
-import { RequireAuth } from '../hooks/RequireAuth';
-import { ForgotPassword } from '../pages/ForgotPassword';
-import { ResetPassword } from '../pages/ResetPassword';
-import { SignIn } from "../pages/SignIn";
-import { SignUp } from "../pages/SignUp";
+import { RequireAuth } from "../hooks/RequireAuth";
 import { Budget } from "../pages/client/Budget";
 import { BudgetDetails } from "../pages/client/Budget/BudgetDetails";
 import { Business } from "../pages/client/Business";
@@ -17,18 +12,22 @@ import { Service } from "../pages/client/Service";
 import { BudgetEntrepreneur } from "../pages/entrepreneur/BudgetEntrepreneur";
 import { CreateProposal } from "../pages/entrepreneur/BudgetEntrepreneur/CreateProposal";
 import { DetailsBudgetEntrepreneur } from "../pages/entrepreneur/BudgetEntrepreneur/DetailsBudgetEntrepreneur";
-import { EditProposal } from '../pages/entrepreneur/BudgetEntrepreneur/EditProposal';
+import { EditProposal } from "../pages/entrepreneur/BudgetEntrepreneur/EditProposal";
 import { BusinessEntrepreneur } from "../pages/entrepreneur/BusinessEntrepreneur";
 import { BusinessCreate } from "../pages/entrepreneur/BusinessEntrepreneur/create";
-import { BusinessEdit } from '../pages/entrepreneur/BusinessEntrepreneur/edit';
+import { BusinessEdit } from "../pages/entrepreneur/BusinessEntrepreneur/edit";
 import { ChatEntrepreneur } from "../pages/entrepreneur/ChatEntrepreneur";
 import { ChatMessageEntrepreneur } from "../pages/entrepreneur/ChatEntrepreneur/ChatMessageEntrepreneur";
 import { ClientsEntrepreneur } from "../pages/entrepreneur/ClientsEntrepreneur";
 import { ServicesEntrepreneur } from "../pages/entrepreneur/ServicesEntrepreneur";
 import { CreateServicesEntrepreneur } from "../pages/entrepreneur/ServicesEntrepreneur/create";
-import { EditServicesEntrepreneur } from '../pages/entrepreneur/ServicesEntrepreneur/edit';
+import { EditServicesEntrepreneur } from "../pages/entrepreneur/ServicesEntrepreneur/edit";
 import { ShowServicesEntrepreneur } from "../pages/entrepreneur/ServicesEntrepreneur/show";
 import { Settings } from "../pages/entrepreneur/Settings";
+import { ForgotPassword } from "../pages/ForgotPassword";
+import { ResetPassword } from "../pages/ResetPassword";
+import { SignIn } from "../pages/SignIn";
+import { SignUp } from "../pages/SignUp";
 
 export const Router: React.FC = () => {
     return (
@@ -200,7 +199,8 @@ export const Router: React.FC = () => {
                     <RequireAuth>
                         <ChatMessageEntrepreneur />
                     </RequireAuth>
-                } />
+                }
+            />
 
             <Route
                 path="/admin/settings"

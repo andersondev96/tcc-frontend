@@ -1,25 +1,19 @@
+import { FormHandles } from "@unform/core";
+import { Form } from "@unform/web";
 import { useCallback, useRef } from "react";
+import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import * as Yup from "yup";
 
+import { Input } from "../components/Form/Input";
 import { useAuth } from "../contexts/AuthContext";
 import { useAuthGoogle } from "../contexts/AuthContextWithGoogle";
-
-
-import { FormHandles } from "@unform/core";
-import { Form } from "@unform/web";
-import { FcGoogle } from "react-icons/fc";
-import { Input } from "../components/Form/Input";
 import getValidationErrors from "../utils/getValidateErrors";
 
 interface SignInFormData {
     email: string;
     password: string;
-}
-
-interface LocationState {
-    path?: string;
 }
 
 export const SignIn: React.FC = () => {
@@ -58,12 +52,10 @@ export const SignIn: React.FC = () => {
 
                 await signIn({
                     email: data.email,
-                    password: data.password
+                    password: data.password,
                 });
 
                 navigate("/");
-
-
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
                     const errors = getValidationErrors(err);
@@ -75,7 +67,9 @@ export const SignIn: React.FC = () => {
 
                 toast.error("Error ao autenticar, tente novamente!");
             }
-        }, [signIn, toast, navigate]);
+        },
+        [signIn, navigate]
+    );
 
     return (
         <div className="bg-gray-100">
@@ -91,7 +85,6 @@ export const SignIn: React.FC = () => {
                             ref={formRef}
                             onSubmit={handleSubmit}
                         >
-
                             <div>
                                 <Input
                                     name="email"
@@ -110,27 +103,40 @@ export const SignIn: React.FC = () => {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-start">
                                     <div className="flex items-center h-5">
-                                        <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:underline">
+                                        <Link
+                                            to="/forgot-password"
+                                            className="text-sm font-medium text-blue-600 hover:underline"
+                                        >
                                             Esqueceu a senha?
                                         </Link>
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                            <button
+                                type="submit"
+                                className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                            >
                                 Entrar
                             </button>
                             <p className="text-sm font-light text-gray-500">
                                 Não possui uma conta?
-                                <Link to="/register" className="font-medium text-blue-400 hover:underline"> Criar conta</Link>
+                                <Link
+                                    to="/register"
+                                    className="font-medium text-blue-400 hover:underline"
+                                >
+                                    {" "}
+                                    Criar conta
+                                </Link>
                             </p>
                             <div className="flex items-center my-4 before:flex-1 before:border-t before:border-gray-300 before:mt-0.5 after:flex-1 after:border-t after:border-gray-300 after:mt-0.5">
-                                <p className="text-center font-semibold text-gray-400 text-sm mx-4 mb-0">OU</p>
+                                <p className="text-center font-semibold text-gray-400 text-sm mx-4 mb-0">
+                                    OU
+                                </p>
                             </div>
                             <button
                                 className="px-7 py-3 text-black font-medium text-sm leading-snug uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full flex justify-center items-center mb-3"
                                 type="button"
                                 onClick={handleGoogleSignIn}
-
                             >
                                 <FcGoogle size={24} />
                                 <span className="ml-2">Entrar com Google</span>
