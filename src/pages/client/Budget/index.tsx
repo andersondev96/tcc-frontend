@@ -1,7 +1,7 @@
 import { format } from "date-fns";
-import { useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { NavBar } from "../../../components/NavBar/NavBar";
 import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
@@ -34,10 +34,10 @@ interface Customer {
 }
 
 export const Budget: React.FC = () => {
-    const navigate = useNavigate();
     const [customer, setCustomer] = useState<Customer>({} as Customer);
     const [proposals, setProposals] = useState<Proposal[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [valueSearch, setValueSearch] = useState("");
     const itemsPerPage = 1;
 
     const handlePageChange = useCallback((newPage: number) => {
@@ -57,9 +57,25 @@ export const Budget: React.FC = () => {
         api.get("/proposals").then(response => setProposals(response.data));
     }, []);
 
-    const handleSearch = useCallback(() => {
+    const handleSearch = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setValueSearch(value);
 
-    }, []);
+        if (valueSearch) {
+            await api.get('/proposals', {
+                params: {
+                    objective: value,
+                    description: value,
+                    status: value,
+                    company: value
+                }
+            }).then((response) => {
+                setProposals(response.data);
+            }).catch((err) => {
+                console.log("Ocorreu um erro ao realizar a requisição", err);
+            });
+        }
+    }, [valueSearch, setProposals]);
 
     return (
         <div className="flex flex-col">

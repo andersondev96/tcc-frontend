@@ -37,8 +37,9 @@ export const Service: React.FC = () => {
     const [company, setCompany] = useState<CompanyData>({} as CompanyData);
     const [services, setServices] = useState<ServiceData[]>([]);
     const [hightLightServices, setHightLightServices] = useState<ServiceData[]>([]);
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState<string[]>([]);
     const [servicesByCategory, setServicesByCategory] = useState<CategoryServiceData>({});
+    const [servicesWithoutCategory, setServicesWithoutCategory] = useState<ServiceData[]>([]);
 
     const loadCompany = useCallback(async () => {
         if (company_id) {
@@ -84,7 +85,7 @@ export const Service: React.FC = () => {
         }
     }, [company_id]);
 
-    const loadingCategories = useCallback(async () => {
+    useEffect(() => {
         if (company.category_id) {
             api.get(`/categories/list-subcategories/${company.category_id}`)
                 .then(response => setCategories(response.data))
@@ -93,16 +94,26 @@ export const Service: React.FC = () => {
     }, [company.category_id]);
 
     useEffect(() => {
+        if (services.length > 0) {
+            const uniqueCategories = new Set(categories);
+            services.forEach((service) => {
+                uniqueCategories.add(service.category);
+            });
+            const categoriesArray = [...uniqueCategories];
+            setCategories(categoriesArray);
+        }
+    }, [services]);
+
+    useEffect(() => {
         if (company_id) {
             api.get<ServiceData[]>(`/services/company/${company_id}`)
                 .then(response => setServices(response.data))
                 .catch(error => console.log(error));
 
             loadCompany();
-            loadingCategories();
             loadingHighlightService();
         }
-    }, [company_id, loadCompany, loadingCategories, loadingHighlightService, setServices]);
+    }, [company_id, loadCompany, loadingHighlightService, setServices]);
 
     useEffect(() => {
         if (services) {
@@ -118,6 +129,9 @@ export const Service: React.FC = () => {
                 },
                 {}
             );
+
+            console.log(groupServices);
+
             setServicesByCategory(groupServices);
         }
     }, [services]);
