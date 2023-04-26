@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import * as Yup from "yup";
 import { Input } from "../../../components/Form/Input";
 import { NavBar } from "../../../components/NavBar/NavBar";
+import { SideBar } from "../../../components/Sidebar";
 import { useAuth } from "../../../contexts/AuthContext";
 import api from "../../../services/api";
 import getValidationErrors from "../../../utils/getValidateErrors";
@@ -25,6 +26,20 @@ export const EditProfile: React.FC = () => {
     const [avatar, setAvatar] = useState(new FormData());
     const [previewAvatar, setPreviewAvatar] = useState<string>();
     const [selectedNewAvatar, setSelectedNewAvatar] = useState<boolean>(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    const verifyIsAdmin = useCallback(async () => {
+        await api
+            .get("/users/entrepreneur")
+            .then((response) => {
+                if (response.data === null) {
+                    setIsAdmin(false);
+                } else {
+                    setIsAdmin(true);
+                }
+            })
+            .catch((err) => console.error(err));
+    }, [setIsAdmin]);
 
     const navigate = useNavigate();
 
@@ -32,7 +47,8 @@ export const EditProfile: React.FC = () => {
 
     useEffect(() => {
         handleSetInitialAvatar();
-    }, [])
+        verifyIsAdmin();
+    }, [verifyIsAdmin])
 
     const handleSetInitialAvatar = useCallback(() => {
         if (user.avatar) {
@@ -82,7 +98,11 @@ export const EditProfile: React.FC = () => {
                 toast.success("Usuário atualizado com sucesso!")
 
 
-                navigate('/')
+                if (isAdmin) {
+                    navigate('/admin/business');
+                } else {
+                    navigate('/')
+                }
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
                     const errors = getValidationErrors(err);
@@ -95,7 +115,7 @@ export const EditProfile: React.FC = () => {
                 toast.error("Error ao editar usuário, tente novamente!");
 
             }
-        }, [toast, history, avatar, selectedNewAvatar]);
+        }, [toast, history, avatar, isAdmin, selectedNewAvatar]);
 
     const handleAvatarChange = useCallback(
         (e: ChangeEvent<HTMLInputElement>) => {
@@ -109,12 +129,24 @@ export const EditProfile: React.FC = () => {
                 setPreviewAvatar(selectedAvatarPreview);
             }
         }, []);
-    return (
-        <div>
-            <ToastContainer />
-            <NavBar />
 
-            <div className="flex flex-col p-10">
+    function classNames(...classes: any): any {
+        return classes.filter(Boolean).join(" ");
+    }
+
+
+    return (
+        <div className={classNames(isAdmin && "flex flex-row")}>
+            <ToastContainer />
+            {
+                isAdmin ? (
+                    <SideBar />
+                ) : (
+                    <NavBar />
+                )
+            }
+
+            <div className={classNames(isAdmin ? "w-full sm:ml-64 p-8" : "p-4", "flex flex-col")}>
                 <PreviousPageButton />
 
                 <div className="flex flex-col">
