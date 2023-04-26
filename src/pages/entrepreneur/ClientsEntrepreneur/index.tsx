@@ -1,5 +1,4 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
 import { Table } from "../../../components/Table";
@@ -64,16 +63,17 @@ export const ClientsEntrepreneur: React.FC = () => {
 
     const handleSearchClients = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
 
-        const name = event.target.value;
+        const value = event.target.value;
 
-        setName(name);
+        setName(value);
 
         if (company.id) {
 
             if (name) {
-                const response = await api.get(`customers/${company.id}/filter`, {
+                const response = await api.get(`customers/${company.id}`, {
                     params: {
-                        name
+                        name: value,
+                        email: value
                     }
                 });
 
@@ -130,7 +130,7 @@ export const ClientsEntrepreneur: React.FC = () => {
                         </Table>
                     </div>
 
-                    <PaginationTable results={clients.length} />
+
                 </div>
             </div>
         </div>
