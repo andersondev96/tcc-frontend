@@ -103,7 +103,10 @@ export const BudgetEntrepreneur: React.FC = () => {
             } else {
                 api.get(`proposals/filter/${company.id}`, {
                     params: {
-                        name
+                        objective: name,
+                        description: name,
+                        status: name,
+                        name,
                     }
                 })
                     .then((response) => setProposals(response.data));
