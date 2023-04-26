@@ -156,7 +156,13 @@ export const BusinessEdit: React.FC = () => {
         }
 
         fetchCompany();
-    }, [params.id, setHasPhysicalLocation, setCompany, setAddress]);
+    }, [params.id, setHasPhysicalLocation, setCompany, setAddress, setScheduleItems]);
+
+    useEffect(() => {
+        if (company && company.Schedule && company.Schedule.length > 0) {
+            setScheduleItems(company.Schedule);
+        }
+    }, [company]);
 
     useEffect(() => {
         async function fetchCategoryByCompany() {
@@ -370,9 +376,19 @@ export const BusinessEdit: React.FC = () => {
                     })
                 }
 
+                console.log(scheduleItems);
+
                 const response = await api.put(`/companies/${params.id}`, companyData);
 
                 if (response.status === 200) {
+                    // Update Schedules
+                    if (scheduleItems) {
+                        await api.put(`companies/schedules/${response.data.id}`, {
+                            schedules: scheduleItems
+                        });
+                    }
+
+
                     if (company?.ImageCompany && company.ImageCompany.length > 0) {
                         // update images
                     } else {
@@ -400,7 +416,7 @@ export const BusinessEdit: React.FC = () => {
             } finally {
                 setIsLoading(false);
             }
-        }, [hasPhysicalLocation, tags]);
+        }, [hasPhysicalLocation, tags, scheduleItems]);
 
     function classNames(...classes: any) {
         return classes.filter(Boolean).join(' ')
@@ -578,7 +594,7 @@ export const BusinessEdit: React.FC = () => {
                         </div>
 
 
-                        {company.Schedule && company.Schedule.map((scheduleItem, index) => {
+                        {scheduleItems.map((scheduleItem, index) => {
 
                             return (
 
