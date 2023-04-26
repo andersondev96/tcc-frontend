@@ -103,13 +103,6 @@ export const ModalService: React.FC<ModalServiceProps> = ({ serviceData }) => {
 
     const handleAddAssessments = useCallback(async (newAssessment: Assessment) => {
         setAssessments((prevAssessments) => [...prevAssessments, newAssessment]);
-
-        if (service.id) {
-            await api.get<Assessment[]>(`/assessments/service/${service.id}`)
-                .then(response => {
-                    setAssessments(response.data);
-                });
-        }
     }, [setAssessments, service.id]);
 
     const handleShowMoreComments = useCallback(() => {

@@ -104,13 +104,8 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, asses
             });
 
             if (response.status === 201) {
-                const newAssessment: Assessment = {
-                    ...response.data,
-                    name: user.name,
-                    avatar: user.avatar,
-                };
 
-                onAddAssessment(newAssessment);
+                onAddAssessment(response.data);
                 setComment("");
                 setStars(0);
 
@@ -128,13 +123,8 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, asses
             });
 
             if (response.status === 201) {
-                const newAssessment: Assessment = {
-                    ...response.data,
-                    name: user.name,
-                    avatar: user.avatar,
-                };
 
-                onAddAssessment(newAssessment);
+                onAddAssessment(response.data);
                 setComment("");
                 setStars(0);
 

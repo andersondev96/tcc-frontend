@@ -127,10 +127,6 @@ export const Business: React.FC = () => {
 
     const handleAddAssessments = useCallback(async (newAssessment: Assessment) => {
         setAssessments((prevAssessments) => [...prevAssessments, newAssessment]);
-        await api.get<Assessment[]>(`/assessments/company/${params.id}`)
-            .then(response => {
-                setAssessments(response.data);
-            });
     }, [setAssessments]);
 
     const handleShowMoreComments = useCallback(() => {
