@@ -247,7 +247,9 @@ export const BusinessCreate: React.FC = () => {
 
                 const response = await api.post('/companies', companies);
 
-                await api.post(`/companies/images/${response.data.id}`, imagesCompany);
+                if (imagesCompany) {
+                    await api.post(`/companies/images/${response.data.id}`, imagesCompany);
+                }
 
                 toast.success("Empresa cadastrada com sucesso!");
 

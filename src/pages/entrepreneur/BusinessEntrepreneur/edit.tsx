@@ -251,6 +251,8 @@ export const BusinessEdit: React.FC = () => {
                     image => imagesCompany.append("company", image)
                 );
 
+                console.log(imagesCompany);
+
                 const selectedPreviewImages = selectedImages.map(image => {
                     return URL.createObjectURL(image);
                 });
@@ -376,12 +378,9 @@ export const BusinessEdit: React.FC = () => {
                     })
                 }
 
-                console.log(scheduleItems);
-
                 const response = await api.put(`/companies/${params.id}`, companyData);
 
                 if (response.status === 200) {
-                    // Update Schedules
                     if (scheduleItems) {
                         await api.put(`companies/schedules/${response.data.id}`, {
                             schedules: scheduleItems
@@ -389,12 +388,10 @@ export const BusinessEdit: React.FC = () => {
                     }
 
 
-                    if (company?.ImageCompany && company.ImageCompany.length > 0) {
-                        // update images
+                    if (imagesCompany && company?.ImageCompany && company.ImageCompany.length > 0) {
+                        await api.put(`/companies/images/${response.data.id}`, imagesCompany);
                     } else {
-                        if (imagesCompany) {
-                            await api.post(`/companies/images/${response.data.id}`, imagesCompany);
-                        }
+                        await api.post(`/companies/images/${response.data.id}`, imagesCompany);
                     }
                 }
 
