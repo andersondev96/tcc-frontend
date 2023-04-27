@@ -251,13 +251,11 @@ export const BusinessEdit: React.FC = () => {
                     image => imagesCompany.append("company", image)
                 );
 
-                console.log(imagesCompany);
-
                 const selectedPreviewImages = selectedImages.map(image => {
                     return URL.createObjectURL(image);
                 });
 
-                setPreviewImages(selectedPreviewImages);
+                setPreviewImages(previewImages.concat(selectedPreviewImages));
             }
         }, [imagesCompany, previewImages, setPreviewImages]);
 
@@ -387,8 +385,7 @@ export const BusinessEdit: React.FC = () => {
                         });
                     }
 
-
-                    if (imagesCompany && company?.ImageCompany && company.ImageCompany.length > 0) {
+                    if (!imagesCompany.entries().next().done) {
                         await api.put(`/companies/images/${response.data.id}`, imagesCompany);
                     } else {
                         await api.post(`/companies/images/${response.data.id}`, imagesCompany);
