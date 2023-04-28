@@ -156,7 +156,7 @@ export const BusinessEdit: React.FC = () => {
         }
 
         fetchCompany();
-    }, [params.id, setHasPhysicalLocation, setCompany, setAddress, setScheduleItems]);
+    }, [params.id, setHasPhysicalLocation, setCompany, setAddress]);
 
     useEffect(() => {
         if (company && company.Schedule && company.Schedule.length > 0) {
@@ -228,10 +228,14 @@ export const BusinessEdit: React.FC = () => {
 
             setPreviewImages(images);
 
+            previewImages.map(
+                image => imagesCompany.append("company", image)
+            );
+
         } catch (err) {
             console.log("Ocorreu um erro ao realizar a requisição: ", err);
         }
-    }, [company, setPreviewImages])
+    }, [company, setPreviewImages, imagesCompany])
 
     const tooglePhysicalLocation = useCallback(() => {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -247,8 +251,9 @@ export const BusinessEdit: React.FC = () => {
             if (e.target.files) {
                 const selectedImages = Array.from(e.target.files);
 
-                selectedImages.map(
-                    image => imagesCompany.append("company", image)
+
+                selectedImages.forEach(image =>
+                    imagesCompany.append("company", image)
                 );
 
                 const selectedPreviewImages = selectedImages.map(image => {
@@ -257,7 +262,7 @@ export const BusinessEdit: React.FC = () => {
 
                 setPreviewImages(previewImages.concat(selectedPreviewImages));
             }
-        }, [imagesCompany, previewImages, setPreviewImages]);
+        }, [imagesCompany, setImagesCompany, previewImages, setPreviewImages]);
 
     const handleInputChangeTag = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
@@ -387,7 +392,9 @@ export const BusinessEdit: React.FC = () => {
 
                     if (!imagesCompany.entries().next().done) {
                         await api.put(`/companies/images/${response.data.id}`, imagesCompany);
+
                     } else {
+
                         await api.post(`/companies/images/${response.data.id}`, imagesCompany);
                     }
                 }
@@ -410,7 +417,7 @@ export const BusinessEdit: React.FC = () => {
             } finally {
                 setIsLoading(false);
             }
-        }, [hasPhysicalLocation, tags, scheduleItems]);
+        }, [hasPhysicalLocation, tags, scheduleItems, imagesCompany]);
 
     function classNames(...classes: any) {
         return classes.filter(Boolean).join(' ')
@@ -428,6 +435,14 @@ export const BusinessEdit: React.FC = () => {
         ])
     }
 
+    function removeScheduleItem(position: number) {
+        const updatedScheduleItems = scheduleItems.filter((scheduleItem, index) => {
+            return index !== position;
+        });
+
+        setScheduleItems(updatedScheduleItems);
+    }
+
     function setScheduleItemValue(position: number, field: string, value: string) {
         const updateScheduleItems = scheduleItems.map((scheduleItem, index) => {
             if (index === position) {
@@ -438,6 +453,60 @@ export const BusinessEdit: React.FC = () => {
         });
 
         setScheduleItems(updateScheduleItems);
+    }
+
+    {
+        scheduleItems.map((scheduleItem, index) => {
+
+            return (
+
+                <div key={index} className="flex flex-wrap -mx-3 md:mb-4">
+                    <div className="w-full md:w-1/4 px-3 mb-3 md:mb-0">
+                        <Select
+                            name="weekday"
+                            label="Dia da semana"
+                            value={scheduleItem.weekday}
+                            onChange={(e) => { setScheduleItemValue(index, 'weekday', e.target.value) }}
+                            options={[
+                                { value: "Todos os dias", label: "Todos os dias" },
+                                { value: "Segunta à Sexta", label: "Segunda à Sexta" },
+                                { value: "Fim de semana", label: "Fim de semana" },
+                                { value: "Feriados", label: "Feriados" },
+                                { value: 'Domingo', label: 'Domingo' },
+                                { value: 'Segunda-feira', label: 'Segunda-feira' },
+                                { value: 'Terça-feira', label: 'Terça-feira' },
+                                { value: 'Quarta-feira', label: 'Quarta-feira' },
+                                { value: 'Quinta-feira', label: 'Quinta-feira' },
+                                { value: 'Sexta-feira', label: 'Sexta-feira' },
+                                { value: 'Sábado', label: 'Sábado' },
+                            ]}
+                            placeholder="Selecione uma opção"
+                        />
+                    </div>
+                    <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+                        <Input
+                            name="Schedule?.opening_time"
+                            type="time"
+                            label="Abre às"
+                            placeholder="XX:XX"
+                            onChange={(e) => { setScheduleItemValue(index, 'opening_time', e.target.value) }}
+                            value={scheduleItem.opening_time}
+
+                        />
+                    </div>
+                    <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+                        <Input
+                            name="Schedule?.closing_time"
+                            type="time"
+                            label="Fecha às"
+                            placeholder="XX:XX"
+                            onChange={(e) => { setScheduleItemValue(index, 'closing_time', e.target.value) }}
+                            value={scheduleItem.closing_time}
+                        />
+                    </div>
+                </div>
+            )
+        })
     }
 
     return (
@@ -592,7 +661,7 @@ export const BusinessEdit: React.FC = () => {
 
                             return (
 
-                                <div key={index} className="flex flex-wrap -mx-3 md:mb-4">
+                                <div key={index} className="flex flex-wrap -mx-3 md:mb-4 items-center">
                                     <div className="w-full md:w-1/4 px-3 mb-3 md:mb-0">
                                         <Select
                                             name="weekday"
@@ -635,6 +704,14 @@ export const BusinessEdit: React.FC = () => {
                                             onChange={(e) => { setScheduleItemValue(index, 'closing_time', e.target.value) }}
                                             value={scheduleItem.closing_time}
                                         />
+                                    </div>
+                                    <div className="px-3 mb-6 md:mb-0 md:mt-2 flex justify-center">
+                                        <button onClick={() => removeScheduleItem(index)}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-red-600 hover:text-red-800">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+
+                                        </button>
                                     </div>
                                 </div>
                             )
