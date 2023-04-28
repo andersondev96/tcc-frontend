@@ -228,14 +228,10 @@ export const BusinessEdit: React.FC = () => {
 
             setPreviewImages(images);
 
-            previewImages.map(
-                image => imagesCompany.append("company", image)
-            );
-
         } catch (err) {
             console.log("Ocorreu um erro ao realizar a requisição: ", err);
         }
-    }, [company, setPreviewImages, imagesCompany])
+    }, [company, setPreviewImages])
 
     const tooglePhysicalLocation = useCallback(() => {
         setHasPhysicalLocation(!hasPhysicalLocation);
@@ -392,9 +388,7 @@ export const BusinessEdit: React.FC = () => {
 
                     if (!imagesCompany.entries().next().done) {
                         await api.put(`/companies/images/${response.data.id}`, imagesCompany);
-
                     } else {
-
                         await api.post(`/companies/images/${response.data.id}`, imagesCompany);
                     }
                 }
