@@ -77,139 +77,141 @@ export const Router: React.FC = () => {
                 }
             />
 
-            <Route
-                path="/admin/business"
-                element={
-                    <RequireAuth>
-                        <BusinessEntrepreneur />
-                    </RequireAuth>
-                }
-            />
+            <Route path="admin">
+                <Route
+                    path="/admin/business"
+                    element={
+                        <RequireAuth>
+                            <BusinessEntrepreneur />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/business/create"
-                element={
-                    <RequireAuth>
-                        <BusinessCreate />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/business/create"
+                    element={
+                        <RequireAuth>
+                            <BusinessCreate />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/business/edit/:id"
-                element={
-                    <RequireAuth>
-                        <BusinessEdit />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/business/edit/:id"
+                    element={
+                        <RequireAuth>
+                            <BusinessEdit />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/services"
-                element={
-                    <RequireAuth>
-                        <ServicesEntrepreneur />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/services"
+                    element={
+                        <RequireAuth>
+                            <ServicesEntrepreneur />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/services/create"
-                element={
-                    <RequireAuth>
-                        <CreateServicesEntrepreneur />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/services/create"
+                    element={
+                        <RequireAuth>
+                            <CreateServicesEntrepreneur />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/services/:id"
-                element={
-                    <RequireAuth>
-                        <ShowServicesEntrepreneur />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/services/:id"
+                    element={
+                        <RequireAuth>
+                            <ShowServicesEntrepreneur />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/services/edit/:id"
-                element={
-                    <RequireAuth>
-                        <EditServicesEntrepreneur />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/services/edit/:id"
+                    element={
+                        <RequireAuth>
+                            <EditServicesEntrepreneur />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/clients"
-                element={
-                    <RequireAuth>
-                        <ClientsEntrepreneur />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/clients"
+                    element={
+                        <RequireAuth>
+                            <ClientsEntrepreneur />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/budget"
-                element={
-                    <RequireAuth>
-                        <BudgetEntrepreneur />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/budget"
+                    element={
+                        <RequireAuth>
+                            <BudgetEntrepreneur />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/budget/details/:proposal_id"
-                element={
-                    <RequireAuth>
-                        <DetailsBudgetEntrepreneur />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/budget/details/:proposal_id"
+                    element={
+                        <RequireAuth>
+                            <DetailsBudgetEntrepreneur />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/budget/create-proposal/:proposal_id"
-                element={
-                    <RequireAuth>
-                        <CreateProposal />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/budget/create-proposal/:proposal_id"
+                    element={
+                        <RequireAuth>
+                            <CreateProposal />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/budget/edit-proposal/:proposal_id"
-                element={
-                    <RequireAuth>
-                        <EditProposal />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/budget/edit-proposal/:proposal_id"
+                    element={
+                        <RequireAuth>
+                            <EditProposal />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/chat"
-                element={
-                    <RequireAuth>
-                        <ChatEntrepreneur />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/chat"
+                    element={
+                        <RequireAuth>
+                            <ChatEntrepreneur />
+                        </RequireAuth>
+                    }
+                />
 
-            <Route
-                path="/admin/chat/message"
-                element={
-                    <RequireAuth>
-                        <ChatMessageEntrepreneur />
-                    </RequireAuth>
-                } />
+                <Route
+                    path="/admin/chat/message"
+                    element={
+                        <RequireAuth>
+                            <ChatMessageEntrepreneur />
+                        </RequireAuth>
+                    } />
 
-            <Route
-                path="/admin/settings"
-                element={
-                    <RequireAuth>
-                        <Settings />
-                    </RequireAuth>
-                }
-            />
+                <Route
+                    path="/admin/settings"
+                    element={
+                        <RequireAuth>
+                            <Settings />
+                        </RequireAuth>
+                    }
+                />
+            </Route>
 
             <Route path="*" element={<Home />} />
             <Route path="/*" element={<Navigate to="/" />} />

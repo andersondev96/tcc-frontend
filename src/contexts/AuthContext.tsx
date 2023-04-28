@@ -32,7 +32,6 @@ interface AuthContextData {
     signOut: () => void;
     updateUser: (user: User) => void;
     authenticated: boolean;
-    isAdmin: boolean;
 }
 
 interface AuthContextProviderProps {
@@ -43,17 +42,6 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 function AuthContextProvider({ children }: AuthContextProviderProps) {
     const [authenticated, setAuthenticated] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
-
-    const verifyUserIsAdmin = useCallback(async () => {
-        const response = await api.get("users/entrepreneur");
-
-        if (response.data) {
-            setIsAdmin(true);
-        } else {
-            setIsAdmin(false);
-        }
-    }, [setIsAdmin]);
 
     const [data, setData] = useState<AuthState>(() => {
         const token = localStorage.getItem("@web:token");
@@ -62,7 +50,6 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
         if (token && user) {
             api.defaults.headers.authorization = `Bearer ${token}`;
             setAuthenticated(true);
-            verifyUserIsAdmin();
             return { token, user: JSON.parse(user) };
         }
 
@@ -84,6 +71,7 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
             api.defaults.headers.authorization = `Bearer ${token}`;
 
             setAuthenticated(true);
+
             setData({ token, user });
         },
         []
@@ -116,8 +104,7 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
                 signIn,
                 signOut,
                 updateUser,
-                authenticated,
-                isAdmin,
+                authenticated
             }}
         >
             {children}

@@ -45,14 +45,29 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
     }, [setIsAdmin]);
 
     useEffect(() => {
-        if (company_id !== null) {
-            api.get(`/entrepreneurs/${company_id}`)
-                .then((response) => setSettings(response.data))
+        if (company_id) {
+            api.get(`/entrepreneurs`)
+                .then((response) => {
+                    if (response.data) {
+                        setSettings(response.data)
+                    }
+                })
                 .catch((err) => console.log(err));
         }
 
         void handleToAdmPage();
     }, [company_id, handleToAdmPage]);
+
+    const logOut = useCallback(() => {
+        try {
+
+            localStorage.removeItem('@web:company_id');
+            signOut();
+
+        } catch (err) {
+            console.log("Erro ao tentar fazer logout", err);
+        }
+    }, [localStorage, signOut]);
 
     function openModal(): void {
         setModalIsOpen(true);
@@ -284,7 +299,7 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
                                                         {({ active }) => (
                                                             <span
                                                                 onClick={
-                                                                    signOut
+                                                                    logOut
                                                                 }
                                                                 className={classNames(
                                                                     active

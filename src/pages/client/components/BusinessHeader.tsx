@@ -55,13 +55,13 @@ interface Category {
 
 interface SettingsCompanyData {
     id: string;
+    company_logo: string;
     entrepreneur_id: string;
     online_budget: string;
     online_chat: string;
 }
 interface BusinessHeaderProps {
     company: Company;
-    // isOpen: boolean;
 }
 
 export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
@@ -109,27 +109,17 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
                 <div className="flex flex-row">
                     <img
                         src={
-                            company.ImageCompany && company.ImageCompany.length > 0 ?
-                                company.ImageCompany[0].image_url
+                            settings && settings.company_logo
+                                ? `http://localhost:3333/company_logo/${settings.company_logo}`
                                 : NoImageImg
                         }
                         alt="Coffee"
-                        className="h-12 w-12 sm:h-24 sm:w-24 object-fill rounded-full"
+                        className="h-12 w-12 sm:h-24 sm:w-24 object-contain rounded-full"
                     />
                 </div>
                 <div className="flex flex-col w-full">
                     <div className="flex flex-row items-center justify-between">
                         <span className="font-inter font-bold text-[1.475rem] mobile:text-mobile text-gray-700">{company.name}</span>
-                        {/* {isOpen ? (
-                            <span className="w-[4.75rem] h-[2.125rem] bg-green-500 flex items-center justify-center rounded-full font-inter font-semibold text-sm text-white">
-                                Aberto
-                            </span>
-                        ) : (
-                            <span className="w-[4.75rem] h-[2.125rem] bg-red-500 flex items-center justify-center rounded-full font-inter font-semibold text-sm text-white">
-                                Fechado
-                            </span>
-                        )
-                        } */}
                     </div>
 
                     <div className="flex flex-col">

@@ -5,7 +5,6 @@ import {
     TileLayer,
     useMapEvent
 } from "react-leaflet";
-import NoImageImg from "../../assets/no-camera.png";
 import api from "../../services/api";
 import { Popup } from "./Popup";
 
@@ -42,6 +41,7 @@ interface ICompanies {
 export const Map: React.FC = () => {
     const animateRef = useRef(false);
     const [companies, setCompanies] = useState<ICompanies[]>([]);
+    const [logoCompany, setLogoCompany] = useState("");
     const [coords, setCoords] = useState([0, 0]);
     const [latitude, setLatitude] = useState(0);
     const [longitude, setLongitude] = useState(0);
@@ -94,10 +94,6 @@ export const Map: React.FC = () => {
                             position={[company.Address.latitude, company.Address.longitude]}>
                             <Popup
                                 id={company.id}
-                                image={company.ImageCompany && company.ImageCompany.length > 0
-                                    ? company.ImageCompany[0].image_url
-                                    : NoImageImg
-                                }
                                 name={company.name}
                                 category={company.category}
                                 contact={company.contact}

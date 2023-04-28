@@ -5,6 +5,7 @@ import { Popup as PopupContainer } from "react-leaflet";
 import { Link } from "react-router-dom";
 
 import { useCallback, useEffect, useState } from "react";
+import NoImageImg from "../../../assets/no-camera.png";
 import { useAuth } from '../../../contexts/AuthContext';
 import { ModalCalculate } from "../../../pages/client/components/ModalCalculate";
 import api from '../../../services/api';
@@ -23,28 +24,32 @@ interface PopupProps {
     name: string;
     category: string;
     contact: IContact;
-    image: string;
 }
 
 interface SettingsCompanyData {
     id: string;
     entrepreneur_id: string;
+    company_logo: string;
     online_budget: string;
     online_chat: string;
 }
 
-export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image }) => {
+export const Popup: React.FC<PopupProps> = ({ id, name, category, contact }) => {
     const { user } = useAuth();
     const [companyFavorited, setCompanyFavorited] = useState(false);
     const [modalCalculeIsOpen, setModalCalculateIsOpen] = useState(false);
     const [modalChatIsOpen, setModalChatIsOpen] = useState(false);
-    /* const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData); */
+    const [settings, setSettings] = useState<SettingsCompanyData>({} as SettingsCompanyData);
 
-    /* useEffect(() => {
+    useEffect(() => {
         api.get(`/entrepreneurs/${id}`)
-            .then((response) => setSettings(response.data))
+            .then((response) => {
+                if (response.data) {
+                    setSettings(response.data)
+                }
+            })
             .catch(err => console.log(err));
-    }, [id, settings, setSettings]); */
+    }, [setSettings]);
 
     const verifyCompanyIsFavorited = useCallback(() => {
         api.get(`users/favorite/${id}`).then((response) => {
@@ -96,7 +101,14 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact, image
                 }
                 <Link to={`/business/${id}`}>
                     <div className="leaflet-popup-image-container">
-                        <img src={image} alt={name} className="image h-24 w-24 rounded" />
+                        <img
+                            src={
+                                settings && settings.company_logo
+                                    ? `http://localhost:3333/company_logo/${settings.company_logo}`
+                                    : NoImageImg
+                            }
+                            alt={name} className="image h-24 w-24 rounded"
+                        />
                     </div>
                     <div className="leaflet-popup-description">
                         <h1>{name}</h1>
