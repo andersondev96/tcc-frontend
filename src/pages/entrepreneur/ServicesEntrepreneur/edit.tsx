@@ -36,6 +36,7 @@ interface EntrepreneurSettingsData {
 export const EditServicesEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
     const [subcategories, setSubcategories] = useState<string[]>([]);
+    const [subcategorySelected, setSubcategorySelected] = useState<string>("");
     const params = useParams();
     const [service, setService] = useState({} as ServiceData);
     const [highlight, setHighlight] = useState<boolean>(false);
@@ -65,11 +66,12 @@ export const EditServicesEntrepreneur: React.FC = () => {
             api.get(`/categories/list-subcategories/${company.category_id}`)
                 .then(response => {
                     setSubcategories(response.data);
+                    setSubcategorySelected(response.data.category);
                 })
                 .catch(error => console.log("Ocorreu um erro na solicitação", error));
         }
 
-    }, [company.category_id, setSubcategories]);
+    }, [company.category_id, setSubcategories, setSubcategorySelected]);
 
     function handleSetHighlight() {
         setHighlight(!highlight);
@@ -133,8 +135,6 @@ export const EditServicesEntrepreneur: React.FC = () => {
                 };
 
                 const response = await api.put(`/services/${params.id}`, serviceData);
-
-                console.log(response);
 
                 if (response.status === 201) {
                     if (!imageService.entries().next().done) {
@@ -207,12 +207,13 @@ export const EditServicesEntrepreneur: React.FC = () => {
                                     label="Categoria do produto/serviço"
                                     idTooltip="tooltip-category-service"
                                     tooltipText="Escolha a categoria que seu serviço se encaixa"
-                                    defaultValue={service.category}
+                                    defaultValue={subcategorySelected}
                                     options={subcategories.map(subcategory => ({
                                         value: subcategory, label: subcategory
                                     }))
                                     }
                                 />
+
                             </div>
                             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                 <Input

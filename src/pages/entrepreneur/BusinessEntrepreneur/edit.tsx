@@ -449,60 +449,6 @@ export const BusinessEdit: React.FC = () => {
         setScheduleItems(updateScheduleItems);
     }
 
-    {
-        scheduleItems.map((scheduleItem, index) => {
-
-            return (
-
-                <div key={index} className="flex flex-wrap -mx-3 md:mb-4">
-                    <div className="w-full md:w-1/4 px-3 mb-3 md:mb-0">
-                        <Select
-                            name="weekday"
-                            label="Dia da semana"
-                            value={scheduleItem.weekday}
-                            onChange={(e) => { setScheduleItemValue(index, 'weekday', e.target.value) }}
-                            options={[
-                                { value: "Todos os dias", label: "Todos os dias" },
-                                { value: "Segunta à Sexta", label: "Segunda à Sexta" },
-                                { value: "Fim de semana", label: "Fim de semana" },
-                                { value: "Feriados", label: "Feriados" },
-                                { value: 'Domingo', label: 'Domingo' },
-                                { value: 'Segunda-feira', label: 'Segunda-feira' },
-                                { value: 'Terça-feira', label: 'Terça-feira' },
-                                { value: 'Quarta-feira', label: 'Quarta-feira' },
-                                { value: 'Quinta-feira', label: 'Quinta-feira' },
-                                { value: 'Sexta-feira', label: 'Sexta-feira' },
-                                { value: 'Sábado', label: 'Sábado' },
-                            ]}
-                            placeholder="Selecione uma opção"
-                        />
-                    </div>
-                    <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
-                        <Input
-                            name="Schedule?.opening_time"
-                            type="time"
-                            label="Abre às"
-                            placeholder="XX:XX"
-                            onChange={(e) => { setScheduleItemValue(index, 'opening_time', e.target.value) }}
-                            value={scheduleItem.opening_time}
-
-                        />
-                    </div>
-                    <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
-                        <Input
-                            name="Schedule?.closing_time"
-                            type="time"
-                            label="Fecha às"
-                            placeholder="XX:XX"
-                            onChange={(e) => { setScheduleItemValue(index, 'closing_time', e.target.value) }}
-                            value={scheduleItem.closing_time}
-                        />
-                    </div>
-                </div>
-            )
-        })
-    }
-
     return (
         <div className="flex flex-row">
             <ToastContainer />
