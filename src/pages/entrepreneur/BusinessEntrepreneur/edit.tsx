@@ -256,7 +256,7 @@ export const BusinessEdit: React.FC = () => {
                     return URL.createObjectURL(image);
                 });
 
-                setPreviewImages(previewImages.concat(selectedPreviewImages));
+                setPreviewImages(selectedPreviewImages);
             }
         }, [imagesCompany, setImagesCompany, previewImages, setPreviewImages]);
 
