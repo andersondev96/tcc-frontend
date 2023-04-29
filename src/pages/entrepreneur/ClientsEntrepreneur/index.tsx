@@ -91,7 +91,7 @@ export const ClientsEntrepreneur: React.FC = () => {
             }
         }
 
-    }, [company.id]);
+    }, [company.id, setName, setClients]);
 
     return (
         <div className="flex flex-row">
