@@ -40,25 +40,11 @@ interface Proposals {
         }
     }
 }
-
-interface Budget {
-    id: string;
-    customer_id: string;
-    company_id: string;
-    proposal_id: string;
-    description: string;
-    delivery_date: string;
-    amount: number;
-    installments: number;
-    files: string[];
-}
-
 export const BudgetEntrepreneur: React.FC = () => {
     const navigate = useNavigate();
 
     const [company, setCompany] = useState<Company>({} as Company);
     const [proposals, setProposals] = useState<Proposals[]>([]);
-    const [budget, setBudget] = useState<Budget>({} as Budget);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [name, setName] = useState("");
@@ -87,7 +73,6 @@ export const BudgetEntrepreneur: React.FC = () => {
         const response = await api.get(`proposals/budget/${proposal_id}`);
 
         if (response.data) {
-            setBudget(response.data);
             navigate(`/admin/budget/edit-proposal/${proposal_id}`);
         } else {
             navigate(`/admin/budget/create-proposal/${proposal_id}`);
@@ -96,9 +81,9 @@ export const BudgetEntrepreneur: React.FC = () => {
 
 
     const handleSearchBudgets = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
-        const name = event.target.value;
+        const value = event.target.value;
 
-        setName(name);
+        setName(value);
 
         if (company.id) {
             if (name) {
@@ -122,7 +107,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                     });
             }
         }
-    }, [company?.id, setProposals, proposals, currentPage, itemsPerPage]);
+    }, [company?.id, setProposals, proposals, currentPage, itemsPerPage, setName]);
 
     return (
         <div className="flex flex-row">
