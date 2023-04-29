@@ -39,7 +39,8 @@ export const Service: React.FC = () => {
     const [hightLightServices, setHightLightServices] = useState<ServiceData[]>([]);
     const [categories, setCategories] = useState<string[]>([]);
     const [servicesByCategory, setServicesByCategory] = useState<CategoryServiceData>({});
-    const [servicesWithoutCategory, setServicesWithoutCategory] = useState<ServiceData[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
 
     const loadCompany = useCallback(async () => {
         if (company_id) {
@@ -55,35 +56,40 @@ export const Service: React.FC = () => {
                 const name = event.target.value;
 
                 if (!name) {
-                    api.get<ServiceData[]>(`/services/company/${company_id}`)
-                        .then(response => setServices(response.data));
+                    api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`)
+                        .then(response => {
+                            setServices(response.data.services)
+                        });
                 } else {
-                    api.get<ServiceData[]>(`/services/company/${company_id}`, {
+                    api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`, {
                         params: {
                             name
                         }
                     })
-                        .then(response => setServices(response.data));
+                        .then(response => {
+                            setServices(response.data);
+                        });
                 }
             }
-        }, [company_id, services]);
+        }, [company_id, services, currentPage, itemsPerPage]);
 
 
     const loadingHighlightService = useCallback(async () => {
         try {
             if (company_id && services) {
-                await api.get<ServiceData[]>(`/services/company/${company_id}`).then(response => {
-                    if (response.data) {
-                        const highlightServices = response.data.filter(service => service.highlight_service);
-                        setHightLightServices(highlightServices);
-                    }
-                });
+                await api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`)
+                    .then(response => {
+                        if (response.data.services) {
+                            const highlightServices = response.data.services.filter((service: ServiceData) => service.highlight_service);
+                            setHightLightServices(highlightServices);
+                        }
+                    });
             }
 
         } catch (err) {
             console.log(err);
         }
-    }, [company_id]);
+    }, [company_id, currentPage, itemsPerPage]);
 
     useEffect(() => {
         if (company.category_id) {
@@ -106,14 +112,14 @@ export const Service: React.FC = () => {
 
     useEffect(() => {
         if (company_id) {
-            api.get<ServiceData[]>(`/services/company/${company_id}`)
-                .then(response => setServices(response.data))
+            api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`)
+                .then(response => setServices(response.data.services))
                 .catch(error => console.log(error));
 
             loadCompany();
             loadingHighlightService();
         }
-    }, [company_id, loadCompany, loadingHighlightService, setServices]);
+    }, [company_id, loadCompany, loadingHighlightService, setServices, currentPage, itemsPerPage]);
 
     useEffect(() => {
         if (services) {
@@ -129,8 +135,6 @@ export const Service: React.FC = () => {
                 },
                 {}
             );
-
-            console.log(groupServices);
 
             setServicesByCategory(groupServices);
         }

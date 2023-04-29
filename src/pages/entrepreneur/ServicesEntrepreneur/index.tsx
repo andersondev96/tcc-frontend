@@ -67,8 +67,7 @@ export const ServicesEntrepreneur: React.FC = () => {
     const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 9;
-    const [totalResults, setTotalResults] = useState(0);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         api
@@ -86,7 +85,6 @@ export const ServicesEntrepreneur: React.FC = () => {
                 const response = await api.get(`/services/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`);
                 setCurrentPage(currentPage + 1);
                 setServices([...services, ...response.data.services]);
-                setTotalResults(response.data.totalResults);
             }
         };
 
