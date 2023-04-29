@@ -91,15 +91,7 @@ export const Service: React.FC = () => {
         }
     }, [company_id, currentPage, itemsPerPage]);
 
-    useEffect(() => {
-        if (company.category_id) {
-            api.get(`/categories/list-subcategories/${company.category_id}`)
-                .then(response => setCategories(response.data))
-                .catch(error => console.log(error));
-        }
-    }, [company.category_id]);
-
-    useEffect(() => {
+    const loadCategories = useCallback(() => {
         if (services.length > 0) {
             const uniqueCategories = new Set(categories);
             services.forEach((service) => {
@@ -111,6 +103,20 @@ export const Service: React.FC = () => {
     }, [services]);
 
     useEffect(() => {
+        if (company.category_id) {
+            api.get(`/categories/list-subcategories/${company.category_id}`)
+                .then(response => setCategories(response.data))
+                .catch(error => console.log(error));
+        }
+    }, [company.category_id]);
+
+
+
+    useEffect(() => {
+
+    }, [services, categories]);
+
+    useEffect(() => {
         if (company_id) {
             api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`)
                 .then(response => setServices(response.data.services))
@@ -118,8 +124,9 @@ export const Service: React.FC = () => {
 
             loadCompany();
             loadingHighlightService();
+            loadCategories();
         }
-    }, [company_id, loadCompany, loadingHighlightService, setServices, currentPage, itemsPerPage]);
+    }, [company_id, loadCompany, loadingHighlightService, loadCategories, currentPage, itemsPerPage]);
 
     useEffect(() => {
         if (services) {
