@@ -65,6 +65,8 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
 
             const { token, user } = response.data;
 
+            console.log(response.data);
+
             localStorage.setItem("@web:token", token);
             localStorage.setItem("@web:user", JSON.stringify(user));
 

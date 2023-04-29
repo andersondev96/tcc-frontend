@@ -46,6 +46,7 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact }) => 
             .then((response) => {
                 if (response.data) {
                     setSettings(response.data)
+                    console.log(response.data);
                 }
             })
             .catch(err => console.log(err));
@@ -104,7 +105,7 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact }) => 
                         <img
                             src={
                                 settings && settings.company_logo
-                                    ? `http://localhost:3333/company_logo/${settings.company_logo}`
+                                    ? settings.company_logo
                                     : NoImageImg
                             }
                             alt={name} className="image h-24 w-24 rounded"

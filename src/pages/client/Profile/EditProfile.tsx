@@ -52,7 +52,7 @@ export const EditProfile: React.FC = () => {
 
     const handleSetInitialAvatar = useCallback(() => {
         if (user.avatar) {
-            setPreviewAvatar(`http://localhost:3333/avatar/${user.avatar}`);
+            setPreviewAvatar(user.avatar);
         }
     }, [setPreviewAvatar]);
 

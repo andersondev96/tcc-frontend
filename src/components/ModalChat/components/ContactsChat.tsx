@@ -32,7 +32,7 @@ export const ContactsChat: React.FC<ContactsChatProps> = ({ connections, handleL
                         {connection.user && connection.user.avatar ? (
                             <img
                                 className="rounded-full w-12 h-12 object-fill"
-                                src={`http://localhost:3333/avatar/${connection.user.avatar}`}
+                                src={connection.user.avatar}
                             />
                         ) : (
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#9ca3af" className="w-12 h-12">

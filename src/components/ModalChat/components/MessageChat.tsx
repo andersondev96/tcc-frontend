@@ -34,7 +34,7 @@ export const MessageChat: React.FC<MessageChatProps> = ({ chatData, handleSendMe
                 <div className="flex flex-row items-center gap-4 mb-4 user_logged">
                     <img
                         className="rounded-full h-8 w-8"
-                        src={`http://localhost:3333/avatar/${user.avatar}`}
+                        src={user.avatar && user.avatar}
                     />
                     <span className="font-semibold">{user.name}</span>
                 </div>

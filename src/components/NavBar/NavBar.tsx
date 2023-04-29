@@ -190,7 +190,7 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
                                                         {user.avatar ? (
                                                             <div className="shrink-0">
                                                                 <img
-                                                                    src={`http://localhost:3333/avatar/${user.avatar}`}
+                                                                    src={user.avatar}
                                                                     alt="Avatar"
                                                                     className="rounded-full h-8 sm:h-10 w-8 sm:w-10"
                                                                 />

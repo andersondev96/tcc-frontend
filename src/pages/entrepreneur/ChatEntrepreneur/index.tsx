@@ -71,7 +71,7 @@ export const ChatEntrepreneur: React.FC = () => {
                                         <Message
                                             key={connection.id}
                                             img={connection.user.avatar ?
-                                                `http://localhost:3333/avatar/${connection.user.avatar}` :
+                                                connection.user.avatar :
                                                 AvatarImg}
                                             name={connection.user.name}
                                             isConnected={userConected}

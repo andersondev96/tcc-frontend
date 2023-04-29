@@ -163,7 +163,7 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, asses
                 <div className="flex flex-row items-center gap-6">
                     <img
                         src={user.avatar &&
-                            `http://localhost:3333/avatar/${user.avatar}` || AvatarImg}
+                            user.avatar || AvatarImg}
                         alt="avatar"
                         className="w-6 h-6 sm:h-10 sm:w-10 rounded-full"
                     />

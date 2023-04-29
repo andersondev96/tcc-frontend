@@ -79,7 +79,7 @@ export const Favorites: React.FC = () => {
                                             key={service.id}
                                             id={service.id}
                                             type="service"
-                                            image={`http://localhost:3333/service/${service.image_url}`}
+                                            image={service.image_url}
                                             description={service.name}
                                         />
                                     </>

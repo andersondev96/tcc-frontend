@@ -197,7 +197,7 @@ export const Settings: React.FC = () => {
                                                 selectImagePreview ? (
                                                     <img src={selectImagePreview} className="w-40 h-40 p-4 object-cover rounded-lg border-2 border-gray-400" />
                                                 ) : !selectImagePreview && entrepreneurSettings.company_logo ? (
-                                                    <img src={`http://localhost:3333/company_logo/${entrepreneurSettings.company_logo}`} className="w-40 h-40 p-4 object-cover rounded-lg border-2 border-gray-400" />
+                                                    <img src={entrepreneurSettings.company_logo} className="w-40 h-40 p-4 object-cover rounded-lg border-2 border-gray-400" />
                                                 ) : <AiOutlineCamera size={24} />
 
                                             }

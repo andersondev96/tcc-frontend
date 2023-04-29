@@ -169,7 +169,7 @@ export const DetailsBudgetEntrepreneur: React.FC = () => {
                                             Anexos
                                         </span>
                                         {budget.files && budget.files.map(file => (
-                                            <a key={file} target="__blank" href={`http://localhost:3333/budgets/${file}`}>
+                                            <a key={file} target="__blank" href={file}>
                                                 <p className="font-light text-xs text-blue-700 sm:text-sm text-justify">
                                                     {file}
                                                 </p>

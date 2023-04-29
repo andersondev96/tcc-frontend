@@ -158,7 +158,7 @@ export const BusinessEntrepreneur: React.FC = () => {
 
                             {logo && (
                                 <img
-                                    src={`http://localhost:3333/company_logo/${logo}`}
+                                    src={logo}
                                     alt=""
                                     className="w-12 sm:w-16 min-h-12 sm:h-16 object-fill rounded-full"
                                 />

@@ -110,7 +110,7 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
                     <img
                         src={
                             settings && settings.company_logo
-                                ? `http://localhost:3333/company_logo/${settings.company_logo}`
+                                ? settings.company_logo
                                 : NoImageImg
                         }
                         alt="Coffee"

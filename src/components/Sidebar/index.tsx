@@ -45,7 +45,7 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
                             <div className="flex items-center">
                                 {user.avatar ? (
                                     <div className="shrink-0">
-                                        <img src={`http://localhost:3333/avatar/${user.avatar}`} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
+                                        <img src={user.avatar} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
                                     </div>
                                 ) : (
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#9ca3af" className="w-8 h-8">
