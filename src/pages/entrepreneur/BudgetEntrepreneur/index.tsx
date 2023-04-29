@@ -59,25 +59,27 @@ export const BudgetEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
     const [proposals, setProposals] = useState<Proposals[]>([]);
     const [budget, setBudget] = useState<Budget>({} as Budget);
-    const [name, setName] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 8;
+    const itemsPerPage = 10;
+    const [name, setName] = useState("");
+    const [totalResults, setTotalResults] = useState(0);
 
     const handlePageChange = useCallback((newPage: number) => {
         setCurrentPage(newPage);
-    }, []);
-
-    const inicialIndice = (currentPage - 1) * itemsPerPage;
-    const finalIndice = inicialIndice * itemsPerPage;
-    const data = proposals.slice(inicialIndice, finalIndice);
+    }, [currentPage, setCurrentPage]);
 
     useEffect(() => {
+
         api.get(`companies/me`).then((response) => setCompany(response.data));
 
         if (company.id) {
-            api.get(`proposals/company/${company.id}`).then((response) => setProposals(response.data));
+            api.get(`proposals/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`)
+                .then((response) => {
+                    setProposals(response.data.proposals);
+                    setTotalResults(response.data.totalResults);
+                });
         }
-    }, [company.id]);
+    }, [company.id, currentPage, itemsPerPage]);
 
 
 
@@ -95,13 +97,12 @@ export const BudgetEntrepreneur: React.FC = () => {
 
     const handleSearchBudgets = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
         const name = event.target.value;
+
         setName(name);
 
         if (company.id) {
-            if (!name) {
-                api.get(`proposals/company/${company.id}`).then((response) => setProposals(response.data));
-            } else {
-                api.get(`proposals/filter/${company.id}`, {
+            if (name) {
+                api.get(`proposals/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`, {
                     params: {
                         objective: name,
                         description: name,
@@ -109,10 +110,19 @@ export const BudgetEntrepreneur: React.FC = () => {
                         name,
                     }
                 })
-                    .then((response) => setProposals(response.data));
+                    .then((response) => {
+                        setProposals(response.data.proposals);
+                        setTotalResults(response.data.totalResults);
+                    });
+            } else {
+                api.get(`proposals/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`)
+                    .then((response) => {
+                        setProposals(response.data.proposals);
+                        setTotalResults(response.data.totalResults);
+                    });
             }
         }
-    }, [company?.id, setProposals]);
+    }, [company?.id, setProposals, proposals, currentPage, itemsPerPage]);
 
     return (
         <div className="flex flex-row">
@@ -168,7 +178,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                     </div>
 
                     <PaginationTable
-                        tot_results={data.length}
+                        tot_results={totalResults}
                         items_per_page={itemsPerPage}
                         current_page={currentPage}
                         onPageChange={handlePageChange}

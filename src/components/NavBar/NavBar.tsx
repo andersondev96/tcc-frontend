@@ -13,13 +13,6 @@ interface INavBarProps {
     pageCurrent?: string;
 }
 
-interface ISettingsCompanyData {
-    id: string;
-    entrepreneur_id: string;
-    online_budget: string;
-    online_chat: string;
-}
-
 export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
     NavBar.propTypes = {
         pageCurrent: PropTypes.string,
@@ -29,7 +22,6 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const company_id = localStorage.getItem("@web:company_id");
-    const [settings, setSettings] = useState<ISettingsCompanyData>();
 
     const handleToAdmPage = useCallback(async () => {
         await api
@@ -45,18 +37,8 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
     }, [setIsAdmin]);
 
     useEffect(() => {
-        if (company_id) {
-            api.get(`/entrepreneurs`)
-                .then((response) => {
-                    if (response.data) {
-                        setSettings(response.data)
-                    }
-                })
-                .catch((err) => console.log(err));
-        }
-
         void handleToAdmPage();
-    }, [company_id, handleToAdmPage]);
+    }, [handleToAdmPage]);
 
     const logOut = useCallback(() => {
         try {
