@@ -36,33 +36,33 @@ interface Customer {
 export const Budget: React.FC = () => {
     const [customer, setCustomer] = useState<Customer>({} as Customer);
     const [proposals, setProposals] = useState<Proposal[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
     const [valueSearch, setValueSearch] = useState("");
-    const itemsPerPage = 1;
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    const [totalResults, setTotalResults] = useState(0);
 
     const handlePageChange = useCallback((newPage: number) => {
         setCurrentPage(newPage);
     }, []);
-
-    const inicialIndice = (currentPage - 1) * itemsPerPage;
-    const finalIndice = inicialIndice * itemsPerPage;
-    const data = proposals.slice(inicialIndice, finalIndice);
-
 
     useEffect(() => {
         api.get(`/customers/my-customer`).then(response => setCustomer(response.data));
     }, []);
 
     useEffect(() => {
-        api.get("/proposals").then(response => setProposals(response.data));
-    }, []);
+        api.get(`/proposals?page=${currentPage}&perPage=${itemsPerPage}`)
+            .then(response => {
+                setProposals(response.data.proposals);
+                setTotalResults(response.data.totalResults);
+            });
+    }, [currentPage, itemsPerPage]);
 
     const handleSearch = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setValueSearch(value);
 
         if (valueSearch) {
-            await api.get('/proposals', {
+            await api.get(`/proposals?page=${currentPage}&perPage=${itemsPerPage}`, {
                 params: {
                     objective: value,
                     description: value,
@@ -70,12 +70,13 @@ export const Budget: React.FC = () => {
                     company: value
                 }
             }).then((response) => {
-                setProposals(response.data);
+                setProposals(response.data.proposals);
+                setTotalResults(response.data.totalResults);
             }).catch((err) => {
                 console.log("Ocorreu um erro ao realizar a requisição", err);
             });
         }
-    }, [valueSearch, setProposals]);
+    }, [valueSearch, setProposals, currentPage, itemsPerPage]);
 
     return (
         <div className="flex flex-col">
@@ -127,7 +128,7 @@ export const Budget: React.FC = () => {
                             </Table>
                         </div>
                         <PaginationTable
-                            tot_results={data.length}
+                            tot_results={totalResults}
                             items_per_page={itemsPerPage}
                             current_page={currentPage}
                             onPageChange={handlePageChange}
