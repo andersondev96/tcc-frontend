@@ -107,7 +107,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                     });
             }
         }
-    }, [company?.id, setProposals, proposals, currentPage, itemsPerPage, setName]);
+    }, [company?.id, setProposals, proposals, currentPage, itemsPerPage, name]);
 
     return (
         <div className="flex flex-row">

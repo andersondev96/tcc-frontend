@@ -1,4 +1,5 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
 import { SideBar } from "../../../components/Sidebar";
 import { Table } from "../../../components/Table";
@@ -34,6 +35,9 @@ export const ClientsEntrepreneur: React.FC = () => {
     const [company, setCompany] = useState<Company>({} as Company);
     const [clients, setClients] = useState<Customer[]>([]);
     const [name, setName] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    const [totalResults, setTotalResults] = useState(0);
 
     useEffect(() => {
         api.get(`companies/me`)
@@ -49,17 +53,22 @@ export const ClientsEntrepreneur: React.FC = () => {
 
     useEffect(() => {
         if (company.id) {
-            api.get(`customers/${company.id}`)
+            api.get(`customers/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`)
                 .then((response) => {
                     if (response.data) {
-                        setClients(response.data);
+                        setClients(response.data.customers);
+                        setTotalResults(response.data.totalResults);
                     }
                 })
                 .catch((err) => {
                     console.log(err);
                 })
         }
-    }, [company.id]);
+    }, [company.id, currentPage, itemsPerPage]);
+
+    const handlePageChange = useCallback((newPage: number) => {
+        setCurrentPage(newPage);
+    }, [currentPage, setCurrentPage]);
 
     const handleSearchClients = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
 
@@ -70,28 +79,30 @@ export const ClientsEntrepreneur: React.FC = () => {
         if (company.id) {
 
             if (name) {
-                const response = await api.get(`customers/${company.id}`, {
+                const response = await api.get(`customers/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`, {
                     params: {
-                        name: value,
-                        email: value
+                        name: name,
+                        email: name
                     }
                 });
 
                 if (response.data) {
-                    setClients(response.data);
+                    setClients(response.data.customers);
+                    setTotalResults(response.data.totalResults);
                 }
             }
 
             if (name.length === 0) {
-                const response = await api.get(`customers/${company.id}`);
+                const response = await api.get(`customers/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`);
 
                 if (response.data) {
-                    setClients(response.data);
+                    setClients(response.data.customers);
+                    setTotalResults(response.data.totalResults);
                 }
             }
         }
 
-    }, [company.id, setName, setClients]);
+    }, [company.id, setName, setClients, clients, totalResults, currentPage, itemsPerPage]);
 
     return (
         <div className="flex flex-row">
@@ -129,6 +140,12 @@ export const ClientsEntrepreneur: React.FC = () => {
                             </TableBody>
                         </Table>
                     </div>
+                    <PaginationTable
+                        tot_results={totalResults}
+                        items_per_page={itemsPerPage}
+                        current_page={currentPage}
+                        onPageChange={handlePageChange}
+                    />
 
 
                 </div>
