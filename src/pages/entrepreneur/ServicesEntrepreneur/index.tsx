@@ -65,6 +65,10 @@ export const ServicesEntrepreneur: React.FC = () => {
     const [name, setName] = useState("");
     const [showInfoUploadXLSX, setShowInfoUploadXLSX] = useState(false);
     const [file, setFile] = useState<File | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 9;
+    const [totalResults, setTotalResults] = useState(0);
 
     useEffect(() => {
         api
@@ -72,13 +76,43 @@ export const ServicesEntrepreneur: React.FC = () => {
             .then(response => setCompany(response.data))
             .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error));
 
-        if (company.id) {
-            api
-                .get<ServiceData[]>(`/services/company/${company.id}`)
-                .then(response => setServices(response.data))
-                .catch(error => console.log("Ocorreu um erro ao realizar a requisição", error));
+
+    }, []);
+
+    useEffect(() => {
+        const loadMore = async () => {
+            if (company.id) {
+                setLoading(true);
+                const response = await api.get(`/services/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`);
+                setCurrentPage(currentPage + 1);
+                setServices([...services, ...response.data.services]);
+                setTotalResults(response.data.totalResults);
+            }
+        };
+
+        const handleScroll = async () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 192) {
+                loadMore();
+            }
         }
-    }, [company.id]);
+
+        window.addEventListener("scroll", handleScroll);
+
+        if (!loading) {
+            if (company.id) {
+                api.get(`/services/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`)
+                    .then((response) => {
+                        setServices(response.data.services);
+                    })
+                    .catch((err) => {
+                        console.log("Ocorreu um erro ao realizar a requisição", err);
+                    })
+            }
+        }
+
+        return () => window.removeEventListener("scroll", handleScroll);
+
+    }, [company.id, currentPage, itemsPerPage, setServices, loading]);
 
     const handleReadXlsFiles = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
         try {
@@ -114,18 +148,18 @@ export const ServicesEntrepreneur: React.FC = () => {
             setName(name);
 
             if (!name) {
-                await api.get<ServiceData[]>(`/services/company/${company.id}`)
-                    .then(response => setServices(response.data));
+                await api.get(`/services/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`)
+                    .then(response => setServices(response.data.services));
             } else {
-                await api.get<ServiceData[]>(`/services/company/${company.id}`, {
+                await api.get(`/services/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`, {
                     params: {
                         name:
                             name
                     }
                 })
-                    .then(response => setServices(response.data));
+                    .then(response => setServices(response.data.services));
             }
-        }, [company?.id]);
+        }, [company?.id, currentPage, itemsPerPage, setServices, services, name]);
 
 
     return (
@@ -178,34 +212,31 @@ export const ServicesEntrepreneur: React.FC = () => {
                             }
                         </div>
                     </div>
-
-
                     {
-                        services.length > 0 && services ? (
-                            <>
-                                <p className="font-mono text-sm mt-4">
-                                    {`Exibindo ${services.length} ${services.length > 1 ? ("resultados") : ("resultado")} ${name && `para a busca "${name}"`}`}</p>
-                                <div className="grid grid-cols-1 sm:grid-cols-5 justify-items-center gap-4 sm:gap-8 mt-8">
-                                    {
-                                        services.map(service => (
-                                            <ServiceCard
-                                                key={service.id}
-                                                data={service}
-                                                setServices={setServices}
-                                            />
-                                        ))
-                                    }
-
-                                </div>
-                            </>
-                        ) : (
-                            name ? (
-                                <p className="font-mono text-sm mt-12">Nenhum resultado exibido para a busca "{name}"</p>
-                            ) : (
-                                <p className="font-mono text-sm mt-12">Nenhum resultado a ser exibido "{name}"</p>
-                            )
+                        name && (
+                            <p className="font-mono text-sm mt-4">
+                                {`Exibindo ${services.length} ${services.length > 1 ? ("resultados") : ("resultado")} ${name && `para a busca "${name}"`}`}</p>
                         )
                     }
+                    <div className="grid grid-cols-1 sm:grid-cols-5 justify-items-center gap-4 sm:gap-8 mt-8">
+                        {
+                            services.map(service => (
+                                <ServiceCard
+                                    key={service.id}
+                                    data={service}
+                                    setServices={setServices}
+                                />
+                            ))
+                        }
+
+                    </div>
+
+                    {services.length === 0 && (
+                        <p className="font-mono text-sm mt-12">Nenhum resultado a ser exibido</p>
+                    )}
+
+
+
                 </div>
             </div>
         </div>
