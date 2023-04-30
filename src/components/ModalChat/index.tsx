@@ -1,6 +1,7 @@
 import { KeyboardEvent, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { io } from "socket.io-client";
+import { useAuth } from "../../contexts/AuthContext";
 import { ContactsChat } from "./components/ContactsChat";
 import { MessageChat } from "./components/MessageChat";
 import { WelcomeChat } from "./components/WelcomeChat";
@@ -57,6 +58,7 @@ interface ModalChatProps {
 
 
 export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
+    const { user } = useAuth();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [telephone, setTelephone] = useState("");
@@ -66,13 +68,12 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
     const [chatData, setChatData] = useState<ChatDataResponse[]>([]);
     const [chatMessageActive, setChatMessageActive] = useState(false);
     const [message, setMessage] = useState("");
+    const [connection, setConnection] = useState<ConnectionsData>({} as ConnectionsData);
     let idChatRoom = "";
 
     const socket = io("http://localhost:3333");
 
     useEffect(() => {
-
-        console.log(userIsConected);
 
         socket.on("connect", () => {
             console.log(socket.id);
@@ -82,7 +83,10 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
 
             setConnectionsUser(connections);
         });
-    }, [setConnectionsUser, userIsConected]);
+
+    }, [setConnectionsUser]);
+
+
 
     const handleFormSubmit = useCallback(async (data: FormData) => {
         setIsLoading(true);
@@ -112,7 +116,9 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
         }
     }, [setName, setEmail, setTelephone, setIsConnected, setIsLoading]);
 
-    const handleLoadingMessage = useCallback((idUser: string) => {
+    const handleLoadingMessage = useCallback((connectionData: ConnectionsData) => {
+
+        const idUser = connectionData.id;
 
         socket.emit("start_chat", { idUser }, (response: ChatData) => {
             console.log(response);
@@ -127,6 +133,7 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
                 };
             });
 
+            setConnection(connectionData);
 
             setChatData((prevChatData) => [...prevChatData, ...messagesData]);
 
@@ -187,11 +194,13 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
                         <MessageChat
                             chatData={chatData}
                             handleSendMessage={handleSendMessage}
+                            connectionData={connection}
                         />
                     ) : (
                         <ContactsChat
                             connections={connectionsUser}
                             handleLoadingMessage={handleLoadingMessage}
+                            userLogged={user}
                         />
                     )
 

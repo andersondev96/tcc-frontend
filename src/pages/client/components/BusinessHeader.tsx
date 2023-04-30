@@ -203,7 +203,7 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
             </ModalContainer>
 
             <ModalContainer
-                title="Singhtglass Coffee"
+                title={company.name}
                 isOpen={modalChatIsOpen}
                 onRequestClose={closeModalChat}
             >
