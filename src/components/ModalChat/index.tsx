@@ -68,6 +68,7 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [chatData, setChatData] = useState<ChatDataResponse[]>([]);
     const [chatMessageActive, setChatMessageActive] = useState(false);
+    const [socketMessage, setSocketMessage] = useState<ChatDataResponse | null>(null);
     const [message, setMessage] = useState("");
     const [connection, setConnection] = useState<ConnectionsData>({} as ConnectionsData);
     let idChatRoom = "";
@@ -86,8 +87,6 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
         });
 
     }, [setConnectionsUser]);
-
-
 
     const handleFormSubmit = useCallback(async (data: FormData) => {
         setIsLoading(true);

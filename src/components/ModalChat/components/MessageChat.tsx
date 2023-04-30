@@ -74,17 +74,18 @@ export const MessageChat: React.FC<MessageChatProps> = ({ chatData, handleSendMe
                                     <>
                                         <Message
                                             key={chat.message.id}
-                                            userAvatar={chat.message.connection.user.avatar
-                                                ? chat.message.connection.user.avatar
-                                                : AvatarImg
+                                            userAvatar={
+                                                chat.message.connection.user.avatar
+                                                    ? chat.message.connection.user.avatar
+                                                    : AvatarImg
                                             }
                                             message={chat.message.text}
                                             dateMessage={chat.message.createdAt}
                                             activeUser={chat.message.connection.user.email === userLogged.email}
                                         />
                                     </>
-                                ))
-                            }
+                                ))}
+
 
 
                         </div>
