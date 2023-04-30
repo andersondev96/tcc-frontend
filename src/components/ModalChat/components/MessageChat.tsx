@@ -1,4 +1,5 @@
 import { KeyboardEvent } from 'react';
+import AvatarImg from "../../../assets/user.png";
 import { Message } from "../../../pages/client/components/Message";
 
 
@@ -49,7 +50,10 @@ export const MessageChat: React.FC<MessageChatProps> = ({ chatData, handleSendMe
                     <div className="flex flex-row items-center gap-2">
                         <img
                             className="rounded-full h-8 w-8"
-                            src={connectionData.user && connectionData.user.avatar}
+                            src={connectionData.user && connectionData.user.avatar
+                                ? connectionData.user.avatar
+                                : AvatarImg
+                            }
                         />
                         <span className="font-semibold">{connectionData.user.name}</span>
                     </div>
@@ -69,7 +73,10 @@ export const MessageChat: React.FC<MessageChatProps> = ({ chatData, handleSendMe
                                     <>
                                         <Message
                                             key={chat.message.id}
-                                            userAvatar={chat.message.connection.user.avatar}
+                                            userAvatar={chat.message.connection.user.avatar
+                                                ? chat.message.connection.user.avatar
+                                                : AvatarImg
+                                            }
                                             message={chat.message.text}
                                             dateMessage={chat.message.createdAt}
                                             activeUser={chat.message.connection.user.email === userLogged.email}
