@@ -1,6 +1,4 @@
 import { KeyboardEvent } from 'react';
-import Coffee1 from '../../../assets/coffee-img1.jpg';
-import { useAuth } from "../../../contexts/AuthContext";
 import { Message } from "../../../pages/client/components/Message";
 
 
@@ -8,6 +6,14 @@ interface MessageChatProps {
     chatData: ChatDataResponse[];
     handleSendMessage: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
     connectionData: ConnectionsData;
+    userLogged: User;
+}
+
+interface User {
+    id: string;
+    name: string;
+    email: string;
+    avatar: string;
 }
 
 interface MessageData {
@@ -17,20 +23,16 @@ interface MessageData {
     chatroom_id: string;
     connection_id: string;
     socket_id: string;
-    created_at: string;
-    updated_at: string;
+    connection: ConnectionsData;
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface ConnectionsData {
     id: string;
     socket_id: string;
     createdAt: Date;
-    user: {
-        id: string;
-        name: string;
-        email: string;
-        avatar: string;
-    }
+    user: User;
     user_id: string;
 }
 interface ChatDataResponse {
@@ -38,9 +40,7 @@ interface ChatDataResponse {
     connection: string;
 }
 
-export const MessageChat: React.FC<MessageChatProps> = ({ chatData, handleSendMessage, connectionData }) => {
-
-    const { user } = useAuth();
+export const MessageChat: React.FC<MessageChatProps> = ({ chatData, handleSendMessage, connectionData, userLogged }) => {
 
     return (
         <>
@@ -66,11 +66,15 @@ export const MessageChat: React.FC<MessageChatProps> = ({ chatData, handleSendMe
 
                             {
                                 chatData && chatData.length > 0 && chatData.map((chat) => (
-                                    <Message
-                                        key={chat.message.id}
-                                        userAvatar={Coffee1}
-                                        message={chat.message.text}
-                                    />
+                                    <>
+                                        <Message
+                                            key={chat.message.id}
+                                            userAvatar={chat.message.connection.user.avatar}
+                                            message={chat.message.text}
+                                            dateMessage={chat.message.createdAt}
+                                            activeUser={chat.message.connection.user.email === userLogged.email}
+                                        />
+                                    </>
                                 ))
                             }
 

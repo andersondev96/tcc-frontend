@@ -356,7 +356,7 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
                 )}
             </Disclosure>
             <ModalContainer
-                title=""
+                title="Chat"
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
             >

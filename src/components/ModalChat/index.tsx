@@ -32,8 +32,9 @@ interface MessageData {
     chatroom_id: string;
     connection_id: string;
     socket_id: string;
-    created_at: string;
-    updated_at: string;
+    connection: ConnectionsData;
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface RoomData {
@@ -169,8 +170,9 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
                             chatroom_id: data.message.chatroom_id,
                             connection_id: data.message.connection_id,
                             socket_id: data.message.socket_id,
-                            created_at: data.message.created_at,
-                            updated_at: data.message.updated_at,
+                            connection: data.message.connection,
+                            createdAt: data.message.createdAt,
+                            updatedAt: data.message.updatedAt,
                         };
                         setChatData((prevChatData) => [...prevChatData, { message: newMessage, connection: data.connection }]);
                     }
@@ -195,6 +197,7 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
                             chatData={chatData}
                             handleSendMessage={handleSendMessage}
                             connectionData={connection}
+                            userLogged={user}
                         />
                     ) : (
                         <ContactsChat
