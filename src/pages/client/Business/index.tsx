@@ -2,7 +2,7 @@ import { BusinessHeader } from '../components/BusinessHeader';
 import { Paragraph } from "../components/Paragraph";
 
 import { useCallback, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Gallery } from '../../../components/Gallery';
 import { NavBar } from "../../../components/NavBar/NavBar";
 import { useAuth } from '../../../contexts/AuthContext';
@@ -85,6 +85,8 @@ interface SettingsCompanyData {
 
 export const Business: React.FC = () => {
     const params = useParams();
+    const navigate = useNavigate();
+
     const { user } = useAuth();
     const [companyFavorited, setCompanyFavorited] = useState(false);
     const [company, setCompany] = useState<Company>({} as Company);
@@ -96,6 +98,11 @@ export const Business: React.FC = () => {
 
         api.get<Company>(`companies/${params.id}`)
             .then(response => {
+                if (!response || !response.data) {
+                    navigate("/");
+                    return;
+                }
+
                 const services = [response.data.services.join(", ")];
                 const modifiedCompany = { ...response.data, services };
                 setCompany(modifiedCompany);

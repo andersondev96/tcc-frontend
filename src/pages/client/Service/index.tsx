@@ -3,7 +3,7 @@ import { Search } from "../../../components/Search";
 import { Card } from "../components/Card";
 
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../services/api";
 
 interface CompanyData {
@@ -34,6 +34,7 @@ interface CategoryServiceData {
 
 export const Service: React.FC = () => {
     const { company_id } = useParams();
+    const navigate = useNavigate();
     const [company, setCompany] = useState<CompanyData>({} as CompanyData);
     const [services, setServices] = useState<ServiceData[]>([]);
     const [hightLightServices, setHightLightServices] = useState<ServiceData[]>([]);
@@ -45,7 +46,13 @@ export const Service: React.FC = () => {
     const loadCompany = useCallback(async () => {
         if (company_id) {
             await api.get<CompanyData>(`/companies/${company_id}`)
-                .then(response => setCompany(response.data))
+                .then(response => {
+                    if (!response || !response.data) {
+                        navigate("/");
+                        return;
+                    }
+                    setCompany(response.data)
+                })
                 .catch(error => console.log(error));
         }
     }, [company_id]);

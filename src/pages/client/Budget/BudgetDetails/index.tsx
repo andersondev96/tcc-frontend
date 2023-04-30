@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { NavBar } from "../../../../components/NavBar/NavBar";
 import api from "../../../../services/api";
@@ -48,12 +48,19 @@ interface Budget {
 
 export const BudgetDetails: React.FC = () => {
     const { proposal_id } = useParams();
+    const navigate = useNavigate();
 
     const [proposal, setProposal] = useState<Proposal>({} as Proposal);
     const [budget, setBudget] = useState<Budget>({} as Budget);
 
     useEffect(() => {
-        api.get(`proposals/${proposal_id}`).then(response => setProposal(response.data));
+        api.get(`proposals/${proposal_id}`).then(response => {
+            if (!response || !response.data) {
+                navigate("/");
+                return;
+            }
+            setProposal(response.data);
+        });
 
         api.get(`proposals/budget/${proposal_id}`).then(response => setBudget(response.data));
 

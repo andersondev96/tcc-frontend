@@ -140,6 +140,12 @@ export const BusinessEdit: React.FC = () => {
         async function fetchCompany() {
             try {
                 const response = await api.get<CompanyData>(`companies/${params.id}`);
+
+                if (!response || !response.data) {
+                    navigate("/admin/business");
+                    return;
+                }
+
                 setHasPhysicalLocation(response.data.physical_localization);
                 setCompany(response.data);
 

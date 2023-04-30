@@ -40,7 +40,15 @@ export const ShowServicesEntrepreneur: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        api.get<ServiceData>(`services/${id}`).then(response => setService(response.data));
+        api.get<ServiceData>(`services/${id}`).then(response => {
+            if (!response || !response.data) {
+                navigate("/admin/services");
+                return;
+            }
+            setService(response.data)
+        }).catch((err) => {
+            console.log(err);
+        });
 
         api.get<AssessmentsData[]>(`assessments/service/${id}`).then(response =>
             setAssessments(response.data));

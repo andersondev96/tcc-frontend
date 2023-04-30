@@ -53,6 +53,11 @@ export const EditServicesEntrepreneur: React.FC = () => {
             .catch(error => console.log("Ocorreu um erro na solicitação", error));
 
         api.get<ServiceData>(`/services/${params.id}`).then((response) => {
+            if (!response || !response.data) {
+                navigate("/admin/services");
+                return;
+            }
+
             setHighlight(response.data.highlight_service)
             setService(response.data);
         })

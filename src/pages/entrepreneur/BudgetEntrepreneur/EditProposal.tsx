@@ -51,7 +51,16 @@ export const EditProposal: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        api.get(`proposals/${proposal_id}`).then(response => setProposal(response.data));
+        api.get(`proposals/${proposal_id}`).then(response => {
+            if (!response || !response.data) {
+                navigate("/admin/budget");
+                return;
+            }
+
+            setProposal(response.data)
+        }).catch(err => {
+            console.log(err);
+        });
 
         api.get(`proposals/budget/${proposal_id}`).then(response => {
             if (response.data) {

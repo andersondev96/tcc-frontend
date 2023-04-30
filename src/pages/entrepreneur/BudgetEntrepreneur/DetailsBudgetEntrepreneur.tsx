@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { SideBar } from "../../../components/Sidebar";
 import api from "../../../services/api";
 import { PreviousPageButton } from "../../client/components/PreviousPageButton";
@@ -41,12 +41,21 @@ interface Budget {
 
 export const DetailsBudgetEntrepreneur: React.FC = () => {
     const { proposal_id } = useParams();
+    const navigate = useNavigate();
 
     const [proposal, setProposal] = useState<Proposal>({} as Proposal);
     const [budget, setBudget] = useState<Budget>({} as Budget);
 
     useEffect(() => {
-        api.get(`proposals/${proposal_id}`).then(response => setProposal(response.data));
+        api.get(`proposals/${proposal_id}`).then(response => {
+            if (!response || !response.data) {
+                navigate("/admin/budget");
+                return;
+            }
+            setProposal(response.data);
+        }).catch((err) => {
+            console.log(err);
+        });
 
         api.get(`proposals/budget/${proposal_id}`).then(response => setBudget(response.data));
 
