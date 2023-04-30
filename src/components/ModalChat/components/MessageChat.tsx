@@ -8,7 +8,7 @@ interface MessageChatProps {
     handleSendMessage: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
     connectionData: ConnectionsData;
     userLogged: User;
-    handleDeleteRoom: () => void;
+    handleDeleteRoom: (connectionData: ConnectionsData) => void;
 }
 
 interface User {
@@ -58,7 +58,7 @@ export const MessageChat: React.FC<MessageChatProps> = ({ chatData, handleSendMe
                         />
                         <span className="font-semibold">{connectionData.user.name}</span>
                     </div>
-                    <div className="flex items-center" onClick={handleDeleteRoom}>
+                    <div className="flex items-center">
                         <span className="font-medium text-sm text-red-800 hover:cursor-pointer">Encerrar bate-papo</span>
                     </div>
                 </div>
