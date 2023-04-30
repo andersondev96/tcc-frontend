@@ -183,7 +183,10 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
         }
     }, [setMessage, setChatData]);
 
-
+    const handleDeleteRoom = useCallback(async () => {
+        socket.disconnect();
+        setChatMessageActive(false);
+    }, [chatMessageActive]);
 
 
     return (
@@ -198,6 +201,7 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
                             handleSendMessage={handleSendMessage}
                             connectionData={connection}
                             userLogged={user}
+                            handleDeleteRoom={handleDeleteRoom}
                         />
                     ) : (
                         <ContactsChat
