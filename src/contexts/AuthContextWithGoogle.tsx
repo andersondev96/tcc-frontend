@@ -34,8 +34,8 @@ const AuthContextWithGoogle = createContext({} as AuthContextWithGoogleType);
 function AuthContextProviderWithGoogle(
     props: AuthContextProviderProps
 ): JSX.Element {
-    const [user, setUser] = useState<User>();
-    const [authenticated, setAuthenticated] = useState(false);
+    const [googleUser, setGoogleUser] = useState<User>();
+    const [googleAuthenticated, setGoogleAuthenticated] = useState(false);
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -46,7 +46,7 @@ function AuthContextProviderWithGoogle(
                     throw new Error("Missing information from Google Account.");
                 }
 
-                setUser({
+                setGoogleUser({
                     id: uid,
                     name: displayName,
                     email,
@@ -85,9 +85,9 @@ function AuthContextProviderWithGoogle(
 
             api.defaults.headers.authorization = `Bearer ${token}`;
 
-            setAuthenticated(true);
+            setGoogleAuthenticated(true);
 
-            setUser({
+            setGoogleUser({
                 id: uid,
                 name: displayName,
                 email,
@@ -100,12 +100,18 @@ function AuthContextProviderWithGoogle(
         localStorage.removeItem("@web:token");
         localStorage.removeItem("@web:user");
 
-        setAuthenticated(false);
+        setGoogleAuthenticated(false);
+        setGoogleUser({} as User);
     }, []);
 
     return (
         <AuthContextWithGoogle.Provider
-            value={{ user, authenticated, signInWithGoogle, signOutWithGoogle }}
+            value={{
+                user: googleUser,
+                authenticated: googleAuthenticated,
+                signInWithGoogle,
+                signOutWithGoogle
+            }}
         >
             {props.children}
         </AuthContextWithGoogle.Provider>

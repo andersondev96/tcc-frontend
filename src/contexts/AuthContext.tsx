@@ -65,8 +65,6 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
 
             const { token, user } = response.data;
 
-            console.log(response.data);
-
             localStorage.setItem("@web:token", token);
             localStorage.setItem("@web:user", JSON.stringify(user));
 
@@ -85,6 +83,7 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
 
         setAuthenticated(false);
         setData({} as AuthState);
+        console.log(data);
     }, []);
 
     const updateUser = useCallback(
