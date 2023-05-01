@@ -122,6 +122,14 @@ export const BusinessCreate: React.FC = () => {
         setScheduleItems(updateScheduleItems);
     }
 
+    function removeScheduleItem(position: number) {
+        const updatedScheduleItems = scheduleItems.filter((scheduleItem, index) => {
+            return index !== position;
+        });
+
+        setScheduleItems(updatedScheduleItems);
+    }
+
     const handleInputChangeTag = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
     }
@@ -410,7 +418,7 @@ export const BusinessCreate: React.FC = () => {
 
                         {scheduleItems.map((scheduleItem, index) => {
                             return (
-                                <div key={index} className="flex flex-wrap -mx-3 md:mb-4">
+                                <div key={index} className="flex flex-wrap -mx-3 md:mb-4 items-center">
                                     <div className="w-full md:w-1/4 px-3 mb-3 md:mb-0">
                                         <Select
                                             name="weekday"
@@ -453,6 +461,14 @@ export const BusinessCreate: React.FC = () => {
                                             value={scheduleItem.closing_time}
                                             onChange={(e) => { setScheduleItemValue(index, 'closing_time', e.target.value) }}
                                         />
+                                    </div>
+                                    <div className="px-3 mb-6 md:mb-0 md:mt-2 flex justify-center">
+                                        <button onClick={() => removeScheduleItem(index)}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-red-600 hover:text-red-800">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+
+                                        </button>
                                     </div>
                                 </div>
                             )
