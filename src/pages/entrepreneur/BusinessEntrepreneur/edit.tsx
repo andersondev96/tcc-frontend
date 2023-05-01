@@ -303,6 +303,7 @@ export const BusinessEdit: React.FC = () => {
             fetch(`https://viacep.com.br/ws/${cep}/json`)
                 .then(response => response.json())
                 .then(data => {
+                    console.log(data);
                     setCompany(prevState => ({
                         ...prevState,
                         Address: {
@@ -693,17 +694,20 @@ export const BusinessEdit: React.FC = () => {
                                     </div>
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="Address.street"
+                                            name="street"
                                             label="Endereço"
                                             placeholder="Digite a rua"
+                                            defaultValue={company.Address.street}
                                         />
 
                                     </div>
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="Address.district"
+                                            name="district"
                                             label="Bairro"
                                             placeholder="Digite o bairro"
+                                            defaultValue={company.Address.district}
+
                                         />
 
                                     </div>
@@ -720,8 +724,9 @@ export const BusinessEdit: React.FC = () => {
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <div className="relative">
                                             <Select
-                                                name="Address.state"
+                                                name="state"
                                                 label="Estado"
+                                                defaultValue={company.Address.state}
                                                 onChange={(e) => setSelectedState(e.target.value)}
                                                 options={[
                                                     { value: 'AC', label: 'Acre' },
@@ -754,14 +759,17 @@ export const BusinessEdit: React.FC = () => {
 
                                                 ]}
                                                 placeholder="Selecione uma opção"
+
                                             />
                                         </div>
                                     </div>
                                     <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="Address.city"
+                                            name="city"
                                             label="Cidade"
+                                            defaultValue={company.Address.city}
                                             placeholder="Digite a cidade"
+                                            readOnly={true}
                                         />
                                     </div>
                                 </div>
