@@ -39,8 +39,10 @@ export const Service: React.FC = () => {
     const [services, setServices] = useState<ServiceData[]>([]);
     const [hightLightServices, setHightLightServices] = useState<ServiceData[]>([]);
     const [categories, setCategories] = useState<string[]>([]);
+    const [valueSerach, setValueSerach] = useState("");
     const [servicesByCategory, setServicesByCategory] = useState<CategoryServiceData>({});
     const [currentPage, setCurrentPage] = useState(1);
+    const [categoriesLoaded, setCategoriesLoaded] = useState(false);
     const itemsPerPage = 20;
 
     const loadCompany = useCallback(async () => {
@@ -59,26 +61,35 @@ export const Service: React.FC = () => {
 
     const searchService = useCallback(
         async (event: ChangeEvent<HTMLInputElement>) => {
-            if (company_id) {
-                const name = event.target.value;
+            try {
+                if (company_id) {
+                    const name = event.target.value;
 
-                if (!name) {
-                    api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`)
-                        .then(response => {
-                            setServices(response.data.services)
-                        });
-                } else {
-                    api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`, {
-                        params: {
-                            name
+                    setValueSerach(name);
+
+                    if (!name) {
+                        const response = await api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`);
+
+                        if (response.data && response.data.services) {
+                            setServices(response.data.services);
                         }
-                    })
-                        .then(response => {
-                            setServices(response.data);
+                    } else {
+                        const response = await api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`, {
+                            params: {
+                                name: valueSerach
+                            }
                         });
+
+                        if (response.data && response.data.services) {
+                            console.log(response.data);
+                            setServices(response.data.services);
+                        }
+                    }
                 }
+            } catch (error) {
+                console.log(error);
             }
-        }, [company_id, services, currentPage, itemsPerPage]);
+        }, [company_id, currentPage, itemsPerPage, setValueSerach, valueSerach]);
 
 
     const loadingHighlightService = useCallback(async () => {
@@ -99,15 +110,17 @@ export const Service: React.FC = () => {
     }, [company_id, currentPage, itemsPerPage]);
 
     const loadCategories = useCallback(() => {
-        if (services.length > 0) {
-            const uniqueCategories = new Set(categories);
-            services.forEach((service) => {
-                uniqueCategories.add(service.category);
-            });
-            const categoriesArray = [...uniqueCategories];
-            setCategories(categoriesArray);
+        try {
+            if (services.length > 0 && !categoriesLoaded) {
+                const uniqueCategories = new Set(services.map(service => service.category));
+                const categoriesArray = [...uniqueCategories];
+                setCategories(categoriesArray);
+                setCategoriesLoaded(true);
+            }
+        } catch (err) {
+            console.log(err);
         }
-    }, [services]);
+    }, [categoriesLoaded, setCategories, setCategoriesLoaded]);
 
     useEffect(() => {
         if (company.category_id) {
@@ -116,12 +129,6 @@ export const Service: React.FC = () => {
                 .catch(error => console.log(error));
         }
     }, [company.category_id]);
-
-
-
-    useEffect(() => {
-
-    }, [services, categories]);
 
     useEffect(() => {
         if (company_id) {
@@ -136,23 +143,27 @@ export const Service: React.FC = () => {
     }, [company_id, loadCompany, loadingHighlightService, loadCategories, currentPage, itemsPerPage]);
 
     useEffect(() => {
-        if (services) {
-            const groupServices = services.reduce<CategoryServiceData>(
-                (acc, service) => {
-                    const category = service.category;
-                    if (acc[category]) {
-                        acc[category].push(service);
-                    } else {
-                        acc[category] = [service];
-                    }
-                    return acc;
-                },
-                {}
-            );
+        try {
+            if (services) {
+                const groupServices = services.reduce<CategoryServiceData>(
+                    (acc, service) => {
+                        const category = service.category;
+                        if (acc[category]) {
+                            acc[category].push(service);
+                        } else {
+                            acc[category] = [service];
+                        }
+                        return acc;
+                    },
+                    {}
+                );
 
-            setServicesByCategory(groupServices);
+                setServicesByCategory(groupServices);
+            }
+        } catch (err) {
+
         }
-    }, [services]);
+    }, [services, setServicesByCategory]);
 
     return (
         <div className="flex flex-col">
