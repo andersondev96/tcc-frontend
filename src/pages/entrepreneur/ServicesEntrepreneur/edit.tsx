@@ -60,23 +60,33 @@ export const EditServicesEntrepreneur: React.FC = () => {
 
             setHighlight(response.data.highlight_service)
             setService(response.data);
+            setSubcategorySelected(response.data.category);
         })
             .catch(error => {
                 console.log("Ocorreu um erro na solicitação", error);
             })
-    }, [params.id, setCompany, setService, setHighlight]);
+    }, [params.id, setCompany, setService, setHighlight, setSubcategorySelected]);
 
     useEffect(() => {
-        if (company.category_id) {
-            api.get(`/categories/list-subcategories/${company.category_id}`)
-                .then(response => {
-                    setSubcategories(response.data);
-                    setSubcategorySelected(response.data.category);
-                })
-                .catch(error => console.log("Ocorreu um erro na solicitação", error));
+        const loadCategory = async () => {
+            try {
+                if (company.category_id) {
+                    const response = await api.get(`/categories/list-subcategories/${company.category_id}`);
+
+                    console.log(response.data.category);
+
+                    if (response.data) {
+                        setSubcategories(response.data);
+                    }
+                }
+            } catch (err) {
+                console.log(err);
+            }
         }
 
-    }, [company.category_id, setSubcategories, setSubcategorySelected]);
+        loadCategory();
+
+    }, [company.category_id, setSubcategories]);
 
     function handleSetHighlight() {
         setHighlight(!highlight);
@@ -135,7 +145,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
                     name: data.name,
                     description: data.description,
                     price: data.price,
-                    category: data.category,
+                    category: subcategorySelected,
                     highlight_service: highlight,
                 };
 
@@ -163,7 +173,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
 
                 toast.error("Erro ao cadastrar o serviço")
             }
-        }, [params.id, highlight, imageService, navigate, toast]);
+        }, [params.id, highlight, subcategorySelected, imageService, navigate, toast]);
 
     return (
         <div className="flex flex-row">
@@ -212,7 +222,8 @@ export const EditServicesEntrepreneur: React.FC = () => {
                                     label="Categoria do produto/serviço"
                                     idTooltip="tooltip-category-service"
                                     tooltipText="Escolha a categoria que seu serviço se encaixa"
-                                    defaultValue={subcategorySelected}
+                                    value={subcategorySelected}
+                                    onChange={(e) => setSubcategorySelected(e.target.value)}
                                     options={subcategories.map(subcategory => ({
                                         value: subcategory, label: subcategory
                                     }))
