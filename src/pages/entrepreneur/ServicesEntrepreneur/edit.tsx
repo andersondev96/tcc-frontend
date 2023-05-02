@@ -68,12 +68,10 @@ export const EditServicesEntrepreneur: React.FC = () => {
     }, [params.id, setCompany, setService, setHighlight, setSubcategorySelected]);
 
     useEffect(() => {
-        const loadCategory = async () => {
+        const loadCategories = async () => {
             try {
                 if (company.category_id) {
                     const response = await api.get(`/categories/list-subcategories/${company.category_id}`);
-
-                    console.log(response.data.category);
 
                     if (response.data) {
                         setSubcategories(response.data);
@@ -84,7 +82,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
             }
         }
 
-        loadCategory();
+        loadCategories();
 
     }, [company.category_id, setSubcategories]);
 
