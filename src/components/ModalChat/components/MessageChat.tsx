@@ -73,7 +73,7 @@ export const MessageChat: React.FC<MessageChatProps> = ({ chatData, handleSendMe
                                 chatData && chatData.length > 0 && chatData.map((chat) => (
                                     <>
                                         <Message
-                                            key={chat.message.id}
+                                            key={`message-${chat.message.id}`}
                                             userAvatar={
                                                 chat.message.connection.user.avatar
                                                     ? chat.message.connection.user.avatar
@@ -85,9 +85,6 @@ export const MessageChat: React.FC<MessageChatProps> = ({ chatData, handleSendMe
                                         />
                                     </>
                                 ))}
-
-
-
                         </div>
 
                     }
@@ -97,7 +94,7 @@ export const MessageChat: React.FC<MessageChatProps> = ({ chatData, handleSendMe
                         <textarea
                             className="w-full h-14 p-4 pr-16 rounded resize-none bg-gray-100 border-none text-gray-800"
                             placeholder="Digite a sua mensagem aqui"
-                            onKeyPress={handleSendMessage}
+                            onKeyDown={handleSendMessage}
                         />
                     </div>
                 </div>

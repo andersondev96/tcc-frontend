@@ -71,6 +71,8 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
     const [socketMessage, setSocketMessage] = useState<ChatDataResponse | null>(null);
     const [message, setMessage] = useState("");
     const [connection, setConnection] = useState<ConnectionsData>({} as ConnectionsData);
+    const [sendingMessage, setSendingMessage] = useState(false);
+
     let idChatRoom = "";
 
     const socket = io("http://localhost:3333");
@@ -144,6 +146,10 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
 
+            if (sendingMessage) {
+                return;
+            }
+
             const messageToSend = event.currentTarget.value;
 
             if (messageToSend.trim() !== "") {
@@ -156,7 +162,7 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
                     idChatRoom
                 };
 
-                console.log(data);
+                setSendingMessage(true);
 
                 socket.emit("message", data);
 
@@ -180,7 +186,7 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
             }
 
         }
-    }, [setMessage, setChatData]);
+    }, [setMessage, setChatData, setSendingMessage, idChatRoom]);
 
     const handleDeleteRoom = useCallback(async (connectionData: ConnectionsData) => {
         socket.disconnect();
