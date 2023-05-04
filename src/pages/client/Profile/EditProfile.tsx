@@ -95,6 +95,8 @@ export const EditProfile: React.FC = () => {
 
                 updateUser(response.data);
 
+                console.log(response.data);
+
                 toast.success("Usuário atualizado com sucesso!")
 
 
