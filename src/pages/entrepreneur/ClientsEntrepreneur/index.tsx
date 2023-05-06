@@ -120,7 +120,6 @@ export const ClientsEntrepreneur: React.FC = () => {
                                     <TableHeader>Nome</TableHeader>
                                     <TableHeader>E-mail</TableHeader>
                                     <TableHeader>Telefone</TableHeader>
-                                    <TableHeader>Status</TableHeader>
                                 </TableRowHead>
                             </TableHead>
                             <TableBody>
@@ -129,7 +128,6 @@ export const ClientsEntrepreneur: React.FC = () => {
                                         <TableData>{client.customer.user.name}</TableData>
                                         <TableData>{client.customer.user.email}</TableData>
                                         <TableData>{client.customer.telephone}</TableData>
-                                        <TableData>{client.customer.status}</TableData>
                                     </TableRowBody>
 
                                 ))) : (

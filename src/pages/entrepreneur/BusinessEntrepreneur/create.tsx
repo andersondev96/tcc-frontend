@@ -22,16 +22,16 @@ interface IScheduleItem {
 }
 interface CreateBusinessEntrepreneurFormData {
     name: string;
-    cnpj: string;
+    cnpj?: string;
     category_id: string;
-    description: string;
+    description?: string;
     services: string[];
     physical_localization: boolean;
     telephone: string;
     whatsapp: string;
     email: string;
-    website: string;
-    schedules: IScheduleItem[],
+    website?: string;
+    schedules?: IScheduleItem[],
     cep: string;
     street: string;
     district: string;
@@ -206,6 +206,9 @@ export const BusinessCreate: React.FC = () => {
                     name: Yup.string().required('Nome obrigatório'),
                     cnpj: cnpjValidation(hasCNPJ),
                     category_id: Yup.string().required('Categoria obrigatório'),
+                    ...(tags.length === 0) ? {
+                        services: Yup.string().required('Digite ao menos um serviço'),
+                    } : {},
                     telephone: Yup.number()
                         .required('Telefone obrigatório')
                         .integer()
@@ -227,6 +230,31 @@ export const BusinessCreate: React.FC = () => {
                             val => val ? val.toString().length === 11 : true
                         ),
                     email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
+                    website: Yup.string().url("Digite um endereço válido").nullable(),
+                    ...(hasPhysicalLocation) && {
+                        cep: Yup.number()
+                            .integer()
+                            .positive()
+                            .required()
+                            .typeError("Digite apenas números")
+                            .test('len',
+                                'O campo deve possuir 8 digitos',
+                                val => val ? val.toString().length === 8 : true
+                            ),
+
+                        street: Yup.string().required("O campo é obrigatório"),
+                        district: Yup.string().required("O campo é obrigatório"),
+                        city: Yup.string().required("O campo é obrigatório"),
+                        state: Yup.string().required("O campo é obrigatório"),
+
+                        number: Yup.number()
+                            .integer()
+                            .positive()
+                            .required()
+                            .typeError("Digite apenas números")
+
+
+                    }
                 });
 
                 await schema.validate(data, {
@@ -253,7 +281,11 @@ export const BusinessCreate: React.FC = () => {
                     schedules: scheduleItems,
                 }
 
+                console.log(companies);
+
                 const response = await api.post('/companies', companies);
+
+                console.log(response);
 
                 if (imagesCompany) {
                     await api.post(`/companies/images/${response.data.id}`, imagesCompany);

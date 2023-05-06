@@ -417,7 +417,6 @@ export const BusinessEdit: React.FC = () => {
                         email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
                         website: Yup.string().url("Digite um endereço válido").nullable()
                     }),
-                    weekday: Yup.string().required("Campo obrigatório"),
                     ...(hasPhysicalLocation) && {
                         Address: Yup.object().shape({
                             cep: Yup.number()

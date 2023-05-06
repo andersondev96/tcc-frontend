@@ -82,6 +82,9 @@ export const TagInput: React.FC<InputProps> = ({
                 ref={inputRef}
                 {...rest}
             />
+            {error && (
+                <p className="text-red-500 text-xs italic">{error}</p>
+            )}
         </>
     )
 }
