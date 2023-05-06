@@ -237,18 +237,20 @@ export const BusinessEntrepreneur: React.FC = () => {
                                 <p className="font-inter text-sm text-justify">{company.contact.email}</p>
                             </div>
 
-                            <div className="flex flex-col gap-1">
-                                <span className="font-inter font-medium">
-                                    Website
-                                </span>
-                                <a
-                                    href={company.contact.website}
-                                    target="_blank"
-                                    className="flex flex-row items-center gap-1 font-inter text-sm text-justify cursor-pointer hover:underline hover:text-blue-600">
-                                    {company.contact.website}
-                                    <GoLinkExternal />
-                                </a>
-                            </div>
+                            {company.contact.website && (
+                                <div className="flex flex-col gap-1">
+                                    <span className="font-inter font-medium">
+                                        Website
+                                    </span>
+                                    <a
+                                        href={company.contact.website}
+                                        target="_blank"
+                                        className="flex flex-row items-center gap-1 font-inter text-sm text-justify cursor-pointer hover:underline hover:text-blue-600">
+                                        {company.contact.website}
+                                        <GoLinkExternal />
+                                    </a>
+                                </div>
+                            )}
 
                             {
                                 <div className="flex flex-col gap-1">

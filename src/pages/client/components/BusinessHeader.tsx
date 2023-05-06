@@ -143,12 +143,16 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
                     {
                         company.contact && (
                             <div className="flex flex-row items-center gap-[1.25rem] mobile:gap-2 mt-4">
-                                <a href={company.contact.website} target="_blank">
-                                    <BiWorld size={24}
-                                        color="#4072F3"
-                                        className="hover:brightness-90 transition-colors mobile:w-6"
-                                    />
-                                </a>
+                                {
+                                    company.contact.website && (
+                                        <a href={company.contact.website} target="_blank">
+                                            <BiWorld size={24}
+                                                color="#4072F3"
+                                                className="hover:brightness-90 transition-colors mobile:w-6"
+                                            />
+                                        </a>
+                                    )
+                                }
 
                                 <a href={`mailto:${company.contact.email}`}>
                                     <AiOutlineMail

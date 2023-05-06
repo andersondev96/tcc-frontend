@@ -18,7 +18,7 @@ interface ProfileFormData {
     email: string;
     old_password: string;
     password: string;
-    password_confirmation: string;
+    confirm_password: string;
 }
 
 export const EditProfile: React.FC = () => {
@@ -65,27 +65,47 @@ export const EditProfile: React.FC = () => {
                     name: Yup.string().required('Nome obrigatório'),
                     email: Yup.string()
                         .email("Digite um e-mail válido")
-                        .required("E-mail obrigatório"),
+                        .required("E-mail obrigatório")
+                        .test("email", "E-mail já está sendo utilizado", async (value) => {
+                            const response = await api.get(`/users/email?email=${value}`);
+                            if (response.data && user.email !== response.data.email) {
+                                return false;
+                            }
+                            return true;
+                        }),
                     old_password: Yup.string(),
-                    password: Yup.string()
+                    password: Yup.string().when('old_password', {
+                        is: (val: string) => !!val.length,
+                        then: Yup.string().required("Campo obrigatório")
+                            .min(8, "A senha deve possuir no mínimo 8 dígitos"),
+                        otherwise: Yup.string()
+                    }),
+                    confirm_password: Yup.string().when("old_password", {
+                        is: (val: string) => !!val.length,
+                        then: Yup.string().required('Campo obrigatório')
+                            .min(8, "A senha deve possuir no mínimo 8 dígitos"),
+                        otherwise: Yup.string()
+                    })
+                        .oneOf(
+                            [Yup.ref('password'), undefined],
+                            'As senhas não são iguais'
+                        ),
                 });
 
                 await schema.validate(data, {
                     abortEarly: false,
                 });
 
-                const { name, email, old_password, password, password_confirmation } = data;
+                const { name, email, old_password, password } = data;
 
                 const formData = {
                     name,
                     email,
-                    password: old_password && !password ? old_password : password,
+                    ...(old_password ? {
+                        password
+                    }
+                        : {}),
                 };
-
-                if (!old_password) {
-                    toast.error("Erro, por favor informe a senha!");
-                    return;
-                }
 
                 if (selectedNewAvatar) {
                     await api.patch("/users/avatar", avatar);
@@ -94,8 +114,6 @@ export const EditProfile: React.FC = () => {
                 const response = await api.put("/users", formData);
 
                 updateUser(response.data);
-
-                console.log(response.data);
 
                 toast.success("Usuário atualizado com sucesso!")
 
