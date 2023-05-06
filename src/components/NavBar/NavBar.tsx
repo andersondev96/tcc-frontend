@@ -5,7 +5,6 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../contexts/AuthContext";
-import { useAuthGoogle } from "../../contexts/AuthContextWithGoogle";
 import api from "../../services/api";
 import { ModalChat } from "../ModalChat";
 import { ModalContainer } from "../ModalContainer";
@@ -26,21 +25,9 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
     };
 
     const { user, signOut } = useAuth();
-    const { user: googleUser, signInWithGoogle, signOutWithGoogle } = useAuthGoogle();
-    const [userAuthenticated, setUserAuthenticated] = useState<User>();
     const [isAdmin, setIsAdmin] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const company_id = localStorage.getItem("@web:company_id");
-
-    useEffect(() => {
-        if (user) {
-            setUserAuthenticated(user);
-        } else if (googleUser) {
-            setUserAuthenticated(googleUser);
-        } else {
-            setUserAuthenticated(undefined);
-        }
-    }, [user, googleUser, userAuthenticated]);
 
     const handleToAdmPage = useCallback(async () => {
         await api
@@ -64,12 +51,11 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
 
             signOut();
             localStorage.removeItem('@web:company_id');
-            setUserAuthenticated({} as User);
 
         } catch (err) {
             console.log("Erro ao tentar fazer logout", err);
         }
-    }, [localStorage, userAuthenticated, signOut]);
+    }, [localStorage, signOut]);
 
     function openModal(): void {
         setModalIsOpen(true);
@@ -131,7 +117,7 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
                                         </span>
                                     </div>
                                     <div className="hidden sm:ml-6 sm:block">
-                                        {userAuthenticated && company_id ? (
+                                        {user && company_id ? (
                                             <div className="flex space-x-4">
                                                 {navigation.map((item) => (
                                                     <Link
@@ -161,7 +147,7 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
                                     </div>
                                 </div>
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                    {userAuthenticated && (
+                                    {user && (
                                         <button
                                             onClick={openModal}
                                             type="button"
@@ -177,7 +163,7 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
                                         </button>
                                     )}
 
-                                    {userAuthenticated ? (
+                                    {user ? (
                                         <Menu
                                             as="div"
                                             className="relative ml-3"
