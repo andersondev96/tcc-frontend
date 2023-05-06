@@ -296,6 +296,38 @@ export const BusinessEdit: React.FC = () => {
         }
     }, [addTag, inputValue, removeTag, tags.length]);
 
+    const handleEditAddress = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        const name = event.target.name;
+        const value = event.target.value;
+
+        if (name === 'street') {
+            setCompany(prevState => ({
+                ...prevState,
+                Address: {
+                    ...prevState.Address,
+                    street: value
+                }
+            }));
+        } else if (name === 'district') {
+            setCompany(prevState => ({
+                ...prevState,
+                Address: {
+                    ...prevState.Address,
+                    district: value
+                }
+            }));
+        } else if (name === 'city') {
+            setCompany(prevState => ({
+                ...prevState,
+                Address: {
+                    ...prevState.Address,
+                    city: value
+                }
+            }));
+        }
+
+    }, [setCompany])
+
     const handleSetCEP = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         const cep = event.target.value;
 
@@ -357,6 +389,55 @@ export const BusinessEdit: React.FC = () => {
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
                     cnpj: cnpjValidation(hasCNPJ),
+                    category: Yup.object().shape({
+                        id: Yup.string().required('Categoria obrigatório'),
+                    }),
+                    contact: Yup.object().shape({
+                        telephone: Yup.number()
+                            .required('Telefone obrigatório')
+                            .integer()
+                            .positive()
+                            .typeError("Digite apenas números")
+                            .test('len',
+                                'O campo deve possuir 11 digitos',
+                                val => val ? val.toString().length === 11 : true
+                            ),
+
+                        whatsapp: Yup
+                            .number()
+                            .required()
+                            .nullable(true)
+                            .integer()
+                            .positive()
+                            .typeError("Digite apenas números")
+                            .test('len',
+                                'O campo deve possuir 11 digitos',
+                                val => val ? val.toString().length === 11 : true
+                            ),
+                        email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
+                        website: Yup.string().url("Digite um endereço válido").nullable()
+                    }),
+                    weekday: Yup.string().required("Campo obrigatório"),
+                    ...(hasPhysicalLocation) && {
+                        Address: Yup.object().shape({
+                            cep: Yup.number()
+                                .integer()
+                                .positive()
+                                .required()
+                                .typeError("Digite apenas números")
+                                .test('len',
+                                    'O campo deve possuir 8 digitos',
+                                    val => val ? val.toString().length === 8 : true
+                                ),
+
+                            number: Yup.number()
+                                .integer()
+                                .positive()
+                                .required()
+                                .typeError("Digite apenas números")
+                        })
+
+                    }
 
                 });
                 await schema.validate(data, {
@@ -633,7 +714,7 @@ export const BusinessEdit: React.FC = () => {
                                     </div>
                                     <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="Schedule?.opening_time"
+                                            name="opening_time"
                                             type="time"
                                             label="Abre às"
                                             placeholder="XX:XX"
@@ -644,7 +725,7 @@ export const BusinessEdit: React.FC = () => {
                                     </div>
                                     <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
                                         <Input
-                                            name="Schedule?.closing_time"
+                                            name="closing_time"
                                             type="time"
                                             label="Fecha às"
                                             placeholder="XX:XX"
@@ -697,7 +778,8 @@ export const BusinessEdit: React.FC = () => {
                                             name="street"
                                             label="Endereço"
                                             placeholder="Digite a rua"
-                                            defaultValue={company.Address.street}
+                                            value={company.Address.street}
+                                            onChange={handleEditAddress}
                                         />
 
                                     </div>
@@ -706,7 +788,8 @@ export const BusinessEdit: React.FC = () => {
                                             name="district"
                                             label="Bairro"
                                             placeholder="Digite o bairro"
-                                            defaultValue={company.Address.district}
+                                            value={company.Address.district}
+                                            onChange={handleEditAddress}
 
                                         />
 
@@ -726,7 +809,7 @@ export const BusinessEdit: React.FC = () => {
                                             <Select
                                                 name="state"
                                                 label="Estado"
-                                                defaultValue={company.Address.state}
+                                                value={company.Address.state}
                                                 onChange={(e) => setSelectedState(e.target.value)}
                                                 options={[
                                                     { value: 'AC', label: 'Acre' },
@@ -767,8 +850,9 @@ export const BusinessEdit: React.FC = () => {
                                         <Input
                                             name="city"
                                             label="Cidade"
-                                            defaultValue={company.Address.city}
+                                            value={company.Address.city}
                                             placeholder="Digite a cidade"
+                                            onChange={handleEditAddress}
                                             readOnly={true}
                                         />
                                     </div>
