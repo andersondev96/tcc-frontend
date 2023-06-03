@@ -1,7 +1,10 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: 'http://localhost:3333',
+    baseURL:
+        import.meta.env.VITE_APP_ENV === 'local'
+            ? 'http://localhost:3333'
+            : 'http://54.89.253.57',
 });
 
 axios.interceptors.response.use(
