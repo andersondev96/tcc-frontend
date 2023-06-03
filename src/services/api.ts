@@ -3,8 +3,8 @@ import axios from "axios";
 const api = axios.create({
     baseURL:
         import.meta.env.VITE_APP_ENV === 'local'
-            ? 'http://localhost:3333'
-            : 'http://54.89.253.57',
+            ? import.meta.env.VITE_API_LOCAL
+            : import.meta.env.VITE_API_PROD,
 });
 
 axios.interceptors.response.use(
