@@ -77,10 +77,7 @@ interface UpdateCompanyFormData {
     id: string;
     name: string;
     cnpj: string;
-    category: {
-        id: string;
-        name: string;
-    },
+    category_id: string;
     description: string;
     services: string[];
     physical_localization: boolean;
@@ -389,9 +386,7 @@ export const BusinessEdit: React.FC = () => {
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
                     cnpj: cnpjValidation(hasCNPJ),
-                    category: Yup.object().shape({
-                        id: Yup.string().required('Categoria obrigatório'),
-                    }),
+                    category_id: Yup.string().required('Categoria obrigatória'),
                     contact: Yup.object().shape({
                         telephone: Yup.number()
                             .required('Telefone obrigatório')
@@ -446,7 +441,7 @@ export const BusinessEdit: React.FC = () => {
                 const companyData = {
                     name: data.name,
                     cnpj: data.cnpj,
-                    category_id: data.category.id,
+                    category_id: data.category_id,
                     services: tags,
                     description: data.description,
                     telephone: data.contact.telephone,
@@ -576,7 +571,7 @@ export const BusinessEdit: React.FC = () => {
                                 {
                                     company.category && (
                                         <Select
-                                            name="category.id"
+                                            name="category_id"
                                             label="Categoria"
                                             idTooltip="tooltip-category"
                                             tooltipText="Selecione a categoria do seu MEI nesta lista. Esta categoria ajudará o cliente a identificar qual é a sua especialidade"

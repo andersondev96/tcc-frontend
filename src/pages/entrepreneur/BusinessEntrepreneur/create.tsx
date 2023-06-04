@@ -205,7 +205,7 @@ export const BusinessCreate: React.FC = () => {
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
                     cnpj: cnpjValidation(hasCNPJ),
-                    category_id: Yup.string().required('Categoria obrigatório'),
+                    category_id: Yup.string().required('Categoria obrigatória'),
                     ...(tags.length === 0) ? {
                         services: Yup.string().required('Digite ao menos um serviço'),
                     } : {},

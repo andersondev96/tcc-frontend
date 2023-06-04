@@ -47,7 +47,8 @@ export const CreateServicesEntrepreneur: React.FC = () => {
 
     useEffect(() => {
         api.get('/companies/me')
-            .then(response => setCompany(response.data))
+            .then(response => setCompany(response.data));
+
 
         if (company.category_id) {
             api.get(`/categories/list-subcategories/${company.category_id}`).then(response => {
