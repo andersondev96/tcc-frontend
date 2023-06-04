@@ -49,13 +49,15 @@ export const CreateServicesEntrepreneur: React.FC = () => {
         api.get('/companies/me')
             .then(response => setCompany(response.data));
 
+        console.log(company.id);
+
 
         if (company.category_id) {
             api.get(`/categories/list-subcategories/${company.category_id}`).then(response => {
                 setSubcategories(response.data);
             });
         }
-    }, [company.category_id]);
+    }, [company.category_id, setCompany]);
 
     function handleSetHighlight() {
         setHighlight(!highlight);
@@ -120,6 +122,8 @@ export const CreateServicesEntrepreneur: React.FC = () => {
 
                 const response = await api.post(`/services/${company.id}`, service);
 
+                console.log(response);
+
                 if (response.status === 201) {
                     if (!imageService.entries().next().done) {
                         await api.patch(`services/service/${response.data.id}`, imageService);
@@ -139,12 +143,14 @@ export const CreateServicesEntrepreneur: React.FC = () => {
 
                     formRef.current?.setErrors(errors);
 
+                    console.log(errors);
+
                     return;
                 }
 
                 toast.error("Erro ao cadastrar o serviço")
             }
-        }, [highlight, company, navigate, imageService]);
+        }, [highlight, company.id, navigate, imageService]);
 
     return (
         <div className="flex flex-row">
