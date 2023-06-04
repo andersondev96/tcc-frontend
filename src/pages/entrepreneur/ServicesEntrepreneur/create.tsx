@@ -49,8 +49,6 @@ export const CreateServicesEntrepreneur: React.FC = () => {
         api.get('/companies/me')
             .then(response => setCompany(response.data));
 
-        console.log(company.id);
-
 
         if (company.category_id) {
             api.get(`/categories/list-subcategories/${company.category_id}`).then(response => {
@@ -120,23 +118,21 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                     highlight_service: highlight,
                 };
 
-                const response = await api.post(`/services/${company.id}`, service);
+                api.post(`/services/${company.id}`, service)
+                    .then(response => {
+                        if (response.status === 201) {
+                            if (!imageService.entries().next().done) {
+                                api.patch(`services/service/${response.data.id}`, imageService);
+                            }
+                            setErrorMessage("");
+                            toast.success("Serviço adicionado com sucesso!")
 
-                console.log(response);
-
-                if (response.status === 201) {
-                    if (!imageService.entries().next().done) {
-                        await api.patch(`services/service/${response.data.id}`, imageService);
-                    }
-
-                    setErrorMessage("");
-                    toast.success("Serviço adicionado com sucesso!")
-
-                    navigate('/admin/services');
-                }
-
-
-
+                            navigate('/admin/services');
+                        }
+                    })
+                    .catch(err => {
+                        console.log('Erro ao cadastrar serviço', err);
+                    })
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
                     const errors = getValidationErrors(err);
