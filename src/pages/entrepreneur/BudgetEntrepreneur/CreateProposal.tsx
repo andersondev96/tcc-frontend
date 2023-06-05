@@ -47,15 +47,22 @@ export const CreateProposal: React.FC = () => {
     const [file, setFile] = useState<File | null>(null);
     const [proposal, setProposal] = useState<Proposal>({} as Proposal);
     const [selectedFiles, setSelectedFiles] = useState(new FormData());
-    const [isLoading, setIsLoading] = useState(false);
     const [date, setDate] = useState('');
     const { proposal_id } = useParams();
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const [loadingSubmit, setLoadingSubmit] = useState(false);
 
     useEffect(() => {
-        api.get(`proposals/${proposal_id}`).then(response => setProposal(response.data));
-    }, []);
+        try {
+            api.get(`proposals/${proposal_id}`).then(response => setProposal(response.data));
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
+    }, [setLoading]);
 
     function classNames(...classes: any) {
         return classes.filter(Boolean).join(' ')
@@ -66,8 +73,6 @@ export const CreateProposal: React.FC = () => {
         const selectedDate = event.target.value;
 
         const formattedDate = format(new Date(selectedDate), "dd/MM/yyyy");
-
-        console.log(formattedDate);
 
         setDate(formattedDate);
     }, []);
@@ -85,7 +90,7 @@ export const CreateProposal: React.FC = () => {
         async (data: BudgetData) => {
             try {
                 formRef.current?.setErrors({});
-                setIsLoading(true);
+                setLoadingSubmit(true);
 
                 const schema = Yup.object().shape({
                     description: Yup.string().required("Campo obrigatório"),
@@ -124,98 +129,114 @@ export const CreateProposal: React.FC = () => {
                     console.log(errors);
 
                     formRef.current?.setErrors(errors);
-                    setIsLoading(false);
+                    setLoadingSubmit(false);
 
                     return;
                 }
 
                 toast.error("Error ao criar o orçamento");
             } finally {
-                setIsLoading(false);
+                setLoadingSubmit(false);
             }
         }, [proposal_id, selectedFiles, navigate, file]);
     return (
         <div className="flex flex-row">
             <SideBar pageActive="orcamentos" />
+
             <div className="flex flex-col w-full sm:ml-64 p-16 sm:p-8">
                 <PreviousPageButton />
-                <div className="flex flex-col items-start sm:items-center py-6 sm:py-8">
-                    <h1 className="font-montserrat font-medium text-lg sm:text-2xl">
-                        Criar proposta
-                    </h1>
-                </div>
-                <Form
-                    ref={formRef}
-                    onSubmit={handleSubmit}
-                    className="flex flex-col px-16">
-                    <div className="flex flex-col gap-8">
-                        <span className="font-montserrat font-medium text-sm sm:text-lg">
-                            Preencha os campos abaixo:
-                        </span>
-                        <div className="flex flex-col gap-2">
-                            <TextArea
-                                name="description"
-                                label="Descrição sobre a proposta oferecida"
-                                placeholder="Escreva aqui a descrição da proposta oferecida"
-                                idTooltip="tooltip-description-proposal"
-                                tooltipText="Forneça as principais informações sobre a proposta oferecida ao cliente"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label
-                                htmlFor="files"
-                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                                Adicionar anexo
-                            </label>
-                            <input
-                                className="relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-neutral-700 outline-none transition duration-300 ease-in-out file:-mx-3 file:-my-1.5 file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-1.5 file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[margin-inline-end:0.75rem] file:[border-inline-end-width:1px] hover:file:bg-neutral-200 focus:border-primary focus:bg-white focus:text-neutral-700 focus:shadow-[0_0_0_1px] focus:shadow-primary focus:outline-none"
-                                name="files"
-                                type="file"
-                                id="files"
-                                accept="image/*,.txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx, .zip, .rar"
-                                maxLength={5242880}
-                                onChange={handleFileUpload}
-                            />
-                            <span className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                                Arquivos aceitos: .jpg, jpeg, png, txt, pdf, doc, docx, xls, xlsx, ppt, pptx, .zip, .rar
-                            </span>
-                        </div>
-                        <div className="flex flex-wrap -mx-3">
-                            <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="delivery_date"
-                                    label="Data de entrega do serviço"
-                                    type="date"
-                                />
-                            </div>
 
-                            <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="amount"
-                                    label="Valor total do serviço"
-                                />
-                            </div>
 
-                            <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
-                                <Input
-                                    name="installments"
-                                    label="Número de parcelas"
-                                    type="number"
-                                    defaultValue={1}
-                                    min={1}
-                                    max={100}
-                                />
-                            </div>
-                        </div>
+                <>
+                    {
+                        loading ? (
+                            <p className="mt-8 text-sm text-gray-400">Carregando...</p>
+                        ) : (
+                            <div>
+                                <div className="flex flex-col items-start sm:items-center py-6 sm:py-8">
+                                    <h1 className="font-montserrat font-medium text-lg sm:text-2xl">
+                                        Criar proposta
+                                    </h1>
+                                </div>
+                                <Form
+                                    ref={formRef}
+                                    onSubmit={handleSubmit}
+                                    className="flex flex-col px-16">
+                                    <div className="flex flex-col gap-8">
+                                        <span className="font-montserrat font-medium text-sm sm:text-lg">
+                                            Preencha os campos abaixo:
+                                        </span>
+                                        <div className="flex flex-col gap-2">
+                                            <TextArea
+                                                name="description"
+                                                label="Descrição sobre a proposta oferecida"
+                                                placeholder="Escreva aqui a descrição da proposta oferecida"
+                                                idTooltip="tooltip-description-proposal"
+                                                tooltipText="Forneça as principais informações sobre a proposta oferecida ao cliente"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label
+                                                htmlFor="files"
+                                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                                Adicionar anexo
+                                            </label>
+                                            <input
+                                                className="relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-neutral-700 outline-none transition duration-300 ease-in-out file:-mx-3 file:-my-1.5 file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-1.5 file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[margin-inline-end:0.75rem] file:[border-inline-end-width:1px] hover:file:bg-neutral-200 focus:border-primary focus:bg-white focus:text-neutral-700 focus:shadow-[0_0_0_1px] focus:shadow-primary focus:outline-none"
+                                                name="files"
+                                                type="file"
+                                                id="files"
+                                                accept="image/*,.txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx, .zip, .rar"
+                                                maxLength={5242880}
+                                                onChange={handleFileUpload}
+                                            />
+                                            <span className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                                Arquivos aceitos: .jpg, jpeg, png, txt, pdf, doc, docx, xls, xlsx, ppt, pptx, .zip, .rar
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-wrap -mx-3">
+                                            <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
+                                                <Input
+                                                    name="delivery_date"
+                                                    label="Data de entrega do serviço"
+                                                    type="date"
+                                                />
+                                            </div>
 
-                        <button className={classNames(isLoading ? "bg-blue-200 cursor-not-allowed" : " bg-blue-600 rounded hover:brightness-90 duration-300 transition-opacity",
-                            "flex items-center justify-center mt-4 w-48 h-12")}>
-                            <span className="font-medium text-gray-100">
-                                {isLoading ? 'Salvando...' : 'Salvar alterações'}
-                            </span>
-                        </button>
-                    </div>
-                </Form>
+                                            <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
+                                                <Input
+                                                    name="amount"
+                                                    label="Valor total do serviço"
+                                                />
+                                            </div>
+
+                                            <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
+                                                <Input
+                                                    name="installments"
+                                                    label="Número de parcelas"
+                                                    type="number"
+                                                    defaultValue={1}
+                                                    min={1}
+                                                    max={100}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <button className={classNames(loadingSubmit ? "bg-blue-200 cursor-not-allowed" : " bg-blue-600 rounded hover:brightness-90 duration-300 transition-opacity",
+                                            "flex items-center justify-center mt-4 w-48 h-12")}>
+                                            <span className="font-medium text-gray-100">
+                                                {loadingSubmit ? 'Salvando...' : 'Salvar alterações'}
+                                            </span>
+                                        </button>
+                                    </div>
+                                </Form>
+                            </div>
+                        )
+                    }
+                </>
+
+
+
             </div>
         </div>
     );

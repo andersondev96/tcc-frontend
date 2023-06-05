@@ -49,6 +49,7 @@ export const BudgetEntrepreneur: React.FC = () => {
     const itemsPerPage = 10;
     const [name, setName] = useState("");
     const [totalResults, setTotalResults] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     const handlePageChange = useCallback((newPage: number) => {
         setCurrentPage(newPage);
@@ -56,16 +57,23 @@ export const BudgetEntrepreneur: React.FC = () => {
 
     useEffect(() => {
 
-        api.get(`companies/me`).then((response) => setCompany(response.data));
+        try {
+            api.get(`companies/me`).then((response) => setCompany(response.data));
 
-        if (company.id) {
-            api.get(`proposals/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`)
-                .then((response) => {
-                    setProposals(response.data.proposals);
-                    setTotalResults(response.data.totalResults);
-                });
+            if (company.id) {
+                api.get(`proposals/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`)
+                    .then((response) => {
+                        setProposals(response.data.proposals);
+                        setTotalResults(response.data.totalResults);
+                    });
+
+                setLoading(false);
+            }
+        } catch (err) {
+            console.log(err);
+            setLoading(false);
         }
-    }, [company.id, currentPage, itemsPerPage]);
+    }, [company.id, currentPage, itemsPerPage, setLoading]);
 
 
 
@@ -81,93 +89,115 @@ export const BudgetEntrepreneur: React.FC = () => {
 
 
     const handleSearchBudgets = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
+        try {
+            setLoading(true);
 
-        setName(value);
+            const value = event.target.value;
+            setName(value);
 
-        if (company.id) {
-            if (name) {
-                api.get(`proposals/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`, {
-                    params: {
-                        objective: name,
-                        description: name,
-                        status: name,
-                        name,
-                    }
-                })
-                    .then((response) => {
-                        setProposals(response.data.proposals);
-                        setTotalResults(response.data.totalResults);
-                    });
-            } else {
-                api.get(`proposals/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`)
-                    .then((response) => {
-                        setProposals(response.data.proposals);
-                        setTotalResults(response.data.totalResults);
-                    });
+
+            if (company.id) {
+                if (name) {
+                    api.get(`proposals/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`, {
+                        params: {
+                            objective: name,
+                            description: name,
+                            status: name,
+                            name,
+                        }
+                    })
+                        .then((response) => {
+                            setProposals(response.data.proposals);
+                            setTotalResults(response.data.totalResults);
+                        });
+                } else {
+                    api.get(`proposals/company/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`)
+                        .then((response) => {
+                            setProposals(response.data.proposals);
+                            setTotalResults(response.data.totalResults);
+                        });
+                }
             }
+            setLoading(false);
+        } catch (err) {
+            console.log(err);
+            setLoading(false);
         }
-    }, [company?.id, setProposals, proposals, currentPage, itemsPerPage, name]);
+    }, [company?.id, setProposals, proposals, currentPage, itemsPerPage, name, setLoading]);
 
     return (
         <div className="flex flex-row">
             <SideBar pageActive="orcamentos" />
+
             <div className="flex flex-col w-full sm:ml-64">
                 <div className="flex flex-col items-center py-6 sm:py-12">
                     <h1 className="font-montserrat font-medium text-2xl">Orçamentos</h1>
                 </div>
                 <div className="flex flex-col px-12 py-4">
                     <Search onChange={handleSearchBudgets} />
-                    <div className="mt-6">
-                        <Table>
-                            <TableHead>
-                                <TableRowHead>
-                                    <TableHeader>Data</TableHeader>
-                                    <TableHeader>Cliente</TableHeader>
-                                    <TableHeader>Objetivo do serviço</TableHeader>
-                                    <TableHeader>Prazo</TableHeader>
-                                    <TableHeader>Status</TableHeader>
-                                    <TableHeader>Última atualização</TableHeader>
-                                    <TableHeader></TableHeader>
-                                </TableRowHead>
-                            </TableHead>
-                            <TableBody>
 
-                                {proposals.length > 0 ? proposals.map((proposal) => (
-                                    <TableRowBody key={proposal.id}>
-                                        <TableData>{format(new Date(proposal.createdAt), "dd/MM/yyyy")}</TableData>
-                                        <TableData>{proposal.customer && proposal.customer.user.name}</TableData>
-                                        <TableData>{proposal.objective}</TableData>
-                                        <TableData>{format(new Date(proposal.time), "dd/MM/yyyy")}</TableData>
-                                        <TableData>{proposal.status && proposal.status.replace(/\(.*\)/g, "").trim()}</TableData>
-                                        <TableData>{format(new Date(proposal.updatedAt), "dd/MM/yyyy")}</TableData>
-                                        <TableData>
-                                            <div className="flex flex-row gap-2">
-                                                <Link to={`/admin/budget/details/${proposal.id}`}>
-                                                    <AiOutlineEye size={24} color="#547DE5" />
-                                                </Link>
-                                                <span onClick={() => handleEditBudget(proposal.id)}>
-                                                    <IoDocumentTextOutline size={24} color="#1EBF1B" />
-                                                </span>
-                                                <TbSend size={24} color="#EEB522" />
-                                            </div>
-                                        </TableData>
-                                    </TableRowBody>
-                                )) : (
-                                    <TableRowBody>
-                                        <TableData>Nenhuma proposta encontrada</TableData>
-                                    </TableRowBody>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
+                    <>
+                        {
+                            loading ? (
+                                <p className="mt-8 text-sm text-gray-400">Carregando...</p>
+                            ) : (
+                                <div>
+                                    <div className="mt-6">
+                                        <Table>
+                                            <TableHead>
+                                                <TableRowHead>
+                                                    <TableHeader>Data</TableHeader>
+                                                    <TableHeader>Cliente</TableHeader>
+                                                    <TableHeader>Objetivo do serviço</TableHeader>
+                                                    <TableHeader>Prazo</TableHeader>
+                                                    <TableHeader>Status</TableHeader>
+                                                    <TableHeader>Última atualização</TableHeader>
+                                                    <TableHeader></TableHeader>
+                                                </TableRowHead>
+                                            </TableHead>
+                                            <TableBody>
 
-                    <PaginationTable
-                        tot_results={totalResults}
-                        items_per_page={itemsPerPage}
-                        current_page={currentPage}
-                        onPageChange={handlePageChange}
-                    />
+                                                {proposals.length > 0 ? proposals.map((proposal) => (
+                                                    <TableRowBody key={proposal.id}>
+                                                        <TableData>{format(new Date(proposal.createdAt), "dd/MM/yyyy")}</TableData>
+                                                        <TableData>{proposal.customer && proposal.customer.user.name}</TableData>
+                                                        <TableData>{proposal.objective}</TableData>
+                                                        <TableData>{format(new Date(proposal.time), "dd/MM/yyyy")}</TableData>
+                                                        <TableData>{proposal.status && proposal.status.replace(/\(.*\)/g, "").trim()}</TableData>
+                                                        <TableData>{format(new Date(proposal.updatedAt), "dd/MM/yyyy")}</TableData>
+                                                        <TableData>
+                                                            <div className="flex flex-row gap-2">
+                                                                <Link to={`/admin/budget/details/${proposal.id}`}>
+                                                                    <AiOutlineEye size={24} color="#547DE5" />
+                                                                </Link>
+                                                                <span onClick={() => handleEditBudget(proposal.id)}>
+                                                                    <IoDocumentTextOutline size={24} color="#1EBF1B" />
+                                                                </span>
+                                                                <TbSend size={24} color="#EEB522" />
+                                                            </div>
+                                                        </TableData>
+                                                    </TableRowBody>
+                                                )) : (
+                                                    <TableRowBody>
+                                                        <TableData>Nenhuma proposta encontrada</TableData>
+                                                    </TableRowBody>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+
+                                    <PaginationTable
+                                        tot_results={totalResults}
+                                        items_per_page={itemsPerPage}
+                                        current_page={currentPage}
+                                        onPageChange={handlePageChange}
+                                    />
+                                </div>
+                            )
+                        }
+                    </>
+
+
                 </div>
             </div>
         </div>

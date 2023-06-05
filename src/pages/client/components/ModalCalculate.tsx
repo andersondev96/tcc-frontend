@@ -14,6 +14,7 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
     close_modal
 }) => {
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         time: '',
         objective: '',
@@ -32,22 +33,38 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
 
 
     const handleSubmit = useCallback(async (event: FormEvent) => {
-        event.preventDefault();
-        const { time, objective, description } = formData;
+        try {
+            event.preventDefault();
 
-        const response = await api.post(`proposals/${company_id}`, {
-            time,
-            objective,
-            description
-        });
+            setIsLoading(true);
 
-        if (response.status === 201) {
-            toast.success("Proposta enviada!");
+            const { time, objective, description } = formData;
 
-            close_modal();
+
+            if (formData.time !== "" && formData.objective !== "" && formData.description !== "") {
+                const response = await api.post(`proposals/${company_id}`, {
+                    time,
+                    objective,
+                    description
+                });
+
+                if (response.status === 201) {
+                    toast.success("Proposta enviada!");
+
+                    close_modal();
+                }
+            } else {
+                toast.error("Erro! Preencha todos os campos corretamente!");
+            }
+
+
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsLoading(false);
         }
 
-    }, [formData]);
+    }, [formData, setIsLoading, toast]);
 
 
     return (
@@ -113,11 +130,23 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
                     </div>
 
                 </div>
-                <button
-                    className="mt-11 w-36 h-10 bg-blue-500 rounded font-montserrat font-medium  text-white text-sm hover:brightness-90"
-                >
-                    Enviar solicitação
-                </button>
+
+                {
+                    isLoading ? (
+                        <button disabled
+                            className="mt-11 w-36 h-10 bg-blue-400 rounded font-montserrat font-medium cursor-not-allowed text-white text-sm hover:brightness-90"
+                        >
+                            Enviando...
+                        </button>
+                    ) : (
+                        <button
+                            className="mt-11 w-36 h-10 bg-blue-500 rounded font-montserrat font-medium  text-white text-sm hover:brightness-90"
+                        >
+                            Enviar solicitação
+                        </button>
+                    )
+                }
+
             </form>
         </div>
     )
