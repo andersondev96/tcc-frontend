@@ -49,14 +49,13 @@ export const BudgetEntrepreneur: React.FC = () => {
     const itemsPerPage = 10;
     const [name, setName] = useState("");
     const [totalResults, setTotalResults] = useState(0);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const handlePageChange = useCallback((newPage: number) => {
         setCurrentPage(newPage);
     }, [currentPage, setCurrentPage]);
 
     useEffect(() => {
-
         try {
             api.get(`companies/me`).then((response) => setCompany(response.data));
 
@@ -66,9 +65,9 @@ export const BudgetEntrepreneur: React.FC = () => {
                         setProposals(response.data.proposals);
                         setTotalResults(response.data.totalResults);
                     });
-
-                setLoading(false);
             }
+
+            setLoading(false);
         } catch (err) {
             console.log(err);
             setLoading(false);

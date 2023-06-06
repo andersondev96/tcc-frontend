@@ -13,7 +13,7 @@ import api from "../../../services/api";
 import getValidationErrors from "../../../utils/getValidateErrors";
 import { PreviousPageButton } from "../../client/components/PreviousPageButton";
 
-interface ServiceData {
+interface IServices {
     id: string;
     name: string;
     description: string;
@@ -21,6 +21,10 @@ interface ServiceData {
     price: number;
     image_url: string;
     highlight_service: boolean;
+}
+interface ServiceData {
+    services: IServices[];
+    totalResults: number;
 }
 
 interface Company {
@@ -38,7 +42,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
     const [subcategories, setSubcategories] = useState<string[]>([]);
     const [subcategorySelected, setSubcategorySelected] = useState<string>("");
     const params = useParams();
-    const [service, setService] = useState({} as ServiceData);
+    const [service, setService] = useState({} as IServices);
     const [highlight, setHighlight] = useState<boolean>(false);
     const [selectImagePreview, setSelectImagePreview] = useState("");
     const [imageService, setImageService] = useState(new FormData());
@@ -52,7 +56,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
             .then(response => setCompany(response.data))
             .catch(error => console.log("Ocorreu um erro na solicitação", error));
 
-        api.get<ServiceData>(`/services/${params.id}`).then((response) => {
+        api.get<IServices>(`/services/${params.id}`).then((response) => {
             if (!response || !response.data) {
                 navigate("/admin/services");
                 return;
@@ -104,7 +108,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
         }, []);
 
     const handleSubmit = useCallback(
-        async (data: ServiceData) => {
+        async (data: IServices) => {
             try {
                 formRef.current?.setErrors({});
                 const schema = Yup.object().shape({
@@ -127,9 +131,9 @@ export const EditServicesEntrepreneur: React.FC = () => {
                         }
                     });
 
-                    const quantHighlightServices = await api.get<ServiceData[]>(`/services/company/${company.id}`).then(response => {
-                        if (response.data) {
-                            return response.data.filter(service => service.highlight_service).length;
+                    const quantHighlightServices = await api.get<ServiceData>(`/services/company/${company.id}`).then(response => {
+                        if (response.data.services) {
+                            return response.data.services.filter(service => service.highlight_service).length;
                         }
                     });
 

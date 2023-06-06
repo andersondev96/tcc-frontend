@@ -14,7 +14,7 @@ import api from "../../../services/api";
 import getValidationErrors from "../../../utils/getValidateErrors";
 import { PreviousPageButton } from "../../client/components/PreviousPageButton";
 
-interface ServiceData {
+interface IServices {
     name: string;
     description: string;
     price: number;
@@ -22,6 +22,10 @@ interface ServiceData {
     image_url?: string;
     highlight_service?: string;
     company_id: string;
+}
+interface ServiceData {
+    services: IServices[];
+    totalResults: number;
 }
 
 interface Company {
@@ -77,7 +81,7 @@ export const CreateServicesEntrepreneur: React.FC = () => {
         }, []);
 
     const handleSubmit = useCallback(
-        async (data: ServiceData) => {
+        async (data: IServices) => {
             try {
                 formRef.current?.setErrors({});
 
@@ -99,9 +103,9 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                         }
                     });
 
-                    const quantHighlightServices = await api.get<ServiceData[]>(`/services/company/${company.id}`).then(response => {
-                        if (response.data) {
-                            return response.data.filter(service => service.highlight_service).length;
+                    const quantHighlightServices = await api.get<ServiceData>(`/services/company/${company.id}`).then(response => {
+                        if (response.data.services) {
+                            return response.data.services.filter(service => service.highlight_service).length;
                         }
                     });
 

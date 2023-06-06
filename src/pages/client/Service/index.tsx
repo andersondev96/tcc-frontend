@@ -41,9 +41,7 @@ export const Service: React.FC = () => {
     const [categories, setCategories] = useState<string[]>([]);
     const [valueSerach, setValueSerach] = useState("");
     const [servicesByCategory, setServicesByCategory] = useState<CategoryServiceData>({});
-    const [currentPage, setCurrentPage] = useState(1);
-    const [categoriesLoaded, setCategoriesLoaded] = useState(false);
-    const itemsPerPage = 20;
+    const [loading, setLoading] = useState(true);
 
     const loadCompany = useCallback(async () => {
         if (company_id) {
@@ -55,47 +53,52 @@ export const Service: React.FC = () => {
                     }
                     setCompany(response.data)
                 })
-                .catch(error => console.log(error));
+                .catch(error => console.log(error))
+                .finally(() => setLoading(false));
         }
-    }, [company_id]);
+    }, [company_id, setLoading]);
 
     const searchService = useCallback(
         async (event: ChangeEvent<HTMLInputElement>) => {
             try {
                 if (company_id) {
+
+                    setLoading(true);
+
                     const name = event.target.value;
 
                     setValueSerach(name);
 
                     if (!name) {
-                        const response = await api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`);
+                        const response = await api.get(`/services/company/${company_id}`);
 
                         if (response.data && response.data.services) {
                             setServices(response.data.services);
                         }
                     } else {
-                        const response = await api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`, {
+                        const response = await api.get(`/services/company/${company_id}`, {
                             params: {
                                 name: valueSerach
                             }
                         });
 
                         if (response.data && response.data.services) {
-                            console.log(response.data);
                             setServices(response.data.services);
                         }
                     }
                 }
             } catch (error) {
                 console.log(error);
+            } finally {
+                setLoading(false);
             }
-        }, [company_id, currentPage, itemsPerPage, setValueSerach, valueSerach]);
+        }, [company_id, setValueSerach, valueSerach, setLoading]);
 
 
     const loadingHighlightService = useCallback(async () => {
         try {
             if (company_id && services) {
-                await api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`)
+                await api.get(`/services/company/${company_id}`)
                     .then(response => {
                         if (response.data.services) {
                             const highlightServices = response.data.services.filter((service: ServiceData) => service.highlight_service);
@@ -106,41 +109,53 @@ export const Service: React.FC = () => {
 
         } catch (err) {
             console.log(err);
+        } finally {
+            setLoading(false);
         }
-    }, [company_id, currentPage, itemsPerPage]);
+    }, [company_id, setLoading]);
 
-    const loadCategories = useCallback(() => {
+    useEffect(() => {
         try {
-            if (services.length > 0 && !categoriesLoaded) {
-                const uniqueCategories = new Set(services.map(service => service.category));
-                const categoriesArray = [...uniqueCategories];
-                setCategories(categoriesArray);
-                setCategoriesLoaded(true);
+            if (company.category_id) {
+                const categoriesSet = new Set<string>();
+
+                services.forEach(service => {
+                    categoriesSet.add(service.category);
+                });
+
+                api.get(`/categories/list-subcategories/${company.category_id}`)
+                    .then(response => {
+                        const responseCategorieas = response.data;
+                        responseCategorieas.forEach((category: string) => {
+                            categoriesSet.add(category);
+                        });
+                        setCategories(Array.from(categoriesSet));
+                    })
+                    .catch(error => console.log(error));
             }
         } catch (err) {
             console.log(err);
+        } finally {
+            setLoading(false);
         }
-    }, [categoriesLoaded, setCategories, setCategoriesLoaded]);
+    }, [company.category_id, services, setLoading]);
 
     useEffect(() => {
-        if (company.category_id) {
-            api.get(`/categories/list-subcategories/${company.category_id}`)
-                .then(response => setCategories(response.data))
-                .catch(error => console.log(error));
-        }
-    }, [company.category_id]);
+        try {
+            if (company_id) {
+                api.get(`/services/company/${company_id}`)
+                    .then(response => setServices(response.data.services))
+                    .catch(error => console.log(error));
 
-    useEffect(() => {
-        if (company_id) {
-            api.get(`/services/company/${company_id}?page=${currentPage}&perPage=${itemsPerPage}`)
-                .then(response => setServices(response.data.services))
-                .catch(error => console.log(error));
-
-            loadCompany();
-            loadingHighlightService();
-            loadCategories();
+                loadCompany();
+                loadingHighlightService();
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
         }
-    }, [company_id, loadCompany, loadingHighlightService, loadCategories, currentPage, itemsPerPage]);
+    }, [company_id, loadCompany, loadingHighlightService, setLoading]);
 
     useEffect(() => {
         try {
@@ -161,9 +176,11 @@ export const Service: React.FC = () => {
                 setServicesByCategory(groupServices);
             }
         } catch (err) {
-
+            console.log(err);
+        } finally {
+            setLoading(false);
         }
-    }, [services, setServicesByCategory]);
+    }, [services, setServicesByCategory, setLoading]);
 
     return (
         <div className="flex flex-col">
@@ -173,43 +190,55 @@ export const Service: React.FC = () => {
                 <div className="mt-8 sm:mt-8">
                     <Search onChange={searchService} />
                 </div>
-                {
-                    hightLightServices && (
-                        <div className="mt-11 flex flex-col font-montserrat font-semibold text-xl">
-                            <span>Em destaque</span>
-                            <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                <>
+                    {
+                        loading ? (
+                            <p className="mt-8 text-sm text-gray-400">Carregando...</p>
+                        ) : (
+
+                            <div>
                                 {
-                                    hightLightServices.map(hightLightService => (
-                                        <Card key={hightLightService.id} service={hightLightService} highlight />
-                                    ))
+                                    hightLightServices && (
+                                        <div className="mt-11 flex flex-col font-montserrat font-semibold text-xl">
+                                            <span>Em destaque</span>
+                                            <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                {
+                                                    hightLightServices.map(hightLightService => (
+                                                        <Card key={hightLightService.id} service={hightLightService} highlight />
+                                                    ))
+                                                }
+                                            </div>
+                                        </div>
+                                    )
+                                }
+
+                                {
+                                    categories ? (
+                                        categories.map(category => (
+                                            servicesByCategory[category] && (
+                                                <div className="mt-8 flex flex-col font-montserrat font-semibold text-xl" key={category}>
+                                                    <span>{category}</span>
+                                                    <p className="font-light text-sm">{servicesByCategory[category].length} itens</p>
+                                                    <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                        {servicesByCategory[category].map((service) => (
+                                                            <div key={service.id}>
+                                                                <Card service={service} />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )
+
+                                        ))
+                                    ) : (
+                                        <h1>Nenhum serviço encontrado</h1>
+                                    )
                                 }
                             </div>
-                        </div>
-                    )
-                }
-
-                {
-                    categories ? (
-                        categories.map(category => (
-                            servicesByCategory[category] && (
-                                <div className="mt-8 flex flex-col font-montserrat font-semibold text-xl" key={category}>
-                                    <span>{category}</span>
-                                    <p className="font-light text-sm">{servicesByCategory[category].length} itens</p>
-                                    <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        {servicesByCategory[category].map((service) => (
-                                            <div key={service.id}>
-                                                <Card service={service} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )
-
-                        ))
-                    ) : (
-                        <h1>Nenhum serviço encontrado</h1>
-                    )
-                }
+                        )
+                    }
+                </>
 
             </div>
         </div>
