@@ -1,5 +1,4 @@
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction, useCallback, useState } from "react";
-import { useParams } from "react-router-dom";
 import AvatarImg from "../../../assets/user.png";
 import api from "../../../services/api";
 import { AssessmentsStars } from "./AssessmentsStars";
@@ -91,53 +90,62 @@ interface AssessmentFormProps {
 export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, assessment_type, onAddAssessment, user, setCompany, setService }) => {
     const [comment, setComment] = useState("");
     const [stars, setStars] = useState(0);
-    const params = useParams();
     const [hasComment, setHasComment] = useState(false);
+    const [loadingSendAssessments, setLoadingSendAssessments] = useState(false);
 
     const handleSubmit = useCallback(async (event: FormEvent) => {
-        event.preventDefault();
+        try {
+            event.preventDefault();
 
-        if (assessment_type === "company") {
-            const response = await api.post(`/assessments/company/${table_id}`, {
-                comment,
-                stars,
-            });
+            setLoadingSendAssessments(true);
 
-            if (response.status === 201) {
+            if (assessment_type === "company") {
+                const response = await api.post(`/assessments/company/${table_id}`, {
+                    comment,
+                    stars,
+                });
 
-                onAddAssessment(response.data);
-                setComment("");
-                setStars(0);
+                if (response.status === 201) {
 
-                const companyUpdated = await api.get(`/companies/${table_id}`);
+                    onAddAssessment(response.data);
+                    setComment("");
+                    setStars(0);
 
-                if (setCompany && companyUpdated.data) {
-                    setCompany(companyUpdated.data);
+                    const companyUpdated = await api.get(`/companies/${table_id}`);
+
+                    if (setCompany && companyUpdated.data) {
+                        setCompany(companyUpdated.data);
+                    }
+                }
+
+            } else if (assessment_type === "service") {
+                const response = await api.post(`/assessments/service/${table_id}`, {
+                    comment,
+                    stars
+                });
+
+                if (response.status === 201) {
+
+                    onAddAssessment(response.data);
+                    setComment("");
+                    setStars(0);
+
+                    const serviceUpdated = await api.get(`/services/${table_id}`);
+
+                    if (setService && serviceUpdated.data) {
+                        setService(serviceUpdated.data);
+                    }
                 }
             }
 
-        } else if (assessment_type === "service") {
-            const response = await api.post(`/assessments/service/${table_id}`, {
-                comment,
-                stars
-            });
 
-            if (response.status === 201) {
-
-                onAddAssessment(response.data);
-                setComment("");
-                setStars(0);
-
-                const serviceUpdated = await api.get(`/services/${table_id}`);
-
-                if (setService && serviceUpdated.data) {
-                    setService(serviceUpdated.data);
-                }
-            }
+            setHasComment(false);
+        } catch (error) {
+            console.log(error);
+            setLoadingSendAssessments(false);
+        } finally {
+            setLoadingSendAssessments(false);
         }
-
-
-        setHasComment(false);
 
     }, [comment, stars, setStars, table_id, onAddAssessment, setCompany, setService]);
 
@@ -187,12 +195,13 @@ export const AssessmentsForm: React.FC<AssessmentFormProps> = ({ table_id, asses
                 <button
                     disabled={!hasComment}
                     className={
-                        classNames(!hasComment ? "bg-gray-300 text-gray-800 cursor-not-allowed" : "bg-indigo-600 text-white hover:brightness-90 transition-opacity",
-                            "ml-14 sm:ml-20 w-32 h-11 sm:w-24 sm:h-10 rounded font-inter font-medium text-lg"
+                        classNames(!hasComment ? "bg-gray-300 text-gray-800 cursor-not-allowed" : loadingSendAssessments ?
+                            "bg-indigo-400 text-gray-600" : "bg-indigo-600 text-white hover:brightness-90 transition-opacity"
+                            , "ml-14 sm:ml-20 w-32 h-11 sm:w-24 sm:h-10 rounded font-inter font-medium text-lg"
                         )}
 
                 >
-                    Enviar
+                    {loadingSendAssessments ? 'Enviando...' : 'Enviar'}
                 </button>
             </form>
         </div>

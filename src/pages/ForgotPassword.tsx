@@ -49,6 +49,8 @@ export const ForgotPassword: React.FC = () => {
 
                     return;
                 }
+
+                toast.error("Erro ao solicitar recuperação da senha");
             } finally {
                 setIsLoading(false);
             }
@@ -86,11 +88,11 @@ export const ForgotPassword: React.FC = () => {
 
                             <button
                                 type="submit"
-                                className={classNames(isLoading ? "bg-blue-200 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400",
+                                className={classNames(isLoading ? "bg-blue-400 text-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400",
                                     "text-white w-full font-medium rounded-lg text-sm px-5 py-2.5 text-center")}
                                 disabled={isLoading}
                             >
-                                {isLoading ? 'Carregando...' : 'Recuperar senha'}
+                                {isLoading ? 'Aguarde...' : 'Recuperar senha'}
                             </button>
 
 

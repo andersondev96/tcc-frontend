@@ -24,6 +24,7 @@ interface SignUpFormData {
 export const SignUp: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
     const { user, signInWithGoogle } = useAuthGoogle();
 
     const [selectedType, setSelectedType] = useState("");
@@ -71,6 +72,7 @@ export const SignUp: React.FC = () => {
         async (data: SignUpFormData) => {
             try {
                 formRef.current?.setErrors({});
+                setIsLoading(true);
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required("Nome obrigatório"),
@@ -97,7 +99,7 @@ export const SignUp: React.FC = () => {
                     data.isEntrepreneur = true;
                 }
 
-                const response = await api.post("/users", data);
+                await api.post("/users", data);
 
                 navigate("/login");
 
@@ -109,13 +111,21 @@ export const SignUp: React.FC = () => {
                     formRef.current?.setErrors(errors);
                     const errorMessage = err.inner[0].message;
 
+                    setIsLoading(false);
+
                     return;
                 }
                 toast.error("Erro ao cadastrar usuário");
+            } finally {
+                setIsLoading(false);
             }
         },
         [navigate, toast, selectedType]
     );
+
+    function classNames(...classes: any) {
+        return classes.filter(Boolean).join(' ')
+    }
 
     return (
         <div className="bg-gray-100">
@@ -199,8 +209,8 @@ export const SignUp: React.FC = () => {
                                     placeholder="Digite uma senha"
                                 />
                             </div>
-                            <button type="submit" className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                                Cadastrar
+                            <button type="submit" className={classNames(isLoading ? "bg-blue-400 text-gray-600 cursor-not-allowed" : "text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400", "w-full font-medium rounded-lg text-sm px-5 py-2.5 text-center")}>
+                                {isLoading ? "Aguarde..." : "Cadastrar"}
                             </button>
                             <div className="flex items-center my-4 before:flex-1 before:border-t before:border-gray-300 before:mt-0.5 after:flex-1 after:border-t after:border-gray-300 after:mt-0.5">
                                 <p className="text-center font-semibold text-gray-400 text-sm mx-4 mb-0">OU</p>

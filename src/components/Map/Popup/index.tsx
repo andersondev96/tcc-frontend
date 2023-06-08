@@ -113,7 +113,6 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact }) => 
                     </div>
                     <div className="leaflet-popup-description">
                         <h1>{name}</h1>
-                        <span>{category}</span>
                     </div>
                 </Link>
                 <div className="leaflet-social-icons">
@@ -133,9 +132,14 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact }) => 
                         <AiOutlineMail size={16} />
                     </a>
 
-                    <MdOutlineChatBubbleOutline size={16} onClick={openModalChat} />
+                    {settings && settings.online_chat && (
+                        <MdOutlineChatBubbleOutline size={16} onClick={openModalChat} />
+                    )}
 
-                    <AiOutlineCalculator size={16} onClick={openModalCalculate} />
+                    {settings && settings.online_budget && (
+                        <AiOutlineCalculator size={16} onClick={openModalCalculate} />
+                    )}
+
 
 
                 </div>

@@ -1,6 +1,6 @@
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -23,6 +23,7 @@ interface LocationState {
 export const SignIn: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     const { signInWithGoogle } = useAuthGoogle();
     const { signIn } = useAuth();
@@ -40,6 +41,7 @@ export const SignIn: React.FC = () => {
         async (data: SignInFormData) => {
             try {
                 formRef.current?.setErrors({});
+                setIsLoading(true);
 
                 const schema = Yup.object().shape({
                     email: Yup.string()
@@ -65,15 +67,22 @@ export const SignIn: React.FC = () => {
                     const errors = getValidationErrors(err);
 
                     formRef.current?.setErrors(errors);
+                    setIsLoading(false);
 
                     return;
                 }
 
-                toast.error("Error ao autenticar, tente novamente!");
+                toast.error("Error ao autenticar, verifique as suas credenciais e tente novamente!");
+            } finally {
+                setIsLoading(false);
             }
         },
         [signIn, toast, navigate]
     );
+
+    function classNames(...classes: any) {
+        return classes.filter(Boolean).join(' ')
+    }
 
     return (
         <div className="bg-gray-100">
@@ -118,9 +127,9 @@ export const SignIn: React.FC = () => {
                             </div>
                             <button
                                 type="submit"
-                                className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                                className={classNames(isLoading ? 'bg-blue-400 text-gray-600 cursor-not-allowed' : 'text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400', "w-full font-medium rounded-lg text-sm px-5 py-2.5 text-center")}
                             >
-                                Entrar
+                                {isLoading ? 'Aguarde...' : 'Entrar'}
                             </button>
                             <p className="text-sm font-light text-gray-500">
                                 Não possui uma conta?
