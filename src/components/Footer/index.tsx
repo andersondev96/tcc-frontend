@@ -18,18 +18,11 @@ export const Footer: React.FC = () => {
         loadCompany();
     }, [setCompany]);
 
-    function classNames(...classes: any) {
-        return classes.filter(Boolean).join(' ')
-    }
-
     return (
-        <div className="flex items-center justify-center bg-gray-700 p-1">
-            <span className={classNames(company && "ml-64", "text-white")}>
+        <div className="flex items-end justify-center bg-gray-700 p-1.5">
+            <span className="text-sm text-white">
                 &#169; 2022 Start Business
             </span>
-            <a href="" className="text-right">
-                Acessar área do cliente
-            </a>
         </div>
     )
 }

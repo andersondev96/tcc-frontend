@@ -327,12 +327,12 @@ export const BusinessEdit: React.FC = () => {
 
     const handleSetCEP = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         const cep = event.target.value;
+        console.log(cep);
 
-        if (cep.length === 8) {
+        if (cep.length === 9) {
             fetch(`https://viacep.com.br/ws/${cep}/json`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
                     setCompany(prevState => ({
                         ...prevState,
                         Address: {
@@ -764,6 +764,7 @@ export const BusinessEdit: React.FC = () => {
                                             name="Address.cep"
                                             label="CEP"
                                             placeholder="XXXXX-XXX"
+                                            mask="cep"
                                             onChange={handleSetCEP}
                                         />
                                     </div>

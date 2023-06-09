@@ -53,9 +53,6 @@ export const CreateServicesEntrepreneur: React.FC = () => {
         api.get('/companies/me')
             .then(response => setCompany(response.data));
 
-        console.log(company.id);
-
-
         if (company.category_id) {
             api.get(`/categories/list-subcategories/${company.category_id}`).then(response => {
                 setSubcategories(response.data);
@@ -88,7 +85,8 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                 const schema = Yup.object().shape({
                     name: Yup.string().required("Campo obrigatório"),
                     description: Yup.string().required("Campo obrigatório"),
-                    price: Yup.number().typeError("Campo deve possuir um valor número").required("Campo obrigatório"),
+                    price: Yup.number()
+                        .typeError("Campo deve possuir um valor número").required("Campo obrigatório"),
                     category: Yup.string().required("Campo obrigatório")
                 });
 
@@ -206,6 +204,8 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                                 <Input
                                     name="price"
                                     label="Preço do produto/serviço"
+                                    mask="currency"
+                                    prefix="R$"
                                     placeholder="0.00"
                                 />
                             </div>
