@@ -361,15 +361,8 @@ export const BusinessEdit: React.FC = () => {
 
     const cnpjValidation = useCallback((isRequired: boolean) => {
         if (isRequired) {
-            return Yup.number()
+            return Yup.string()
                 .required('CNPJ obrigatório')
-                .integer()
-                .positive()
-                .typeError("Digite apenas números")
-                .test('len',
-                    'O campo deve possuir 14 digitos',
-                    val => val ? val.toString().length === 14 : true
-                )
         } else {
             return Yup.string().nullable().notRequired();
         }
@@ -388,41 +381,20 @@ export const BusinessEdit: React.FC = () => {
                     cnpj: cnpjValidation(hasCNPJ),
                     category_id: Yup.string().required('Categoria obrigatória'),
                     contact: Yup.object().shape({
-                        telephone: Yup.number()
-                            .required('Telefone obrigatório')
-                            .integer()
-                            .positive()
-                            .typeError("Digite apenas números")
-                            .test('len',
-                                'O campo deve possuir 11 digitos',
-                                val => val ? val.toString().length === 11 : true
-                            ),
+                        telephone: Yup.string()
+                            .required('Telefone obrigatório'),
 
                         whatsapp: Yup
-                            .number()
+                            .string()
                             .required()
-                            .nullable(true)
-                            .integer()
-                            .positive()
-                            .typeError("Digite apenas números")
-                            .test('len',
-                                'O campo deve possuir 11 digitos',
-                                val => val ? val.toString().length === 11 : true
-                            ),
+                            .nullable(true),
                         email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
                         website: Yup.string().url("Digite um endereço válido").nullable()
                     }),
                     ...(hasPhysicalLocation) && {
                         Address: Yup.object().shape({
-                            cep: Yup.number()
-                                .integer()
-                                .positive()
-                                .required()
-                                .typeError("Digite apenas números")
-                                .test('len',
-                                    'O campo deve possuir 8 digitos',
-                                    val => val ? val.toString().length === 8 : true
-                                ),
+                            cep: Yup.string()
+                                .required(),
 
                             number: Yup.number()
                                 .integer()
@@ -559,6 +531,7 @@ export const BusinessEdit: React.FC = () => {
                                     name="cnpj"
                                     label="CNPJ"
                                     placeholder="XX. XXX. XXX/0001-XX"
+                                    mask="cnpj"
                                     idTooltip="tooltip-cnpj"
                                     tooltipText="O CNPJ não é obrigatório e só será visível para o empreendedor"
                                 />
@@ -631,6 +604,7 @@ export const BusinessEdit: React.FC = () => {
                                 <Input
                                     name="contact.telephone"
                                     label="Telefone"
+                                    mask="phone"
                                     placeholder="(XX) XXXXX-XXXX"
                                 />
                             </div>
@@ -638,6 +612,7 @@ export const BusinessEdit: React.FC = () => {
                                 <Input
                                     name="contact.whatsapp"
                                     label="Whatsapp"
+                                    mask="phone"
                                     placeholder="(XX) XXXXX-XXXX"
                                 />
                             </div>
@@ -892,8 +867,8 @@ export const BusinessEdit: React.FC = () => {
                                     type="submit"
                                     className={classNames(
                                         isLoading ?
-                                            "bg-blue-200 cursor-not-allowed"
-                                            : "bg-sky-500 text-white active:bg-sky-600 hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150",
+                                            "bg-blue-400 text-gray-600 cursor-not-allowed"
+                                            : "bg-blue-600 text-white active:bg-blue-700 hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150",
                                         "font-bold uppercase text-xs px-6 py-3 rounded shadow mr-1 mb-1")}>
                                     {isLoading ? "Salvando..." : "Salvar"}
                                 </button>

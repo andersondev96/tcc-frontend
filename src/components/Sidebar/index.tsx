@@ -45,7 +45,7 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
                     </div>
 
                     <div className="mt-6 sm:block sm:ml-6 items-center">
-                        <Link to="/profile">
+                        <div className="flex flex-col">
                             <div className="flex items-center">
                                 {user.avatar ? (
                                     <div className="shrink-0">
@@ -60,9 +60,14 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
                                 )}
                                 <div className="hidden sm:block glow ml-3">
                                     <p className="text-sm font-semibold text-white">{user.name}</p>
+                                    <div className="flex flex-row justify-between gap-2 mt-1 text-xs text-white underline">
+                                        <Link to="/profile" className="hover:text-blue-600 transition-all duration-300">Editar perfil</Link>
+                                        <Link to="/" className="hover:text-blue-600 transition-all duration-300">Área do cliente</Link>
+                                    </div>
                                 </div>
                             </div>
-                        </Link>
+
+                        </div>
                     </div>
                     {
                         isLoading ? (

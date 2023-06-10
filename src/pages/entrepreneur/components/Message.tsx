@@ -52,7 +52,7 @@ export const Message: React.FC<MessageProps> = ({
                 </div>
             </div>
             <ModalContainer
-                title="Júlia Duarte"
+                title={name}
                 isOpen={modalChatIsOpen}
                 onRequestClose={closeModal}
             >

@@ -2,13 +2,13 @@ import { useField } from "@unform/core";
 import { FormEvent, InputHTMLAttributes, useCallback, useEffect, useRef, useState } from "react";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip } from "../../Tooltip";
-import { cep, currency } from "./masks";
+import { cep, cnpj, currency, phone } from "./masks";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     name: string;
     label: string;
     type?: string;
-    mask?: "cep" | "currency";
+    mask?: "cep" | "currency" | "cnpj" | "phone";
     prefix?: string;
     placeholder?: string;
     idTooltip?: string | undefined;
@@ -51,6 +51,14 @@ export const Input: React.FC<InputProps> = ({
 
         if (mask === 'currency') {
             currency(event);
+        }
+
+        if (mask === 'cnpj') {
+            cnpj(event);
+        }
+
+        if (mask === 'phone') {
+            phone(event);
         }
     }, [mask]);
 

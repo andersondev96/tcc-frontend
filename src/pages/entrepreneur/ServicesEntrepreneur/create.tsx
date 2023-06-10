@@ -46,6 +46,7 @@ export const CreateServicesEntrepreneur: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const [imageService, setImageService] = useState(new FormData());
     const [errorMessage, setErrorMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -81,6 +82,7 @@ export const CreateServicesEntrepreneur: React.FC = () => {
         async (data: IServices) => {
             try {
                 formRef.current?.setErrors({});
+                setIsLoading(true);
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required("Campo obrigatório"),
@@ -139,13 +141,20 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                     const errors = getValidationErrors(err);
 
                     formRef.current?.setErrors(errors);
+                    setIsLoading(false);
 
                     return;
                 }
 
                 toast.error("Erro ao cadastrar o serviço")
+            } finally {
+                setIsLoading(false);
             }
-        }, [highlight, company.id, navigate, imageService]);
+        }, [highlight, company.id, navigate, imageService, setIsLoading]);
+
+    function classNames(...classes: any) {
+        return classes.filter(Boolean).join(' ')
+    }
 
     return (
         <div className="flex flex-row">
@@ -262,10 +271,14 @@ export const CreateServicesEntrepreneur: React.FC = () => {
                         </div>
 
                         <div className="flex flex-row items-center justify-center">
-                            <button className="flex items-center justify-center mt-8 w-48 h-12 bg-blue-600 rounded hover:brightness-90 duration-300 transition-opacity">
-                                <span className="font-medium text-gray-100">
-                                    Salvar alterações
-                                </span>
+                            <button
+                                type="submit"
+                                className={classNames(
+                                    isLoading ?
+                                        "bg-blue-400 text-gray-600 cursor-not-allowed"
+                                        : "bg-blue-600 text-white active:bg-blue-700 hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150",
+                                    "font-bold uppercase text-xs px-6 py-3 rounded shadow mr-1 mb-1")}>
+                                {isLoading ? "Salvando..." : "Salvar"}
                             </button>
                         </div>
                     </Form>

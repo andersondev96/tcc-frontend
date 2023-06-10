@@ -191,7 +191,9 @@ export const ServicesEntrepreneur: React.FC = () => {
                     <>
                         {
                             loading ? (
-                                <p></p>
+                                <div className="flex flex-col items-center mt-24">
+                                    <h1 className="font-medium text-2xl">Carregando...</h1>
+                                </div>
                             ) : (
                                 <div>
                                     {

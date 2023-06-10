@@ -36,6 +36,8 @@ export const Settings: React.FC = () => {
     const [logo, setLogo] = useState(new FormData());
     const [modalDelete, setModalDelete] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [loadingSave, setLoadingSave] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false);
 
     useEffect(() => {
         const fetchEntrepreneurSettings = async () => {
@@ -97,17 +99,22 @@ export const Settings: React.FC = () => {
 
     const handleDeleteAccount = useCallback(async () => {
         try {
+            setLoadingDelete(true);
             await api.delete('/users');
             navigate('/login');
         } catch (err) {
+            setLoadingDelete(false);
             toast.error("Ocorreu um erro ao tentar excluir a sua conta, tente novamente!");
+        } finally {
+            setLoadingDelete(false);
         }
-    }, []);
+    }, [setLoadingDelete]);
 
 
     const handleSubmit = useCallback(async (event: FormEvent) => {
         try {
             event.preventDefault();
+            setLoadingSave(true);
 
             const data = {
                 highlight_services_quantity: quantityServices,
@@ -145,7 +152,10 @@ export const Settings: React.FC = () => {
             }
 
         } catch (err) {
+            setLoadingSave(false);
             toast.error("Erro ao alterar as preferências!");
+        } finally {
+            setLoadingSave(false);
         }
 
     }, [
@@ -169,6 +179,10 @@ export const Settings: React.FC = () => {
             background: "#FFFFFF",
         },
     };
+
+    function classNames(...classes: any) {
+        return classes.filter(Boolean).join(' ')
+    }
 
     return (
         <div className="flex flex-row">
@@ -285,18 +299,26 @@ export const Settings: React.FC = () => {
                         </div>
 
                         <div className="flex flex-col">
-                            <button className="flex items-center justify-center mt-6 sm:mt-12 w-48 h-12 bg-blue-600 rounded hover:brightness-90 duration-300 transition-opacity">
-                                <span className="font-medium text-gray-100">
-                                    Salvar alterações
+                            <button
+                                disabled={loadingSave}
+                                className={classNames(loadingSave ? 'bg-blue-500 cursor-not-allowed' : 'bg-blue-600 hover:brightness-90 duration-300 transition-opacity',
+                                    "flex items-center justify-center mt-6 sm:mt-12 w-48 h-12 rounded")}>
+                                <span className={classNames(loadingSave ? 'text-gray-50' : 'text-gray-100', 'font-medium')}>
+                                    {loadingSave ? 'Salvando...' : 'Salvar alterações'}
                                 </span>
                             </button>
                         </div>
                     </div>
                 </form>
 
-                <button onClick={handleOpenModalDelete} className="flex flex-row mb-14 sm:mr-24 sm:justify-end justify-start">
-                    <span className="font-semibold text-sm text-red-500">
-                        Excluir conta
+                <button
+                    onClick={handleOpenModalDelete}
+                    disabled={loadingDelete}
+                    className={classNames(loadingDelete ? "cursor-not-allowed" : "",
+                        "flex flex-row mb-14 sm:mr-24 sm:justify-end justify-start"
+                    )}>
+                    <span className={classNames(loadingDelete ? " text-red-400" : "text-red-500", "font-semibold text-sm")}>
+                        {loadingDelete ? "Aguarde..." : "Excluir conta"}
                     </span>
                 </button>
 

@@ -68,6 +68,7 @@ export const BusinessCreate: React.FC = () => {
     const [address, setAddress] = useState<Address>({});
     const [tags, setTags] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const [scheduleItems, setScheduleItems] = useState([
         {
             weekday: 'Todos os dias',
@@ -181,15 +182,8 @@ export const BusinessCreate: React.FC = () => {
 
     const cnpjValidation = useCallback((isRequired: boolean) => {
         if (isRequired) {
-            return Yup.number()
+            return Yup.string()
                 .required('CNPJ obrigatório')
-                .integer()
-                .positive()
-                .typeError("Digite apenas números")
-                .test('len',
-                    'O campo deve possuir 14 digitos',
-                    val => val ? val.toString().length === 14 : true
-                )
         } else {
             return Yup.string().nullable().notRequired();
         }
@@ -199,6 +193,7 @@ export const BusinessCreate: React.FC = () => {
         async (data: CreateBusinessEntrepreneurFormData) => {
             try {
                 formRef.current?.setErrors({});
+                setIsLoading(true);
 
                 const hasCNPJ = Boolean(data.cnpj && data.cnpj.length > 0);
 
@@ -209,39 +204,16 @@ export const BusinessCreate: React.FC = () => {
                     ...(tags.length === 0) ? {
                         services: Yup.string().required('Digite ao menos um serviço'),
                     } : {},
-                    telephone: Yup.number()
-                        .required('Telefone obrigatório')
-                        .integer()
-                        .positive()
-                        .typeError("Digite apenas números")
-                        .test('len',
-                            'O campo deve possuir 11 digitos',
-                            val => val ? val.toString().length === 11 : true
-                        ),
+                    telephone: Yup.string()
+                        .required('Telefone obrigatório'),
                     whatsapp: Yup
-                        .number()
+                        .string()
                         .required()
-                        .nullable(true)
-                        .integer()
-                        .positive()
-                        .typeError("Digite apenas números")
-                        .test('len',
-                            'O campo deve possuir 11 digitos',
-                            val => val ? val.toString().length === 11 : true
-                        ),
+                        .nullable(true),
                     email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
                     website: Yup.string().url("Digite um endereço válido").nullable(),
                     ...(hasPhysicalLocation) && {
-                        cep: Yup.number()
-                            .integer()
-                            .positive()
-                            .required()
-                            .typeError("Digite apenas números")
-                            .test('len',
-                                'O campo deve possuir 8 digitos',
-                                val => val ? val.toString().length === 8 : true
-                            ),
-
+                        cep: Yup.string().required(),
                         street: Yup.string().required("O campo é obrigatório"),
                         district: Yup.string().required("O campo é obrigatório"),
                         city: Yup.string().required("O campo é obrigatório"),
@@ -300,13 +272,20 @@ export const BusinessCreate: React.FC = () => {
                     const errors = getValidationErrors(err);
 
                     formRef.current?.setErrors(errors);
+                    setIsLoading(false);
 
                     return;
                 }
 
                 toast.error("Erro ao cadastrar empresa");
+            } finally {
+                setIsLoading(false);
             }
-        }, [toast, navigate, hasPhysicalLocation, scheduleItems, images, tags]);
+        }, [toast, navigate, hasPhysicalLocation, scheduleItems, images, tags, setIsLoading]);
+
+    function classNames(...classes: any) {
+        return classes.filter(Boolean).join(' ')
+    }
 
     return (
         <div className="flex flex-row">
@@ -332,6 +311,7 @@ export const BusinessCreate: React.FC = () => {
                                     name="cnpj"
                                     label="CNPJ"
                                     placeholder="XX. XXX. XXX/0001-XX"
+                                    mask="cnpj"
                                     idTooltip="tooltip-cnpj"
                                     tooltipText="O CNPJ não é obrigatório e só será visível para o empreendedor"
                                 />
@@ -401,6 +381,7 @@ export const BusinessCreate: React.FC = () => {
                                 <Input
                                     name="telephone"
                                     label="Telefone"
+                                    mask="phone"
                                     placeholder="(XX) XXXXX-XXXX"
                                 />
                             </div>
@@ -408,6 +389,7 @@ export const BusinessCreate: React.FC = () => {
                                 <Input
                                     name="whatsapp"
                                     label="Whatsapp"
+                                    mask="phone"
                                     placeholder="(XX) XXXXX-XXXX"
                                 />
                             </div>
@@ -532,6 +514,7 @@ export const BusinessCreate: React.FC = () => {
                                             name="cep"
                                             label="CEP"
                                             placeholder="XXXXX-XXX"
+                                            mask="cep"
                                             onChange={e => setCEP(e.target.value)}
                                         />
                                     </div>
@@ -646,8 +629,14 @@ export const BusinessCreate: React.FC = () => {
 
                         <div className="flex flex-wrap -mx-3 md:mb-6 mt-4">
                             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                                <button type="submit" className="bg-sky-500 text-white active:bg-sky-600 font-bold uppercase text-xs px-6 py-3 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
-                                    Salvar
+                                <button
+                                    type="submit"
+                                    className={classNames(
+                                        isLoading ?
+                                            "bg-blue-400 text-gray-600 cursor-not-allowed"
+                                            : "bg-blue-600 text-white active:bg-blue-700 hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150",
+                                        "font-bold uppercase text-xs px-6 py-3 rounded shadow mr-1 mb-1")}>
+                                    {isLoading ? "Salvando..." : "Salvar"}
                                 </button>
                             </div>
                         </div>

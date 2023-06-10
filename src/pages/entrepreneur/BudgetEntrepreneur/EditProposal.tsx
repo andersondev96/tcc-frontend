@@ -221,6 +221,8 @@ export const EditProposal: React.FC = () => {
                                             <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
                                                 <Input
                                                     name="amount"
+                                                    mask="currency"
+                                                    prefix="R$"
                                                     label="Valor total do serviço"
                                                 />
                                             </div>

@@ -38,18 +38,21 @@ export const ClientsEntrepreneur: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [totalResults, setTotalResults] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         api.get(`companies/me`)
             .then((response) => {
                 if (response.data) {
                     setCompany(response.data);
+                    setIsLoading(false);
                 }
             })
             .catch(err => {
                 console.log(err);
+                setIsLoading(false);
             })
-    }, [company.id]);
+    }, [company.id, setIsLoading]);
 
     useEffect(() => {
         if (company.id) {
@@ -58,13 +61,15 @@ export const ClientsEntrepreneur: React.FC = () => {
                     if (response.data) {
                         setClients(response.data.customers);
                         setTotalResults(response.data.totalResults);
+                        setIsLoading(false);
                     }
                 })
                 .catch((err) => {
                     console.log(err);
+                    setIsLoading(false);
                 })
         }
-    }, [company.id, currentPage, itemsPerPage]);
+    }, [company.id, currentPage, itemsPerPage, setIsLoading]);
 
     const handlePageChange = useCallback((newPage: number) => {
         setCurrentPage(newPage);
@@ -72,37 +77,44 @@ export const ClientsEntrepreneur: React.FC = () => {
 
     const handleSearchClients = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
 
-        const value = event.target.value;
+        try {
+            const value = event.target.value;
 
-        setName(value);
+            setName(value);
 
-        if (company.id) {
+            setIsLoading(false);
 
-            if (name) {
-                const response = await api.get(`customers/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`, {
-                    params: {
-                        name: name,
-                        email: name
+
+            if (company.id) {
+
+                if (name) {
+                    const response = await api.get(`customers/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`, {
+                        params: {
+                            name: name,
+                            email: name
+                        }
+                    });
+
+                    if (response.data) {
+                        setClients(response.data.customers);
+                        setTotalResults(response.data.totalResults);
                     }
-                });
+                }
 
-                if (response.data) {
-                    setClients(response.data.customers);
-                    setTotalResults(response.data.totalResults);
+                if (name.length === 0) {
+                    const response = await api.get(`customers/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`);
+
+                    if (response.data) {
+                        setClients(response.data.customers);
+                        setTotalResults(response.data.totalResults);
+                    }
                 }
             }
-
-            if (name.length === 0) {
-                const response = await api.get(`customers/${company.id}?page=${currentPage}&perPage=${itemsPerPage}`);
-
-                if (response.data) {
-                    setClients(response.data.customers);
-                    setTotalResults(response.data.totalResults);
-                }
-            }
+        } catch (error) {
+            console.log(error);
         }
 
-    }, [company.id, setName, setClients, clients, totalResults, currentPage, itemsPerPage]);
+    }, [company.id, setName, setClients, clients, totalResults, currentPage, itemsPerPage, setIsLoading]);
 
     return (
         <div className="flex flex-row">
@@ -113,37 +125,51 @@ export const ClientsEntrepreneur: React.FC = () => {
                 </div>
                 <div className="flex flex-col px-12">
                     <Search onChange={handleSearchClients} />
-                    <div className="mt-6">
-                        <Table>
-                            <TableHead>
-                                <TableRowHead>
-                                    <TableHeader>Nome</TableHeader>
-                                    <TableHeader>E-mail</TableHeader>
-                                    <TableHeader>Telefone</TableHeader>
-                                </TableRowHead>
-                            </TableHead>
-                            <TableBody>
-                                {clients.length > 0 ? clients.map((client => (
-                                    <TableRowBody key={client.id}>
-                                        <TableData>{client.customer.user.name}</TableData>
-                                        <TableData>{client.customer.user.email}</TableData>
-                                        <TableData>{client.customer.telephone}</TableData>
-                                    </TableRowBody>
+                    <>
+                        {isLoading ? (
+                            <div className="flex flex-col items-center mt-24">
+                                <h1 className="font-medium text-2xl">Carregando...</h1>
+                            </div>
+                        ) : (
+                            <div>
+                                <div className="mt-6">
+                                    <Table>
+                                        <TableHead>
+                                            <TableRowHead>
+                                                <TableHeader>Nome</TableHeader>
+                                                <TableHeader>E-mail</TableHeader>
+                                                <TableHeader>Telefone</TableHeader>
+                                            </TableRowHead>
+                                        </TableHead>
+                                        <TableBody>
+                                            {clients.length > 0 ? clients.map((client => (
+                                                <>
+                                                    <TableRowBody key={client.id}>
+                                                        <TableData>{client.customer.user.name}</TableData>
+                                                        <TableData>{client.customer.user.email}</TableData>
+                                                        <TableData>{client.customer.telephone}</TableData>
+                                                    </TableRowBody>
+                                                    <PaginationTable
+                                                        tot_results={totalResults}
+                                                        items_per_page={itemsPerPage}
+                                                        current_page={currentPage}
+                                                        onPageChange={handlePageChange}
+                                                    />
+                                                </>
 
-                                ))) : (
-                                    <TableRowBody>
-                                        <TableData>Nenhum cliente cadastrado</TableData>
-                                    </TableRowBody>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-                    <PaginationTable
-                        tot_results={totalResults}
-                        items_per_page={itemsPerPage}
-                        current_page={currentPage}
-                        onPageChange={handlePageChange}
-                    />
+                                            ))) : (
+                                                <TableRowBody>
+                                                    <TableData>Nenhum cliente cadastrado</TableData>
+                                                </TableRowBody>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+
+                            </div>
+                        )}
+                    </>
+
 
 
                 </div>

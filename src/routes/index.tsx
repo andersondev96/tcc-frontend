@@ -22,7 +22,6 @@ import { BusinessEntrepreneur } from "../pages/entrepreneur/BusinessEntrepreneur
 import { BusinessCreate } from "../pages/entrepreneur/BusinessEntrepreneur/create";
 import { BusinessEdit } from '../pages/entrepreneur/BusinessEntrepreneur/edit';
 import { ChatEntrepreneur } from "../pages/entrepreneur/ChatEntrepreneur";
-import { ChatMessageEntrepreneur } from "../pages/entrepreneur/ChatEntrepreneur/ChatMessageEntrepreneur";
 import { ClientsEntrepreneur } from "../pages/entrepreneur/ClientsEntrepreneur";
 import { ServicesEntrepreneur } from "../pages/entrepreneur/ServicesEntrepreneur";
 import { CreateServicesEntrepreneur } from "../pages/entrepreneur/ServicesEntrepreneur/create";
@@ -194,14 +193,6 @@ export const Router: React.FC = () => {
                         </RequireAuth>
                     }
                 />
-
-                <Route
-                    path="/admin/chat/message"
-                    element={
-                        <RequireAuth>
-                            <ChatMessageEntrepreneur />
-                        </RequireAuth>
-                    } />
 
                 <Route
                     path="/admin/settings"
