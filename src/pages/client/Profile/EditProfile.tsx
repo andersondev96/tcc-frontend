@@ -27,6 +27,7 @@ export const EditProfile: React.FC = () => {
     const [previewAvatar, setPreviewAvatar] = useState<string>();
     const [selectedNewAvatar, setSelectedNewAvatar] = useState<boolean>(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const verifyIsAdmin = useCallback(async () => {
         await api
@@ -60,6 +61,7 @@ export const EditProfile: React.FC = () => {
         async (data: ProfileFormData) => {
             try {
                 formRef.current?.setErrors({});
+                setIsLoading(true);
 
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
@@ -113,10 +115,11 @@ export const EditProfile: React.FC = () => {
 
                 const response = await api.put("/users", formData);
 
+                console.log(response.data);
+
                 updateUser(response.data);
 
                 toast.success("Usuário atualizado com sucesso!")
-
 
                 if (isAdmin) {
                     navigate('/admin/business');
@@ -128,14 +131,17 @@ export const EditProfile: React.FC = () => {
                     const errors = getValidationErrors(err);
 
                     formRef.current?.setErrors(errors);
+                    setIsLoading(false);
 
                     return;
                 }
 
                 toast.error("Error ao editar usuário, tente novamente!");
 
+            } finally {
+                setIsLoading(true);
             }
-        }, [toast, history, avatar, isAdmin, selectedNewAvatar]);
+        }, [toast, history, avatar, isAdmin, selectedNewAvatar, setIsLoading]);
 
     const handleAvatarChange = useCallback(
         (e: ChangeEvent<HTMLInputElement>) => {
@@ -251,8 +257,16 @@ export const EditProfile: React.FC = () => {
 
                             </div>
                         </div>
-                        <button type="submit" className=" text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                            Salvar alterações
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className={classNames(
+                                isLoading
+                                    ? " text-gray-600 bg-blue-500"
+                                    : " text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-400",
+                                "font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                            )}>
+                            {isLoading ? "Salvando..." : "Salvar alterações"}
                         </button>
 
                     </Form>

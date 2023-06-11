@@ -76,8 +76,8 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
     let idChatRoom = "";
 
     const socket = import.meta.env.VITE_APP_ENV === "local"
-        ? io("http://localhost:3333")
-        : io("https://api.startbusinesshome.dev");
+        ? io(import.meta.env.VITE_API_LOCAL)
+        : io(import.meta.env.VITE_API_PROD);
 
     useEffect(() => {
 

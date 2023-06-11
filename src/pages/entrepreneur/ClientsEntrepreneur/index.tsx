@@ -10,6 +10,7 @@ import { TableHead } from "../../../components/Table/TableHead";
 import { TableHeader } from "../../../components/Table/TableHead/TableHeader";
 import { TableRowHead } from "../../../components/Table/TableHead/TableRowHead";
 import api from "../../../services/api";
+import formatTelephone from "../../../utils/formatTelephone";
 
 interface Company {
     id: string;
@@ -147,7 +148,7 @@ export const ClientsEntrepreneur: React.FC = () => {
                                                     <TableRowBody key={client.id}>
                                                         <TableData>{client.customer.user.name}</TableData>
                                                         <TableData>{client.customer.user.email}</TableData>
-                                                        <TableData>{client.customer.telephone}</TableData>
+                                                        <TableData>{formatTelephone(client.customer.telephone)}</TableData>
                                                     </TableRowBody>
                                                     <PaginationTable
                                                         tot_results={totalResults}

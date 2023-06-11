@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
@@ -29,6 +29,17 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
 
         loadCompany();
     }, [setCompany, setIsLoading]);
+
+    const logOut = useCallback(() => {
+        try {
+
+            signOut();
+            localStorage.removeItem('@web:company_id');
+
+        } catch (err) {
+            console.log("Erro ao tentar fazer logout", err);
+        }
+    }, [localStorage, signOut]);
 
     function classNames(...classes: any) {
         return classes.filter(Boolean).join(' ')
@@ -156,7 +167,7 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
                 <div className="text-center bottom-0 absolute w-full">
                     <hr className="m-0" />
                     <div className="flex space-x-4 sm:ml-6">
-                        <button onClick={signOut} className="flex flex-row flex-center text-white px-3 py-2 rounded-md font-medium hover:text-gray-300 transition duration-600">
+                        <button onClick={logOut} className="flex flex-row flex-center text-white px-3 py-2 rounded-md font-medium hover:text-gray-300 transition duration-600">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                             </svg>

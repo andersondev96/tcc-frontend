@@ -34,7 +34,9 @@ export const ChatEntrepreneur: React.FC = () => {
     }, [setUserConected]);
 
     useEffect(() => {
-        const socket = io("http://localhost:3333");
+        const socket = import.meta.env.VITE_APP_ENV === "local"
+            ? io(import.meta.env.VITE_API_LOCAL)
+            : io(import.meta.env.VITE_API_PROD);
 
         socket.on("connect", () => {
             console.log(socket.id);

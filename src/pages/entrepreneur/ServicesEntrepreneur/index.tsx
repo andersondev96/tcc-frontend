@@ -202,7 +202,7 @@ export const ServicesEntrepreneur: React.FC = () => {
                                                 {`Exibindo ${services.length} ${services.length > 1 ? ("resultados") : ("resultado")} ${name && `para a busca "${name}"`}`}</p>
                                         )
                                     }
-                                    <div className="grid grid-cols-1 sm:grid-cols-5 justify-items-center gap-4 sm:gap-8 mt-8">
+                                    <div className="grid grid-cols-1 sm:grid-cols-4 justify-items-center gap-4 sm:gap-8 mt-8">
                                         {
                                             services.map(service => (
                                                 <ServiceCard
