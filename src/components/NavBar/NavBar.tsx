@@ -5,6 +5,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../contexts/AuthContext";
+import { useAuthGoogle } from "../../contexts/AuthContextWithGoogle";
 import api from "../../services/api";
 import { ModalChat } from "../ModalChat";
 import { ModalContainer } from "../ModalContainer";
@@ -25,6 +26,7 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
     };
 
     const { user, signOut } = useAuth();
+    const { user: userGoogle, signOutWithGoogle } = useAuthGoogle();
     const [isAdmin, setIsAdmin] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const company_id = localStorage.getItem("@web:company_id");
@@ -48,14 +50,22 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
 
     const logOut = useCallback(() => {
         try {
+            if (userGoogle) {
+                signOutWithGoogle();
+            }
 
-            signOut();
+            if (user) {
+                signOut();
+            }
+
+            navigate('/login');
+
             localStorage.removeItem('@web:company_id');
 
         } catch (err) {
             console.log("Erro ao tentar fazer logout", err);
         }
-    }, [localStorage, signOut]);
+    }, [localStorage, signOut, signOutWithGoogle]);
 
     function openModal(): void {
         setModalIsOpen(true);
@@ -117,7 +127,7 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
                                         </span>
                                     </div>
                                     <div className="hidden sm:ml-6 sm:block">
-                                        {user && company_id ? (
+                                        {(user || userGoogle) && company_id ? (
                                             <div className="flex space-x-4">
                                                 {navigation.map((item) => (
                                                     <Link
@@ -147,7 +157,7 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
                                     </div>
                                 </div>
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                    {user && (
+                                    {(user || userGoogle) && (
                                         <button
                                             onClick={openModal}
                                             type="button"
@@ -163,7 +173,7 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
                                         </button>
                                     )}
 
-                                    {user ? (
+                                    {(user || userGoogle) ? (
                                         <Menu
                                             as="div"
                                             className="relative ml-3"
@@ -175,10 +185,10 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
                                                     </span>
 
                                                     <div className="flex items-center">
-                                                        {user?.avatar ? (
+                                                        {(user?.avatar || userGoogle?.avatar) ? (
                                                             <div className="shrink-0">
                                                                 <img
-                                                                    src={user?.avatar}
+                                                                    src={user?.avatar || userGoogle?.avatar || undefined}
                                                                     alt="Avatar"
                                                                     className="rounded-full h-8 sm:h-10 w-8 sm:w-10"
                                                                 />
@@ -212,7 +222,7 @@ export const NavBar: React.FC<INavBarProps> = ({ pageCurrent }) => {
                                                 <Menu.Items className="absolute right-0 z-40 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                     <div className="border-b border-gray-400 border-opacity-40">
                                                         <span className="block px-4 py-2 font-medium text-sm text-gray-700">
-                                                            {user?.name}
+                                                            {user?.name || userGoogle?.name}
                                                         </span>
                                                     </div>
 

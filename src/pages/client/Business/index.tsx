@@ -6,6 +6,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Gallery } from '../../../components/Gallery';
 import { NavBar } from "../../../components/NavBar/NavBar";
 import { useAuth } from '../../../contexts/AuthContext';
+import { useAuthGoogle } from '../../../contexts/AuthContextWithGoogle';
 import api from "../../../services/api";
 import formatCEP from '../../../utils/formatCEP';
 import formatTelephone from '../../../utils/formatTelephone';
@@ -88,6 +89,7 @@ export const Business: React.FC = () => {
     const navigate = useNavigate();
 
     const { user } = useAuth();
+    const { user: userGoogle } = useAuthGoogle();
     const [companyFavorited, setCompanyFavorited] = useState(false);
     const [company, setCompany] = useState<Company>({} as Company);
     const [assessments, setAssessments] = useState<Assessment[]>([]);
@@ -300,7 +302,7 @@ export const Business: React.FC = () => {
                                     )
                                 }
                                 {
-                                    user ? (
+                                    (user || userGoogle) ? (
                                         <div>
                                             <ButtonAction
                                                 type="favorite"
@@ -353,7 +355,7 @@ export const Business: React.FC = () => {
                                                 <AssessmentsForm
                                                     table_id={company.id}
                                                     assessment_type="company"
-                                                    user={user}
+                                                    user={user || userGoogle}
                                                     onAddAssessment={handleAddAssessments}
                                                     setCompany={setCompany}
                                                 />
