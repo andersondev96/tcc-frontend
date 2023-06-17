@@ -1,9 +1,11 @@
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
+import { addDays, format, parse } from "date-fns";
 import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
+import { DayPickerInput } from "../../../components/Form/DayPickerInput";
 import { Input } from "../../../components/Form/Input";
 import { TextArea } from "../../../components/Form/TextArea";
 import { SideBar } from "../../../components/Sidebar";
@@ -46,6 +48,7 @@ export const EditProposal: React.FC = () => {
     const [file, setFile] = useState<File | null>(null);
     const [proposal, setProposal] = useState<Proposal>({} as Proposal);
     const [budget, setBudget] = useState<BudgetData>({} as BudgetData);
+    const [dateValue, setDateValue] = useState<string>('');
     const { proposal_id } = useParams();
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
@@ -73,6 +76,8 @@ export const EditProposal: React.FC = () => {
                     const formattedDate = date.toISOString().substring(0, 10);
                     data.delivery_date = formattedDate;
                     setBudget(data);
+                    const formattedDateValue = format(addDays(new Date(formattedDate), 1), 'dd/MM/yyyy');
+                    setDateValue(formattedDateValue);
                 }
             });
 
@@ -82,7 +87,7 @@ export const EditProposal: React.FC = () => {
             setLoading(false);
         }
 
-    }, [proposal_id, setBudget, setLoading]);
+    }, [proposal_id, setBudget, setLoading, setDateValue]);
 
     function classNames(...classes: any) {
         return classes.filter(Boolean).join(' ')
@@ -96,7 +101,8 @@ export const EditProposal: React.FC = () => {
                 setFile(selectedFile);
             }
 
-        }, [setFile]);
+        }, [setFile]
+    );
 
 
 
@@ -108,7 +114,6 @@ export const EditProposal: React.FC = () => {
 
                 const schema = Yup.object().shape({
                     description: Yup.string().required("Campo obrigatório"),
-                    delivery_date: Yup.date().typeError("Campo deve ser no formato data").required("Campo obrigatório"),
                     amount: Yup.number().typeError("Campo deve possuir um valor número").required("Campo obrigatório"),
                     installments: Yup.number().required("Campo obrigatório"),
                 });
@@ -117,9 +122,12 @@ export const EditProposal: React.FC = () => {
                     abortEarly: false,
                 });
 
+                const parsedDate = parse(dateValue, 'dd/MM/yyyy', new Date());
+                const formattedDate = format(addDays(parsedDate, 1), 'yyyy-MM-dd');
+
                 const updateBudget = {
                     description: data.description,
-                    delivery_date: data.delivery_date,
+                    delivery_date: formattedDate,
                     amount: data.amount,
                     installments: data.installments
                 }
@@ -150,7 +158,7 @@ export const EditProposal: React.FC = () => {
             } finally {
                 setLoadingSubmit(false);
             }
-        }, [proposal_id, budget, navigate, file, setLoadingSubmit]);
+        }, [proposal_id, budget, navigate, file, dateValue, setLoadingSubmit]);
     return (
         <div className="flex flex-row">
             <SideBar pageActive="orcamentos" />
@@ -211,10 +219,12 @@ export const EditProposal: React.FC = () => {
 
                                         <div className="flex flex-wrap -mx-3">
                                             <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
-                                                <Input
+                                                <DayPickerInput
                                                     name="delivery_date"
                                                     label="Data de entrega do serviço"
-                                                    type="date"
+                                                    selectedDate={budget.delivery_date}
+                                                    dateValue={dateValue}
+                                                    setDateValue={setDateValue}
                                                 />
                                             </div>
 
