@@ -131,7 +131,7 @@ export const BudgetEntrepreneur: React.FC = () => {
                 <div className="flex flex-col items-center py-6 sm:py-12">
                     <h1 className="font-montserrat font-medium text-2xl">Orçamentos</h1>
                 </div>
-                <div className="flex flex-col px-12 py-4">
+                <div className="flex flex-col px-6 sm:px-12 py-4 ml-12">
                     <Search onChange={handleSearchBudgets} />
 
                     <>

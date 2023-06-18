@@ -315,7 +315,7 @@ export const Settings: React.FC = () => {
                     onClick={handleOpenModalDelete}
                     disabled={loadingDelete}
                     className={classNames(loadingDelete ? "cursor-not-allowed" : "",
-                        "flex flex-row mb-14 sm:mr-24 sm:justify-end justify-start"
+                        "flex flex-row mb-14 ml-24 mt-4 sm:mr-24 sm:justify-end justify-start"
                     )}>
                     <span className={classNames(loadingDelete ? " text-red-400" : "text-red-500", "font-semibold text-sm")}>
                         {loadingDelete ? "Aguarde..." : "Excluir conta"}

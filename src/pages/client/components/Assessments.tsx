@@ -21,10 +21,10 @@ interface AssessmentsProps {
 export const Assessments: React.FC<AssessmentsProps> = ({ data }) => {
 
     return (
-        <div className="flex flex-row items-center gap-[1.125rem] mt-[1.625rem]">
+        <div className="flex flex-row items-center gap-2 sm:gap-4 mt-4">
             <div>
                 <img
-                    className="h-[2.625rem] w-[2.625rem] mobile:h-[1.75rem] mobile:w-[1.75rem] rounded-full"
+                    className="h-4 w-4 sm:h-8 sm:w-8 rounded-full"
                     src={data.user && data.user.avatar && data.user.avatar || AvatarImg}
                     alt="avatar"
                     title={data.user && data.user.name}
@@ -36,7 +36,7 @@ export const Assessments: React.FC<AssessmentsProps> = ({ data }) => {
                     <p className="font-light text-xs">{format(new Date(data.createdAt), "dd/MM/yyyy")}</p>
                 </div>
                 <span className="font-inter text-sm mobile:text-xs">{data.comment}</span>
-                <div className="flex flex-row items-center gap-[0.25rem]">
+                <div className="flex flex-row items-center gap-1">
                     <AssessmentsStars stars={data.stars} />
                 </div>
 

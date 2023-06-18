@@ -79,7 +79,7 @@ export const DayPickerInput: React.FC<DayPickerInputProps> = ({ name, label, sel
         <div>
             <div
                 ref={popperRef}
-                className="absolute"
+                className="sm:absolute"
                 onClick={handleButtonClick}
             >
                 <label

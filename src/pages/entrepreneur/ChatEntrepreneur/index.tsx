@@ -55,7 +55,7 @@ export const ChatEntrepreneur: React.FC = () => {
     return (
         <div className="flex flex-row">
             <SideBar pageActive="chat" />
-            <div className="flex flex-col w-full sm:ml-64">
+            <div className="flex flex-col w-full ml-12 sm:ml-64">
                 <div className="flex flex-col items-center py-6 sm:py-12">
                     <h1 className="font-montserrat font-medium text-2xl">
                         Chat

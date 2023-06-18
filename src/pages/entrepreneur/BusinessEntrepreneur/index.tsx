@@ -212,7 +212,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                                             <span className="font-inter font-medium">
                                                 Serviços
                                             </span>
-                                            <div className="flex flex-row gap-4">
+                                            <div className="flex flex-col sm:flex-row gap-4">
                                                 {
                                                     company.services.map((service) => (
                                                         <p key={service}
@@ -278,7 +278,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                                             {
                                                 company.Schedule &&
                                                 company.Schedule.map(schedule => (
-                                                    <div key={schedule.id} className="flex flex-row items-center gap-4 font-inter text-sm">
+                                                    <div key={schedule.id} className="flex flex-col sm:flex-row gap-2 sm:gap-1 font-inter text-sm">
                                                         <span className="font-bold">{schedule.weekday}: </span>
                                                         <p className="font-normal">{schedule.opening_time} - {schedule.closing_time}</p>
                                                     </div>

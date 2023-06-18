@@ -184,7 +184,7 @@ export const EditProposal: React.FC = () => {
                                     ref={formRef}
                                     onSubmit={handleSubmit}
                                     initialData={budget}
-                                    className="flex flex-col px-16">
+                                    className="flex flex-col sm:px-16">
                                     <div className="flex flex-col gap-8">
                                         <span className="font-montserrat font-medium text-sm sm:text-lg">
                                             Preencha os campos abaixo:
@@ -230,7 +230,7 @@ export const EditProposal: React.FC = () => {
                                         </div>
 
                                         <div className="flex flex-wrap -mx-3">
-                                            <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
+                                            <div className="sm:w-2/5 px-3 mb-6 sm:mb-0">
                                                 <DayPickerInput
                                                     name="delivery_date"
                                                     label="Data de entrega do serviço"
@@ -240,7 +240,7 @@ export const EditProposal: React.FC = () => {
                                                 />
                                             </div>
 
-                                            <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
+                                            <div className="sm:w-2/5 px-3 mb-6 sm:mb-0">
                                                 <Input
                                                     name="amount"
                                                     mask="currency"
@@ -248,7 +248,7 @@ export const EditProposal: React.FC = () => {
                                                 />
                                             </div>
 
-                                            <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
+                                            <div className="sm:w-1/5 px-3 mb-6 sm:mb-0">
                                                 <Input
                                                     name="installments"
                                                     label="Número de parcelas"

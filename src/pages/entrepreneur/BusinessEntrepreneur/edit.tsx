@@ -408,7 +408,6 @@ export const BusinessEdit: React.FC = () => {
                 await schema.validate(data, {
                     abortEarly: false,
                 });
-
                 const companyData = {
                     name: data.name,
                     cnpj: data.cnpj,
@@ -456,6 +455,7 @@ export const BusinessEdit: React.FC = () => {
                 navigate('/admin/business');
 
             } catch (err) {
+                console.log(err);
                 if (err instanceof Yup.ValidationError) {
                     const errors = getValidationErrors(err);
 
