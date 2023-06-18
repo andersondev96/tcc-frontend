@@ -1,6 +1,6 @@
 import { format, isSameDay, isValid, parse } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
-import { ChangeEventHandler, useRef, useState } from "react";
+import { ChangeEventHandler, useEffect, useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { usePopper } from "react-popper";
@@ -62,9 +62,26 @@ export const DayPickerInput: React.FC<DayPickerInputProps> = ({ name, label, sel
         }
     };
 
+    useEffect(() => {
+        const handleOutsideClick = (event: MouseEvent) => {
+            if (popperElement && !popperElement.contains(event.target as Node)) {
+                closePopper();
+            }
+        };
+
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        };
+    }, [popperElement]);
+
     return (
         <div>
-            <div ref={popperRef} className="absolute">
+            <div
+                ref={popperRef}
+                className="absolute"
+                onClick={handleButtonClick}
+            >
                 <label
                     htmlFor={name}
                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -76,19 +93,18 @@ export const DayPickerInput: React.FC<DayPickerInputProps> = ({ name, label, sel
                     placeholder={format(new Date(), 'dd/MM/yyyy', { locale: ptBR })}
                     value={dateValue}
                     onChange={handleInputChange}
-                    className="absolute py-3 px-4 mb-2 font-medium text-gray-600 bg-gray-100 border rounded-sm"
+                    className="absolute py-3 px-4 mb-2 font-medium text-gray-600 bg-gray-200 border rounded-sm"
                 />
-                <button
-                    ref={buttonRef}
-                    type="button"
-                    className="relative mt-3 ml-64 bg-white button-reset ba"
+                <div
+                    className="relative mt-5 ml-64 button-reset ba"
                     aria-label="Pick a date"
-                    onClick={handleButtonClick}
                 >
                     <span role="img" aria-label="calendar icon" className="text-xl">
-                        📅
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                        </svg>
                     </span>
-                </button>
+                </div>
             </div>
             {isPopperOpen && (
                 <div

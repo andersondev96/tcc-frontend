@@ -1,6 +1,8 @@
+import { addDays, format, parse } from "date-fns";
 import { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { DayPickerInput } from "../../../components/Form/DayPickerInput";
 import { Tooltip } from "../../../components/Tooltip";
 import api from "../../../services/api";
 
@@ -15,10 +17,11 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
 }) => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const [dateValue, setDateValue] = useState<string>('');
     const [formData, setFormData] = useState({
-        time: '',
         objective: '',
-        description: ''
+        description: '',
+        telephone: '',
     });
 
     function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
@@ -31,6 +34,22 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
         setFormData({ ...formData, [name]: value })
     }
 
+    const handleKeyUp = useCallback((event: FormEvent<HTMLInputElement>) => {
+
+        event.currentTarget.maxLength = 14;
+        let value = event.currentTarget.value;
+        value = value.replace(/\D/g, "");
+
+        if (value.length <= 10) {
+            value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
+        } else if (value.length === 11) {
+            value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+        }
+
+        event.currentTarget.value = value;
+        return event;
+    }, []);
+
 
     const handleSubmit = useCallback(async (event: FormEvent) => {
         try {
@@ -38,14 +57,20 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
 
             setIsLoading(true);
 
-            const { time, objective, description } = formData;
+            const { objective, description, telephone } = formData;
 
 
-            if (formData.time !== "" && formData.objective !== "" && formData.description !== "") {
+            if (dateValue !== "" && formData.objective !== "" && formData.description !== "") {
+
+
+                const parsedDate = parse(dateValue, 'dd/MM/yyyy', new Date());
+                const formattedDate = format(addDays(parsedDate, 1), 'yyyy-MM-dd');
+
                 const response = await api.post(`proposals/${company_id}`, {
-                    time,
+                    time: formattedDate,
                     objective,
-                    description
+                    description,
+                    telephone
                 });
 
                 if (response.status === 201) {
@@ -80,22 +105,21 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
                 <div className="flex flex-col gap-2 mt-8">
 
                     <div className="flex flex-row gap-4 w-full justify-between">
-                        <div className="flex flex-col w-1/4 gap-2">
-                            <label htmlFor="time" className="font-montserrat font-semibold text-sm text-indigo-600 outline-0 focus:border-indigo-600">
-                                Prazo esperado
-                            </label>
-                            <input
+                        <div className="flex flex-col w-3/4 gap-2">
+
+                            <DayPickerInput
                                 name="time"
-                                type="date"
-                                onChange={handleInputChange}
-                                className="h-10 p-2 bg-gray-300 rounded border-none font-montserrat font-light text-sm mt-2"
+                                label="Prazo esperado"
+                                selectedDate={new Date()}
+                                dateValue={dateValue}
+                                setDateValue={setDateValue}
                             />
 
                         </div>
 
-                        <div className="flex flex-col w-3/4 gap-2">
+                        <div className="flex flex-col w-3/4">
                             <div className="flex flex-row gap-1 items-center">
-                                <label htmlFor="objective" className="font-montserrat font-semibold text-sm text-indigo-600 outline-0 focus:border-indigo-600 mb-2">
+                                <label htmlFor="objective" className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                                     Objetivo do serviço
                                 </label>
                                 <Tooltip
@@ -106,7 +130,7 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
                             <input
                                 name="objective"
                                 onChange={handleInputChange}
-                                className="h-10 p-2 bg-gray-300 rounded border-none font-montserrat font-light text-sm"
+                                className="py-3 px-4 mb-2 font-medium text-gray-600 bg-gray-200 border rounded-sm"
                             />
 
                         </div>
@@ -114,7 +138,7 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
 
                     <div className="flex flex-col mt-4 gap-2">
                         <div className="flex flex-row gap-1 items-center">
-                            <label htmlFor="description" className="font-montserrat font-semibold text-sm text-indigo-600 outline-0 focus:border-indigo-600 mb-2">
+                            <label htmlFor="description" className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                                 Informe detalhadamente sobre o serviço
                             </label>
                             <Tooltip
@@ -126,7 +150,25 @@ export const ModalCalculate: React.FC<ModalCalculateProps> = ({
                             name="description"
                             placeholder="Escreva o objetivo do serviço"
                             onChange={handleTextAreaChange}
-                            className="h-28 p-2 bg-gray-300 rounded border-none outline-0 resize-none font-montserrat font-light text-sm" />
+                            className="h-28 p-2 bg-gray-200 rounded border-none outline-0 resize-none font-medium text-gray-600" />
+                    </div>
+
+                    <div className="mt-4">
+                        <div className="flex flex-col w-1/4">
+                            <div className="flex flex-row gap-1 items-center">
+                                <label htmlFor="objective" className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                    Telefone para contato
+                                </label>
+                            </div>
+                            <input
+                                name="telephone"
+                                onChange={handleInputChange}
+                                onKeyUp={handleKeyUp}
+                                placeholder="(XX)XXXXX-XXXX"
+                                className="py-3 px-4 mb-2 font-medium text-gray-600 bg-gray-200 border rounded-sm"
+                            />
+
+                        </div>
                     </div>
 
                 </div>

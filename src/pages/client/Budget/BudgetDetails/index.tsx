@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { NavBar } from "../../../../components/NavBar/NavBar";
 import api from "../../../../services/api";
+import formatTelephone from "../../../../utils/formatTelephone";
 import { PreviousPageButton } from "../../components/PreviousPageButton";
 
 interface Proposal {
@@ -151,7 +152,7 @@ export const BudgetDetails: React.FC = () => {
                                                         Telefone:
                                                     </span>
                                                     <p className="font-light text-sm ml-1">
-                                                        {proposal.customer?.telephone}
+                                                        {proposal.customer?.telephone && formatTelephone(proposal.customer?.telephone)}
                                                     </p>
                                                 </div>
                                             </div>
@@ -160,16 +161,16 @@ export const BudgetDetails: React.FC = () => {
                                                     Sobre a proposta
                                                 </span>
 
-                                                <div className="flex flex-row gap-6">
+                                                <div className="flex flex-col gap-2">
                                                     <span className="font-semibold text-sm">
                                                         Objetivo:
                                                     </span>
-                                                    <p className="font-light text-sm ml-1">
+                                                    <p className="font-light text-sm">
                                                         {proposal.objective}
                                                     </p>
                                                 </div>
 
-                                                <div className="flex flex-row gap-6">
+                                                <div className="flex flex-col gap-2">
                                                     <span className="font-semibold text-sm">
                                                         Descrição:
                                                     </span>
@@ -178,11 +179,11 @@ export const BudgetDetails: React.FC = () => {
                                                     </p>
                                                 </div>
 
-                                                <div className="flex flex-row gap-6">
+                                                <div className="flex flex-col gap-2">
                                                     <span className="font-semibold text-sm">
                                                         Prazo esperado:
                                                     </span>
-                                                    <p className="font-light text-sm ml-1">
+                                                    <p className="font-light text-sm">
                                                         {isNaN(Date.parse(proposal.time)) ? "" : format(new Date(proposal.time), "dd/MM/yyyy")}
                                                     </p>
                                                 </div>

@@ -2,7 +2,6 @@ import { format } from "date-fns";
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { IoDocumentTextOutline } from "react-icons/io5";
-import { TbSend } from "react-icons/tb";
 import { Link, useNavigate } from "react-router-dom";
 import { PaginationTable } from "../../../components/PaginationTable";
 import { Search } from "../../../components/Search";
@@ -172,7 +171,6 @@ export const BudgetEntrepreneur: React.FC = () => {
                                                                 <span onClick={() => handleEditBudget(proposal.id)}>
                                                                     <IoDocumentTextOutline size={24} color="#1EBF1B" />
                                                                 </span>
-                                                                <TbSend size={24} color="#EEB522" />
                                                             </div>
                                                         </TableData>
                                                     </TableRowBody>

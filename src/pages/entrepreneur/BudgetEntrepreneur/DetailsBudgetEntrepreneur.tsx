@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { SideBar } from "../../../components/Sidebar";
 import api from "../../../services/api";
+import formatTelephone from "../../../utils/formatTelephone";
 import { PreviousPageButton } from "../../client/components/PreviousPageButton";
 
 interface Proposal {
@@ -119,7 +120,7 @@ export const DetailsBudgetEntrepreneur: React.FC = () => {
                                                 Telefone:
                                             </span>
                                             <p className="font-light text-sm ml-1">
-                                                {proposal.customer?.telephone}
+                                                {proposal.customer?.telephone && formatTelephone(proposal.customer?.telephone)}
                                             </p>
                                         </div>
                                     </div>
@@ -128,7 +129,7 @@ export const DetailsBudgetEntrepreneur: React.FC = () => {
                                             Sobre a proposta
                                         </span>
 
-                                        <div className="flex flex-row gap-6">
+                                        <div className="flex flex-col gap-2">
                                             <span className="font-semibold text-sm">
                                                 Objetivo:
                                             </span>
@@ -137,7 +138,7 @@ export const DetailsBudgetEntrepreneur: React.FC = () => {
                                             </p>
                                         </div>
 
-                                        <div className="flex flex-row gap-6">
+                                        <div className="flex flex-col gap-2">
                                             <span className="font-semibold text-sm">
                                                 Descrição:
                                             </span>
@@ -146,7 +147,7 @@ export const DetailsBudgetEntrepreneur: React.FC = () => {
                                             </p>
                                         </div>
 
-                                        <div className="flex flex-row gap-6">
+                                        <div className="flex flex-col gap-2">
                                             <span className="font-semibold text-sm">
                                                 Prazo esperado:
                                             </span>

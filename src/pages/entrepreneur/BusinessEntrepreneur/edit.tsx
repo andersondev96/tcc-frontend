@@ -386,7 +386,6 @@ export const BusinessEdit: React.FC = () => {
 
                         whatsapp: Yup
                             .string()
-                            .required()
                             .nullable(true),
                         email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
                         website: Yup.string().url("Digite um endereço válido").nullable()
@@ -434,7 +433,12 @@ export const BusinessEdit: React.FC = () => {
                 const response = await api.put(`/companies/${params.id}`, companyData);
 
                 if (response.status === 200) {
-                    if (scheduleItems) {
+                    if (scheduleItems && scheduleItems.length > 0 && scheduleItems.filter(schedule => (
+                        schedule.weekday !== "" &&
+                        schedule.opening_time !== "" &&
+                        schedule.closing_time !== "" &&
+                        schedule.lunch_time !== ""
+                    ))) {
                         await api.put(`companies/schedules/${response.data.id}`, {
                             schedules: scheduleItems
                         });

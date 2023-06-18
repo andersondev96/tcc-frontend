@@ -1,10 +1,11 @@
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
-import { format } from "date-fns";
+import { addDays, format, parse } from "date-fns";
 import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
+import { DayPickerInput } from "../../../components/Form/DayPickerInput";
 import { Input } from "../../../components/Form/Input";
 import { TextArea } from "../../../components/Form/TextArea";
 import { SideBar } from "../../../components/Sidebar";
@@ -45,9 +46,10 @@ interface Proposal {
 
 export const CreateProposal: React.FC = () => {
     const [file, setFile] = useState<File | null>(null);
+    const [fileName, setFileName] = useState<string>("");
     const [proposal, setProposal] = useState<Proposal>({} as Proposal);
     const [selectedFiles, setSelectedFiles] = useState(new FormData());
-    const [date, setDate] = useState('');
+    const [dateValue, setDateValue] = useState('');
     const { proposal_id } = useParams();
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
@@ -68,23 +70,15 @@ export const CreateProposal: React.FC = () => {
         return classes.filter(Boolean).join(' ')
     }
 
-
-    const handleDateChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-        const selectedDate = event.target.value;
-
-        const formattedDate = format(new Date(selectedDate), "dd/MM/yyyy");
-
-        setDate(formattedDate);
-    }, []);
-
     const handleFileUpload = useCallback(
         async (event: ChangeEvent<HTMLInputElement>) => {
             const selectedFile = event.target.files && event.target.files[0];
 
             if (selectedFile) {
                 setFile(selectedFile);
+                setFileName(selectedFile["name"]);
             }
-        }, [setFile]);
+        }, [setFile, setFileName]);
 
     const handleSubmit = useCallback(
         async (data: BudgetData) => {
@@ -94,7 +88,6 @@ export const CreateProposal: React.FC = () => {
 
                 const schema = Yup.object().shape({
                     description: Yup.string().required("Campo obrigatório"),
-                    delivery_date: Yup.date().typeError("Campo deve ser no formato data").required("Campo obrigatório"),
                     amount: Yup.number().typeError("Campo deve possuir um valor número").required("Campo obrigatório"),
                     installments: Yup.number().required("Campo obrigatório"),
                 });
@@ -103,9 +96,12 @@ export const CreateProposal: React.FC = () => {
                     abortEarly: false,
                 });
 
+                const parsedDate = parse(dateValue, 'dd/MM/yyyy', new Date());
+                const formattedDate = format(addDays(parsedDate, 1), 'yyyy-MM-dd');
+
                 const budget = {
                     description: data.description,
-                    delivery_date: data.delivery_date,
+                    delivery_date: formattedDate,
                     amount: data.amount,
                     installments: data.installments
                 }
@@ -126,8 +122,6 @@ export const CreateProposal: React.FC = () => {
                 if (err instanceof Yup.ValidationError) {
                     const errors = getValidationErrors(err);
 
-                    console.log(errors);
-
                     formRef.current?.setErrors(errors);
                     setLoadingSubmit(false);
 
@@ -138,7 +132,7 @@ export const CreateProposal: React.FC = () => {
             } finally {
                 setLoadingSubmit(false);
             }
-        }, [proposal_id, selectedFiles, navigate, file]);
+        }, [proposal_id, selectedFiles, navigate, file, dateValue]);
     return (
         <div className="flex flex-row">
             <SideBar pageActive="orcamentos" />
@@ -181,25 +175,41 @@ export const CreateProposal: React.FC = () => {
                                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                                                 Adicionar anexo
                                             </label>
-                                            <input
-                                                className="relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-neutral-700 outline-none transition duration-300 ease-in-out file:-mx-3 file:-my-1.5 file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-1.5 file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[margin-inline-end:0.75rem] file:[border-inline-end-width:1px] hover:file:bg-neutral-200 focus:border-primary focus:bg-white focus:text-neutral-700 focus:shadow-[0_0_0_1px] focus:shadow-primary focus:outline-none"
-                                                name="files"
-                                                type="file"
-                                                id="files"
-                                                accept="image/*,.txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx, .zip, .rar"
-                                                maxLength={5242880}
-                                                onChange={handleFileUpload}
-                                            />
+                                            <label htmlFor="files">
+                                                <div className="flex items-center justify-between rounded w-48 h-12 p-3 bg-indigo-500 cursor-pointer hover:opacity-90 transition-opacity duration-300">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-white">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+                                                    </svg>
+                                                    <span className="text-white">Adicionar arquivo</span>
+                                                </div>
+                                                <input
+                                                    className="hidden"
+                                                    name="files"
+                                                    type="file"
+                                                    id="files"
+                                                    accept="image/*,.txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                                                    onChange={handleFileUpload}
+                                                />
+                                            </label>
+                                            <div>
+                                                {fileName && (
+                                                    <div>
+                                                        <p className="text-sm text-gray-700">{fileName}</p>
+                                                    </div>
+                                                )}
+                                            </div>
                                             <span className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                                                 Arquivos aceitos: .jpg, jpeg, png, txt, pdf, doc, docx, xls, xlsx, ppt, pptx, .zip, .rar
                                             </span>
                                         </div>
                                         <div className="flex flex-wrap -mx-3">
                                             <div className="w-full md:w-2/5 px-3 mb-6 md:mb-0">
-                                                <Input
+                                                <DayPickerInput
                                                     name="delivery_date"
                                                     label="Data de entrega do serviço"
-                                                    type="date"
+                                                    selectedDate={new Date()}
+                                                    dateValue={dateValue}
+                                                    setDateValue={setDateValue}
                                                 />
                                             </div>
 

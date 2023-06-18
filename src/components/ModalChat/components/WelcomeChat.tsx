@@ -37,7 +37,7 @@ export const WelcomeChat: React.FC<Props> = ({ handleSubmit, isLoading = false }
                 </div>
 
                 <div>
-                    <Input id="telephone" name="telephone" label="Telefone" type="phone" />
+                    <Input id="telephone" name="telephone" label="Telefone" type="phone" mask="phone" />
                 </div>
 
                 <div>

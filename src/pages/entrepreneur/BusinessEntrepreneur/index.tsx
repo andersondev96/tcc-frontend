@@ -232,15 +232,17 @@ export const BusinessEntrepreneur: React.FC = () => {
                                         <p className="font-inter text-sm text-justify">{formatTelephone(company.contact.telephone)}</p>
                                     </div>
 
-                                    <div className="flex flex-col gap-1">
-                                        <span className="font-inter font-medium text-base">Whatsapp</span>
-                                        <a
-                                            href={`https://api.whatsapp.com/send/?phone=${company.contact.whatsapp}`}
-                                            target="_blank"
-                                            className="font-inter text-sm text-justify cursor-pointer hover:underline hover:text-blue-600">
-                                            {formatTelephone(company?.contact.whatsapp)}
-                                        </a>
-                                    </div>
+                                    {company.contact.whatsapp && (
+                                        <div className="flex flex-col gap-1">
+                                            <span className="font-inter font-medium text-base">Whatsapp</span>
+                                            <a
+                                                href={`https://api.whatsapp.com/send/?phone=${company.contact.whatsapp}`}
+                                                target="_blank"
+                                                className="font-inter text-sm text-justify cursor-pointer hover:underline hover:text-blue-600">
+                                                {formatTelephone(company?.contact.whatsapp)}
+                                            </a>
+                                        </div>
+                                    )}
 
                                     <div className="flex flex-col gap-1">
                                         <span className="font-inter font-medium">

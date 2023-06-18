@@ -200,6 +200,7 @@ export const BusinessCreate: React.FC = () => {
                 const schema = Yup.object().shape({
                     name: Yup.string().required('Nome obrigatório'),
                     cnpj: cnpjValidation(hasCNPJ),
+                    description: Yup.string().required('Descrição obrigatória'),
                     category_id: Yup.string().required('Categoria obrigatória'),
                     ...(tags.length === 0) ? {
                         services: Yup.string().required('Digite ao menos um serviço'),
@@ -208,7 +209,6 @@ export const BusinessCreate: React.FC = () => {
                         .required('Telefone obrigatório'),
                     whatsapp: Yup
                         .string()
-                        .required()
                         .nullable(true),
                     email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
                     website: Yup.string().url("Digite um endereço válido").nullable(),
@@ -250,10 +250,17 @@ export const BusinessCreate: React.FC = () => {
                     whatsapp: data.whatsapp,
                     email: data.email,
                     website: data.website,
-                    schedules: scheduleItems,
+                    ...(scheduleItems.length > 0 && {
+                        schedules: scheduleItems.filter(schedule => (
+                            schedule.weekday !== "" &&
+                            schedule.opening_time !== "" &&
+                            schedule.closing_time !== "" &&
+                            schedule.lunch_time !== ""
+                        ))
+                    })
                 }
 
-                console.log(companies);
+                console.log(scheduleItems);
 
                 const response = await api.post('/companies', companies);
 
@@ -268,6 +275,7 @@ export const BusinessCreate: React.FC = () => {
                 navigate('/admin/business');
 
             } catch (err) {
+                console.log(err);
                 if (err instanceof Yup.ValidationError) {
                     const errors = getValidationErrors(err);
 

@@ -144,19 +144,14 @@ export const ClientsEntrepreneur: React.FC = () => {
                                         </TableHead>
                                         <TableBody>
                                             {clients.length > 0 ? clients.map((client => (
-                                                <>
-                                                    <TableRowBody key={client.id}>
-                                                        <TableData>{client.customer.user.name}</TableData>
-                                                        <TableData>{client.customer.user.email}</TableData>
-                                                        <TableData>{formatTelephone(client.customer.telephone)}</TableData>
-                                                    </TableRowBody>
-                                                    <PaginationTable
-                                                        tot_results={totalResults}
-                                                        items_per_page={itemsPerPage}
-                                                        current_page={currentPage}
-                                                        onPageChange={handlePageChange}
-                                                    />
-                                                </>
+
+                                                <TableRowBody key={client.id}>
+                                                    <TableData>{client.customer.user.name}</TableData>
+                                                    <TableData>{client.customer.user.email}</TableData>
+                                                    <TableData>{formatTelephone(client.customer.telephone)}</TableData>
+                                                </TableRowBody>
+
+
 
                                             ))) : (
                                                 <TableRowBody>
@@ -165,6 +160,12 @@ export const ClientsEntrepreneur: React.FC = () => {
                                             )}
                                         </TableBody>
                                     </Table>
+                                    <PaginationTable
+                                        tot_results={totalResults}
+                                        items_per_page={itemsPerPage}
+                                        current_page={currentPage}
+                                        onPageChange={handlePageChange}
+                                    />
                                 </div>
 
                             </div>

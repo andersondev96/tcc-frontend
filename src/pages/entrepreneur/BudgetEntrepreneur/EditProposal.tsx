@@ -46,9 +46,10 @@ interface Proposal {
 
 export const EditProposal: React.FC = () => {
     const [file, setFile] = useState<File | null>(null);
+    const [fileName, setFileName] = useState<string>("");
     const [proposal, setProposal] = useState<Proposal>({} as Proposal);
     const [budget, setBudget] = useState<BudgetData>({} as BudgetData);
-    const [dateValue, setDateValue] = useState<string>('');
+    const [dateValue, setDateValue] = useState<string>("");
     const { proposal_id } = useParams();
     const formRef = useRef<FormHandles>(null);
     const navigate = useNavigate();
@@ -75,7 +76,9 @@ export const EditProposal: React.FC = () => {
                     date.setUTCHours(date.getUTCHours() - 3);
                     const formattedDate = date.toISOString().substring(0, 10);
                     data.delivery_date = formattedDate;
+                    data.amount = data.amount.toFixed(2);
                     setBudget(data);
+                    setFileName(data.files);
                     const formattedDateValue = format(addDays(new Date(formattedDate), 1), 'dd/MM/yyyy');
                     setDateValue(formattedDateValue);
                 }
@@ -99,9 +102,10 @@ export const EditProposal: React.FC = () => {
 
             if (selectedFile) {
                 setFile(selectedFile);
+                setFileName(selectedFile["name"]);
             }
 
-        }, [setFile]
+        }, [setFile, setFileName]
     );
 
 
@@ -200,20 +204,28 @@ export const EditProposal: React.FC = () => {
                                                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                                                 Adicionar anexo
                                             </label>
-                                            <input
-                                                className="relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-neutral-700 outline-none transition duration-300 ease-in-out file:-mx-3 file:-my-1.5 file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-1.5 file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[margin-inline-end:0.75rem] file:[border-inline-end-width:1px] hover:file:bg-neutral-200 focus:border-primary focus:bg-white focus:text-neutral-700 focus:shadow-[0_0_0_1px] focus:shadow-primary focus:outline-none"
-                                                name="files"
-                                                type="file"
-                                                id="files"
-                                                accept="image/*,.txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                                                onChange={handleSelectFiles}
-                                            />
+                                            <label htmlFor="files">
+                                                <div className="flex items-center justify-between rounded w-48 h-12 p-3 bg-indigo-500 cursor-pointer hover:opacity-90 transition-opacity duration-300">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-white">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+                                                    </svg>
+                                                    <span className="text-white">Adicionar arquivo</span>
+                                                </div>
+                                                <input
+                                                    className="hidden"
+                                                    name="files"
+                                                    type="file"
+                                                    id="files"
+                                                    accept="image/*,.txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                                                    onChange={handleSelectFiles}
+                                                />
+                                            </label>
                                             <div>
-                                                {budget.files && budget.files.map(file => (
-                                                    <div key={file}>
-                                                        <p className="text-sm text-blue-700">{file}</p>
+                                                {fileName && (
+                                                    <div>
+                                                        <p className="text-sm text-gray-700">{fileName}</p>
                                                     </div>
-                                                ))}
+                                                )}
                                             </div>
                                         </div>
 
@@ -232,7 +244,6 @@ export const EditProposal: React.FC = () => {
                                                 <Input
                                                     name="amount"
                                                     mask="currency"
-                                                    prefix="R$"
                                                     label="Valor total do serviço"
                                                 />
                                             </div>
@@ -242,7 +253,7 @@ export const EditProposal: React.FC = () => {
                                                     name="installments"
                                                     label="Número de parcelas"
                                                     type="number"
-                                                    defaultValue={1}
+                                                    defaultValue={budget.installments}
                                                     min={1}
                                                     max={100}
                                                 />
