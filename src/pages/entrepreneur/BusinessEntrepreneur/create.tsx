@@ -83,7 +83,7 @@ export const BusinessCreate: React.FC = () => {
     }, [setCategories]);
 
     useEffect(() => {
-        if (cep.length === 8) {
+        if (cep.length === 9) {
             fetch(`https://viacep.com.br/ws/${cep}/json`)
                 .then(response => response.json())
                 .then(data => setAddress(data as Address))
