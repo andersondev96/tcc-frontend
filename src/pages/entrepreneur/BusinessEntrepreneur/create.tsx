@@ -240,7 +240,7 @@ export const BusinessCreate: React.FC = () => {
                     services: tags,
                     description: data.description,
                     physical_localization: hasPhysicalLocation,
-                    cep: data.cep.split('-'),
+                    cep: data.cep,
                     street: data.street,
                     district: data.district,
                     number: data.number,
