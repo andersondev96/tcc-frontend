@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { useCallback, useEffect, useState } from "react";
 import AvatarImg from "../../../assets/user.png";
 import { AssessmentsStars } from "./AssessmentsStars";
 
@@ -19,15 +20,37 @@ interface AssessmentsProps {
 }
 
 export const Assessments: React.FC<AssessmentsProps> = ({ data }) => {
+    const [userData, setUserData] = useState<Assessment>(data);
 
-    console.log(data);
+    const formatGoogleImage = useCallback(() => {
+        const baseUrl = "lh3.googleusercontent.com";
+        const localhostUrl = "http://localhost:3333/avatar/";
+        const { avatar } = data.user;
+
+
+        if (avatar.includes(baseUrl)) {
+            const newUrl = avatar.replace(localhostUrl, "");
+            setUserData(prevData => ({
+                ...prevData,
+                user: {
+                    ...prevData.user,
+                    avatar: newUrl
+                }
+            }));
+            data.user.avatar = newUrl;
+        }
+    }, [data]);
+
+    useEffect(() => {
+        formatGoogleImage();
+    }, [formatGoogleImage]);
 
     return (
         <div className="flex flex-row items-center gap-2 sm:gap-4 mt-4">
             <div>
                 <img
                     className="h-4 w-4 sm:h-8 sm:w-8 rounded-full"
-                    src={data.user && data.user.avatar && data.user.avatar || AvatarImg}
+                    src={userData.user && userData.user.avatar && userData.user.avatar || AvatarImg}
                     alt="avatar"
                     title={data.user && data.user.name}
                 />
