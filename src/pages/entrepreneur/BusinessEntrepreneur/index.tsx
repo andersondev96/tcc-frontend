@@ -98,16 +98,18 @@ export const BusinessEntrepreneur: React.FC = () => {
                 setIsLoading(false);
             })
 
-        api.get<AssessmentData[]>(`/assessments/company/${company?.id}`)
-            .then(response => {
-                setAssessments(response.data);
-                setIsLoading(false);
-            })
-            .catch(error => {
-                console.log("Ocorreu um erro ao realizar a requisição", error);
-                setIsLoading(false);
-            }
-            );
+        if (company) {
+            api.get<AssessmentData[]>(`/assessments/company/${company?.id}`)
+                .then(response => {
+                    setAssessments(response.data);
+                    setIsLoading(false);
+                })
+                .catch(error => {
+                    console.log("Ocorreu um erro ao realizar a requisição", error);
+                    setIsLoading(false);
+                }
+                );
+        }
 
         api.get("/entrepreneurs")
             .then(response => {

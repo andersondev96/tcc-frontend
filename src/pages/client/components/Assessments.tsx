@@ -20,6 +20,8 @@ interface AssessmentsProps {
 
 export const Assessments: React.FC<AssessmentsProps> = ({ data }) => {
 
+    console.log(data);
+
     return (
         <div className="flex flex-row items-center gap-2 sm:gap-4 mt-4">
             <div>

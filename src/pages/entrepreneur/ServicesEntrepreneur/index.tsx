@@ -77,14 +77,16 @@ export const ServicesEntrepreneur: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        try {
-            api.get(`/services/company/${company.id}`).then(response => {
-                setServices(response.data.services);
-            });
-            setLoading(false);
-        } catch (err) {
-            console.log("Ocorreu um erro ao realizar a requisição", err);
-            setLoading(false);
+        if (company.id) {
+            try {
+                api.get(`/services/company/${company.id}`).then(response => {
+                    setServices(response.data.services);
+                });
+                setLoading(false);
+            } catch (err) {
+                console.log("Ocorreu um erro ao realizar a requisição", err);
+                setLoading(false);
+            }
         }
 
     }, [company.id, setServices]);

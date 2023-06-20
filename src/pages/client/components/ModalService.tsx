@@ -6,6 +6,7 @@ import { ButtonAction } from "./ButtonAction";
 
 import { ModalContainer } from "../../../components/ModalContainer";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useAuthGoogle } from "../../../contexts/AuthContextWithGoogle";
 import api from "../../../services/api";
 import { ModalCalculate } from './ModalCalculate';
 
@@ -47,6 +48,7 @@ interface ModalServiceProps {
 
 export const ModalService: React.FC<ModalServiceProps> = ({ serviceData }) => {
     const { user } = useAuth();
+    const { user: userGoogle } = useAuthGoogle();
     const [serviceFavorited, setServiceFavorited] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [assessments, setAssessments] = useState<Assessment[]>([]);
@@ -203,7 +205,7 @@ export const ModalService: React.FC<ModalServiceProps> = ({ serviceData }) => {
                     <AssessmentsForm
                         table_id={service.id}
                         assessment_type="service"
-                        user={user}
+                        user={user || userGoogle}
                         onAddAssessment={handleAddAssessments}
                         setService={setService}
                     />

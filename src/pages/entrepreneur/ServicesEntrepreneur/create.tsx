@@ -126,10 +126,11 @@ export const CreateServicesEntrepreneur: React.FC = () => {
 
                 const response = await api.post(`/services/${company.id}`, service);
 
-                if (response.data) {
+                if (response.status === 201 && response.data) {
                     if (!imageService.entries().next().done) {
                         api.patch(`services/service/${response.data.id}`, imageService);
                     }
+
                     setErrorMessage("");
                     toast.success("Serviço adicionado com sucesso!")
 
