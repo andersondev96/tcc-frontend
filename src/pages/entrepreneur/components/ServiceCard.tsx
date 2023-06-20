@@ -94,8 +94,8 @@ export const ServiceCard: React.FC<ServiceProps> = ({ data, setServices }) => {
 
                 {mouseEnter && (
                     <div className="flex flex-col justify-center gap-2 p-2 absolute w-48 h-18 mt-24 bg-gray-300 bg-opacity-60 transition ease-in-out delay-150 hover:-translate-y-1">
-                        <div className="flex flex-col justify-between">
-                            <span className="font-montserrat mt-2 font-semibold text-sm">
+                        <div className="flex flex-col justify-between gap-2">
+                            <span className="font-montserrat mt-2 font-semibold text-sm leading-none">
                                 {service.name}
                             </span>
                             <p className="font-inter font-light text-xs leading-none">

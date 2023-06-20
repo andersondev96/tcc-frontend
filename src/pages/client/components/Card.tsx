@@ -91,7 +91,12 @@ export const Card: React.FC<CardProps> = ({ service, highlight = false }) => {
 
                     <div className="flex flex-col justify-center py-2 px-3  w-full cursor-pointer" onClick={openModal}>
                         <div className="flex flex-row justify-between">
-                            <span className="font-montserrat font-semibold mb-1 text-sm sm:text-base">{service.name}</span>
+                            <span className="font-montserrat font-semibold mb-1 text-sm sm:text-base leading-none truncate">
+                                {
+                                    service.name.length > 20 ? service.name.substring(0, 20) + '...'
+                                        : service.name
+                                }
+                            </span>
                         </div>
                         <AssessmentsStars stars={service.stars} />
                         <span className="font-inter font-semibold text-xs sm:text-sm mt-2 text-amber-900">
