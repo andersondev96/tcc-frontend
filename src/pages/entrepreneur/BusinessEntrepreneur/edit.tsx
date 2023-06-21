@@ -363,6 +363,7 @@ export const BusinessEdit: React.FC = () => {
         if (isRequired) {
             return Yup.string()
                 .required('CNPJ obrigatório')
+                .length(18, 'Deve possuir 18 caracteres')
         } else {
             return Yup.string().nullable().notRequired();
         }
@@ -382,10 +383,12 @@ export const BusinessEdit: React.FC = () => {
                     category_id: Yup.string().required('Categoria obrigatória'),
                     contact: Yup.object().shape({
                         telephone: Yup.string()
-                            .required('Telefone obrigatório'),
+                            .required('Telefone obrigatório')
+                            .length(15, 'Deve possuir 15 caracteres'),
 
                         whatsapp: Yup
                             .string()
+                            .length(15, 'Deve possuir 15 caracteres')
                             .nullable(true),
                         email: Yup.string().email("Formato de e-mail inválido").required('Email obrigatório'),
                         website: Yup.string().url("Digite um endereço válido").nullable()

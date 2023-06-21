@@ -60,25 +60,24 @@ export const EditProfile: React.FC = () => {
             }
         }));
 
-        console.log(userData);
-
     }, [user]);
 
-    useEffect(() => {
-        formatGoogleUser();
-        handleSetInitialAvatar();
-        verifyIsAdmin();
-    }, [verifyIsAdmin, formatGoogleUser])
-
-    const handleSetInitialAvatar = useCallback(() => {
-        if (userData && userData.avatar) {
+    const handleSetInitialAvatar = () => {
+        if (userData?.avatar) {
             setPreviewAvatar(userData.avatar);
         }
 
-        if (userGoogle && userGoogle.avatar) {
+        else if (userGoogle?.avatar) {
             setPreviewAvatar(userGoogle.avatar);
         }
-    }, [setPreviewAvatar, userGoogle]);
+
+    };
+
+    useEffect(() => {
+        handleSetInitialAvatar();
+        formatGoogleUser();
+        verifyIsAdmin();
+    }, [verifyIsAdmin, formatGoogleUser]);
 
     const handleSubmit = useCallback(
         async (data: ProfileFormData) => {
@@ -122,8 +121,6 @@ export const EditProfile: React.FC = () => {
                 });
 
                 const { name, email, old_password, password } = data;
-
-                console.log(data);
 
                 const formData = {
                     name,

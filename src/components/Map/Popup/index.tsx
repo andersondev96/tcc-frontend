@@ -9,6 +9,7 @@ import NoImageImg from "../../../assets/no-camera.png";
 import { useAuth } from '../../../contexts/AuthContext';
 import { ModalCalculate } from "../../../pages/client/components/ModalCalculate";
 import api from '../../../services/api';
+import removeMasksTelephone from '../../../utils/removeMasksTelephone';
 import { ModalChat } from "../../ModalChat";
 import { ModalContainer } from "../../ModalContainer";
 import './styles.scss';
@@ -123,7 +124,7 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact }) => 
                     )}
                     {
                         contact?.whatsapp && (
-                            <a href={`https://wa.me/55${contact.whatsapp}`} target="_blank">
+                            <a href={`https://wa.me/55${removeMasksTelephone(contact.whatsapp)}`} target="_blank">
                                 <AiOutlineWhatsApp size={16} />
                             </a>
                         )

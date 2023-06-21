@@ -9,6 +9,7 @@ import api from "../../../services/api";
 import formatCEP from "../../../utils/formatCEP";
 import formatCPFAndCNPJ from "../../../utils/formatCPFandCNPJ";
 import formatTelephone from "../../../utils/formatTelephone";
+import removeMasksTelephone from "../../../utils/removeMasksTelephone";
 import { Assessments } from "../../client/components/Assessments";
 import { Pictures } from "../../client/components/Pictures";
 
@@ -238,7 +239,7 @@ export const BusinessEntrepreneur: React.FC = () => {
                                         <div className="flex flex-col gap-1">
                                             <span className="font-inter font-medium text-base">Whatsapp</span>
                                             <a
-                                                href={`https://api.whatsapp.com/send/?phone=${company.contact.whatsapp}`}
+                                                href={`https://wa.me/55${removeMasksTelephone(company.contact.whatsapp)}`}
                                                 target="_blank"
                                                 className="font-inter text-sm text-justify cursor-pointer hover:underline hover:text-blue-600">
                                                 {formatTelephone(company?.contact.whatsapp)}

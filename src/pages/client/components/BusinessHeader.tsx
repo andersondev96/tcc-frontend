@@ -8,6 +8,7 @@ import { ModalChat } from '../../../components/ModalChat';
 import { ModalContainer } from "../../../components/ModalContainer";
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../services/api';
+import removeMasksTelephone from '../../../utils/removeMasksTelephone';
 import { AssessmentsStars } from './AssessmentsStars';
 import { ModalCalculate } from './ModalCalculate';
 
@@ -162,13 +163,17 @@ export const BusinessHeader: React.FC<BusinessHeaderProps> = ({ company }) => {
                                     />
                                 </a>
 
-                                <a href={`https://wa.me/55${company.contact.whatsapp}`} target="_blank">
-                                    <AiOutlineWhatsApp
-                                        size={24}
-                                        color="#1EBF1B"
-                                        className="hover:brightness-90 transition-colors mobile:w-6"
-                                    />
-                                </a>
+                                {
+                                    company.contact.whatsapp && (
+                                        <a href={`https://wa.me/55${removeMasksTelephone(company.contact.whatsapp)}`} target="_blank">
+                                            <AiOutlineWhatsApp
+                                                size={24}
+                                                color="#1EBF1B"
+                                                className="hover:brightness-90 transition-colors mobile:w-6"
+                                            />
+                                        </a>
+                                    )
+                                }
 
                                 {authenticated && settings.online_chat && (
                                     <MdOutlineChatBubbleOutline
