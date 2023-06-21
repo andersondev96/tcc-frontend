@@ -13,6 +13,8 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
     const [company, setCompany] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const mobilePlataform = window.innerWidth < 640;
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -61,17 +63,19 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
                     <div className="mt-6 sm:block sm:ml-6 items-center">
                         <div className="flex flex-col">
                             <div className="flex items-center">
-                                {user.avatar ? (
-                                    <div className="shrink-0">
-                                        <img src={user.avatar} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
-                                    </div>
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#9ca3af" className="w-8 h-8">
-                                        <path fillRule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clipRule="evenodd" />
-                                    </svg>
+                                <Link to={mobilePlataform ? "/profile" : ""}>
+                                    {user.avatar ? (
+                                        <div className="shrink-0">
+                                            <img src={user.avatar} alt="Avatar" className="rounded-full h-8 sm:h-10 w-8 sm:w-10" />
+                                        </div>
+                                    ) : (
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#9ca3af" className="w-8 h-8">
+                                            <path fillRule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clipRule="evenodd" />
+                                        </svg>
 
 
-                                )}
+                                    )}
+                                </Link>
                                 <div className="hidden sm:block glow ml-3">
                                     <p className="text-sm font-semibold text-white">{user.name}</p>
                                     <div className="flex flex-row justify-between gap-2 mt-1 text-xs text-white underline">

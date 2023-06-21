@@ -202,7 +202,7 @@ export const EditProfile: React.FC = () => {
                     <h1 className="font-montserrat font-bold text-center text-2xl">Editar perfil</h1>
 
                     <Form
-                        className="flex flex-col items-center mt-12 sm:mt-16"
+                        className={classNames(isAdmin ? "m-16" : "", "flex flex-col items-center mt-12 sm:mt-16")}
                         ref={formRef}
                         onSubmit={handleSubmit}
                         initialData={user ? {

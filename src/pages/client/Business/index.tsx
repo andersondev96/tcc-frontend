@@ -214,7 +214,7 @@ export const Business: React.FC = () => {
                                         <div className="flex flex-col">
                                             <span className="font-inter font-semibold text-gray-700 mb-2">Serviços oferecidos</span>
                                             {company.services.map(service => (
-                                                <div key={service} className="flex flex-row">
+                                                <div key={service} className="flex flex-col sm:flex-row">
                                                     {service.split(",").map((word, index) => (
                                                         <p key={index}
                                                             className="bg-gray-200 border border-blue-600 text-gray-700 rounded-full py-1 px-3 inline-block mr-2 mb-2">
@@ -286,7 +286,7 @@ export const Business: React.FC = () => {
                                             <span className="font-inter font-semibold text-gray-700">Fotos</span>
                                             <div
                                                 onClick={toggleFullscreen}
-                                                className="flex flex-row mobile:grid mobile:grid-cols-2 gap-[1.25rem] hover:cursor-pointer">
+                                                className="grid grid-cols-2 mt-4 sm:flex sm:flex-row gap-5 hover:cursor-pointer">
                                                 {company.ImageCompany.map(img => (
                                                     <Pictures key={img.id} image={img.image_url} description={company.name} />
                                                 ))}
