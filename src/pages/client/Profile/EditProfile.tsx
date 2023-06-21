@@ -9,6 +9,7 @@ import { Input } from "../../../components/Form/Input";
 import { NavBar } from "../../../components/NavBar/NavBar";
 import { SideBar } from "../../../components/Sidebar";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useAuthGoogle } from "../../../contexts/AuthContextWithGoogle";
 import api from "../../../services/api";
 import getValidationErrors from "../../../utils/getValidateErrors";
 import { PreviousPageButton } from "../components/PreviousPageButton";
@@ -16,9 +17,10 @@ import { PreviousPageButton } from "../components/PreviousPageButton";
 interface ProfileFormData {
     name: string;
     email: string;
-    old_password: string;
+    old_password?: string;
     password: string;
-    confirm_password: string;
+    confirm_password?: string;
+    avatar?: string;
 }
 
 export const EditProfile: React.FC = () => {
@@ -45,17 +47,38 @@ export const EditProfile: React.FC = () => {
     const navigate = useNavigate();
 
     const { user, updateUser } = useAuth();
+    const { user: userGoogle } = useAuthGoogle();
+
+    const [userData, setUserData] = useState<ProfileFormData>(user);
+
+    const formatGoogleUser = useCallback(() => {
+
+        setUserData(prevData => ({
+            ...prevData,
+            user: {
+                ...prevData
+            }
+        }));
+
+        console.log(userData);
+
+    }, [user]);
 
     useEffect(() => {
+        formatGoogleUser();
         handleSetInitialAvatar();
         verifyIsAdmin();
-    }, [verifyIsAdmin])
+    }, [verifyIsAdmin, formatGoogleUser])
 
     const handleSetInitialAvatar = useCallback(() => {
-        if (user.avatar) {
-            setPreviewAvatar(user.avatar);
+        if (userData && userData.avatar) {
+            setPreviewAvatar(userData.avatar);
         }
-    }, [setPreviewAvatar]);
+
+        if (userGoogle && userGoogle.avatar) {
+            setPreviewAvatar(userGoogle.avatar);
+        }
+    }, [setPreviewAvatar, userGoogle]);
 
     const handleSubmit = useCallback(
         async (data: ProfileFormData) => {
@@ -70,7 +93,7 @@ export const EditProfile: React.FC = () => {
                         .required("E-mail obrigatório")
                         .test("email", "E-mail já está sendo utilizado", async (value) => {
                             const response = await api.get(`/users/email?email=${value}`);
-                            if (response.data && user.email !== response.data.email) {
+                            if (response.data && (user.email || userGoogle?.email) !== response.data.email) {
                                 return false;
                             }
                             return true;
@@ -100,6 +123,8 @@ export const EditProfile: React.FC = () => {
 
                 const { name, email, old_password, password } = data;
 
+                console.log(data);
+
                 const formData = {
                     name,
                     email,
@@ -127,6 +152,7 @@ export const EditProfile: React.FC = () => {
                     navigate('/')
                 }
             } catch (err) {
+                console.log(err);
                 if (err instanceof Yup.ValidationError) {
                     const errors = getValidationErrors(err);
 
@@ -182,9 +208,12 @@ export const EditProfile: React.FC = () => {
                         className="flex flex-col items-center mt-12 sm:mt-16"
                         ref={formRef}
                         onSubmit={handleSubmit}
-                        initialData={{
+                        initialData={user ? {
                             name: user.name,
                             email: user.email
+                        } : {
+                            name: userGoogle?.name,
+                            email: userGoogle?.email
                         }}
                     >
 
@@ -200,7 +229,7 @@ export const EditProfile: React.FC = () => {
                                     previewAvatar && (
                                         <img
                                             src={previewAvatar}
-                                            alt={user.name}
+                                            alt={user ? user.name : userGoogle ? userGoogle.avatar : undefined}
                                             className="w-36 h-36 rounded-full object-cover opacity-80"
                                         />
                                     )

@@ -72,7 +72,7 @@ export const CardFavorites: React.FC<CardFavoritesProps> = (
                     />
                     <div className={`flex flex-col justify-center p-2 absolute w-48 ${businessName ? 'h-16 mt-32' : 'h-8 mt-40'} bg-gray-500 bg-opacity-60`}>
                         <div className="flex flex-row items-center justify-between">
-                            <span className="font-montserrat font-medium text-sm leading-3">{description}</span>
+                            <span className="font-montserrat font-medium text-sm leading-none truncate">{description}</span>
                             <AiFillHeart
                                 size={16}
                                 className="text-red-500 cursor-pointer hover:opacity-80 transition-opacity duration-300"

@@ -63,7 +63,7 @@ export const EditServicesEntrepreneur: React.FC = () => {
                 return;
             }
 
-            setHighlight(response.data.highlight_service)
+            setHighlight(response.data.highlight_service);
             setService(response.data);
             setSubcategorySelected(response.data.category);
         })
@@ -247,6 +247,8 @@ export const EditServicesEntrepreneur: React.FC = () => {
                                 <Input
                                     name="price"
                                     label="Preço do produto/serviço"
+                                    mask="currency"
+                                    prefix="R$"
                                     placeholder="0.00"
                                 />
                             </div>

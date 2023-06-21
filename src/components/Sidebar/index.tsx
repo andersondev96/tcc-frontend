@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
 
@@ -12,6 +12,8 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
     const { user, signOut } = useAuth();
     const [company, setCompany] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function loadCompany() {
@@ -35,6 +37,7 @@ export const SideBar: React.FC<SideBarProps> = ({ pageActive }) => {
 
             signOut();
             localStorage.removeItem('@web:company_id');
+            navigate("/login");
 
         } catch (err) {
             console.log("Erro ao tentar fazer logout", err);
