@@ -18,7 +18,7 @@ interface IServices {
     name: string;
     description: string;
     category: string;
-    price: number;
+    price: number | string;
     image_url: string;
     highlight_service: boolean;
 }
@@ -63,9 +63,14 @@ export const EditServicesEntrepreneur: React.FC = () => {
                 return;
             }
 
-            setHighlight(response.data.highlight_service);
-            setService(response.data);
-            setSubcategorySelected(response.data.category);
+            const data = response.data;
+
+            setHighlight(data.highlight_service);
+            const priceFormatted = Number(data.price).toFixed(2);
+
+            data.price = priceFormatted;
+            setService(data);
+            setSubcategorySelected(data.category);
         })
             .catch(error => {
                 console.log("Ocorreu um erro na solicitação", error);
