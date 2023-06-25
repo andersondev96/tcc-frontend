@@ -37,10 +37,8 @@ export const SignUp: React.FC = () => {
     async function handleGoogleSignIn() {
         try {
             await signInWithGoogle();
-            console.log(user);
 
             if (user) {
-                console.log(user.email);
                 const response = await api.get("users/email", {
                     params: {
                         email: user.email

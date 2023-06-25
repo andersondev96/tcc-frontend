@@ -4,7 +4,5 @@ export default function removeMasksTelephone(telephone: string) {
 
     const removeSpaces = phoneFormatted.replace(/[\s+]|^\+/, '');
 
-    console.log(removeSpaces);
-
     return removeSpaces;
 }

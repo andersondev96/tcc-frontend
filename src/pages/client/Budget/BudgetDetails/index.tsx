@@ -67,7 +67,6 @@ export const BudgetDetails: React.FC = () => {
 
             api.get(`proposals/budget/${proposal_id}`).then(response => {
                 setBudget(response.data);
-                console.log(budget);
             });
 
             setLoading(false);
@@ -84,7 +83,6 @@ export const BudgetDetails: React.FC = () => {
                 status
             }).then(
                 (response) => {
-                    console.log(response.data.status)
                     if (response.data.status === "Proposta aceita") {
                         toast.success("Proposta aceita, aguarde o contato do vendedor!")
                     } else {

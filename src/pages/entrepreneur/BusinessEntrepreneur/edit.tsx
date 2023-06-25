@@ -327,7 +327,6 @@ export const BusinessEdit: React.FC = () => {
 
     const handleSetCEP = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         const cep = event.target.value;
-        console.log(cep);
 
         if (cep.length === 9) {
             fetch(`https://viacep.com.br/ws/${cep}/json`)

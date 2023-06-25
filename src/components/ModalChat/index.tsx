@@ -125,7 +125,6 @@ export const ModalChat: React.FC<ModalChatProps> = ({ userIsConected }) => {
         const idUser = connectionData.id;
 
         socket.emit("start_chat", { idUser }, (response: ChatData) => {
-            console.log(response);
             idChatRoom = response.room.id;
 
             setChatMessageActive(true);

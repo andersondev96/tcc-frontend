@@ -147,7 +147,6 @@ export const BusinessCreate: React.FC = () => {
 
     const addTag = (tag: string) => {
         const tagsValues = [...new Set(tag.split(",").map((t) => t.trim()))];
-        console.log(tagsValues);
         const newTags = tagsValues.filter((t) => !tags.includes(t));
 
         if (tags.length + newTags.length > 5) {
@@ -263,11 +262,7 @@ export const BusinessCreate: React.FC = () => {
                     })
                 }
 
-                console.log(scheduleItems);
-
                 const response = await api.post('/companies', companies);
-
-                console.log(response);
 
                 if (imagesCompany) {
                     await api.post(`/companies/images/${response.data.id}`, imagesCompany);

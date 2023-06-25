@@ -83,7 +83,6 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
 
         setAuthenticated(false);
         setData({} as AuthState);
-        console.log(data);
     }, []);
 
     const updateUser = useCallback(

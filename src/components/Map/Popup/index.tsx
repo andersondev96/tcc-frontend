@@ -47,7 +47,6 @@ export const Popup: React.FC<PopupProps> = ({ id, name, category, contact }) => 
             .then((response) => {
                 if (response.data) {
                     setSettings(response.data)
-                    console.log(response.data);
                 }
             })
             .catch(err => console.log(err));

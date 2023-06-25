@@ -137,8 +137,6 @@ export const EditProfile: React.FC = () => {
 
                 const response = await api.put("/users", formData);
 
-                console.log(response.data);
-
                 updateUser(response.data);
 
                 toast.success("Usuário atualizado com sucesso!")

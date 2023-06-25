@@ -42,7 +42,6 @@ function onLoad() {
     });
 
     socket.on("message", (data) => {
-        console.log(data);
         if (data.message.chatroom_id === idChatRoom) {
             addMessage(data);
         }
@@ -51,8 +50,6 @@ function onLoad() {
 
 function addMessage(data) {
     const divMessageUser = document.getElementById("message_user");
-
-    console.log(data.message.createdAt);
 
     divMessageUser.innerHTML += `
     <span class="user_name user_name_date">

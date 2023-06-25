@@ -29,10 +29,6 @@ export function VerifyUserIsAdmin({ children }: any) {
 
     }, [setIsAdmin, isAdmin]);
 
-    useEffect(() => {
-        console.log(isAdmin);
-    }, [isAdmin]);
-
     return isAdmin ? (
         children
     ) : (
