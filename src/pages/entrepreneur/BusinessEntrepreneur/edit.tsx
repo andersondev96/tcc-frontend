@@ -134,40 +134,6 @@ export const BusinessEdit: React.FC = () => {
     ]);
 
     useEffect(() => {
-        async function fetchCompany() {
-            try {
-                const response = await api.get<CompanyData>(`companies/${params.id}`);
-
-                if (!response || !response.data) {
-                    navigate("/admin/business");
-                    return;
-                }
-
-                setHasPhysicalLocation(response.data.physical_localization);
-                setCompany(response.data);
-
-                setAddress({
-                    cep: response.data.Address.cep,
-                    logradouro: response.data.Address.street,
-                    bairro: response.data.Address.district,
-                    uf: response.data.Address.state,
-                    localidade: response.data.Address.city
-                });
-            } catch (err) {
-                console.log("Ocorreu um erro ao realizar a requisição", err);
-            }
-        }
-
-        fetchCompany();
-    }, [params.id, setHasPhysicalLocation, setCompany, setAddress]);
-
-    useEffect(() => {
-        if (company && company.Schedule && company.Schedule.length > 0) {
-            setScheduleItems(company.Schedule);
-        }
-    }, [company]);
-
-    useEffect(() => {
         async function fetchCategoryByCompany() {
             try {
                 if (company.category_id) {
@@ -204,6 +170,40 @@ export const BusinessEdit: React.FC = () => {
         fetchCategoryByCompany();
         fetchCategories();
     }, [company.category_id, setCategory, setCategories, setCompany, category]);
+
+    useEffect(() => {
+        async function fetchCompany() {
+            try {
+                const response = await api.get<CompanyData>(`companies/${params.id}`);
+
+                if (!response || !response.data) {
+                    navigate("/admin/business");
+                    return;
+                }
+
+                setHasPhysicalLocation(response.data.physical_localization);
+                setCompany(response.data);
+
+                setAddress({
+                    cep: response.data.Address.cep,
+                    logradouro: response.data.Address.street,
+                    bairro: response.data.Address.district,
+                    uf: response.data.Address.state,
+                    localidade: response.data.Address.city
+                });
+            } catch (err) {
+                console.log("Ocorreu um erro ao realizar a requisição", err);
+            }
+        }
+
+        fetchCompany();
+    }, [params.id, setHasPhysicalLocation, setCompany, setAddress]);
+
+    useEffect(() => {
+        if (company && company.Schedule && company.Schedule.length > 0) {
+            setScheduleItems(company.Schedule);
+        }
+    }, [company]);
 
     useEffect(() => {
         async function fetchTags() {
