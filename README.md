@@ -84,7 +84,7 @@ Para executar a aplicação deve seguir os seguintes passos:
   </li>
   <li>Com tudo configurado você poderá acessar a aplicação com o comando<br>
   <code>npm run dev</code></li>
-<li>A aplicação será executada na porte <code>3000</code> do servidor. Para acessar a interface abra um navegador de sua preferência e acesse essa url: 
+<li>A aplicação será executada na porta <code>3000</code> do servidor. Para acessar a interface abra um navegador de sua preferência e acesse essa url: 
 
 <code>http://localhost:3000</code>
 
