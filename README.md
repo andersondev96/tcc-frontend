@@ -6,7 +6,7 @@ Projeto desenvolvido para o trabalho de conclusão de curso (TCC) de Sistemas de
   <img src="https://img.shields.io/github/last-commit/andersondev96/tcc-api"/>
 </div>
 <br>
-<img src="./projeto.png" style="width: 400px;" />
+<img src="./projeto.png" style="width: 600px;" />
 
 <b> <br> Índice </b>
 <div>
@@ -45,7 +45,7 @@ Para a implementação do front-end, foi utilizada como linguagem de programaç�
 
 ## 🎨 Layout da aplicação
 
-<img src="./interface-figma.png" style="width: 400px;" />
+<img src="./interface-figma.png" style="width: 600px;" />
 
 Você pode visualizar o layout da aplicação pelo link abaixo:
 
